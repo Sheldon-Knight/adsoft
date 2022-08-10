@@ -15,15 +15,15 @@ class DatabaseSeeder extends Seeder
     {
        $this->call(
               [
-                AdminSeeder::class,
-                UserSeeder::class,
-                OmsSettingsSeeder::class,
-                // InvoiceStatusesSeeder::class,
+                // AdminSeeder::class,
+                // UserSeeder::class,
+                // OmsSettingsSeeder::class,
+                InvoiceStatusesSeeder::class,
                 // BasicInfoSeeder::class,
                 // EmailInfoSeeder::class,
                 // JobsStatusesSeeder::class,
-                DepartmentSeeder::class,
-                ClientSeeder::class,
+                // DepartmentSeeder::class,
+                // ClientSeeder::class,
               ]
          );
     }

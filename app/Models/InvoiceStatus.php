@@ -9,7 +9,7 @@ class InvoiceStatus extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];    
+    protected $fillable = ['name', 'is_quote'];    
 
     protected $table = 'invoice_statuses';
 }

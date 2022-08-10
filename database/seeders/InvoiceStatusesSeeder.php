@@ -23,7 +23,6 @@ class InvoiceStatusesSeeder extends Seeder
             'name' => "Paid",
         ]);
 
-
         InvoiceStatus::create([
             'name' => "Pending",
         ]);

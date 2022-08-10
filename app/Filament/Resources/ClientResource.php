@@ -21,6 +21,7 @@ class ClientResource extends Resource
     protected static ?string $model = Client::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?int $navigationSort = 3;  
     
 
     protected static function getNavigationBadge(): ?string
