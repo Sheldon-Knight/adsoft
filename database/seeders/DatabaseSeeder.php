@@ -17,13 +17,13 @@ class DatabaseSeeder extends Seeder
               [
                 AdminSeeder::class,
                 UserSeeder::class,
-                // OmsSettingsSeeder::class,
+                OmsSettingsSeeder::class,
                 // InvoiceStatusesSeeder::class,
                 // BasicInfoSeeder::class,
                 // EmailInfoSeeder::class,
                 // JobsStatusesSeeder::class,
-                // DepartmentSeeder::class,
-                // ClientSeeder::class,
+                DepartmentSeeder::class,
+                ClientSeeder::class,
               ]
          );
     }

@@ -22,6 +22,7 @@ class OmsSettingsSeeder extends Seeder
             'oms_company_address' => config('oms.settings.oms_company_address'),
             'oms_company_vat' => config('oms.settings.oms_company_vat'),
             'oms_company_registration' => config('oms.settings.oms_company_registration'),
-        ])->addMedia(public_path('images/DemoLogo.png'))->preservingOriginal()->toMediaCollection("DemoLogo");
+            'oms_email' => config('oms.settings.oms_email'),
+        ]);
     }
 }

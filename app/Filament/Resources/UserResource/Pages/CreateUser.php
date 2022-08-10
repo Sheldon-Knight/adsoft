@@ -25,46 +25,26 @@ class CreateUser extends CreateRecord
             Step::make('Basic Info')
                 ->description('basic info of the user')
                 ->schema([
-                    TextInput::make('name')
-                        ->required(),
-                    TextInput::make('surname')
-                        ->required(),
-                    Select::make('gender')
-                        ->required()
-                        ->options([
-                            'male' => 'male',
-                            'female' => 'female',
-                            'other' => 'other',
-                        ]),
-                    Toggle::make('is_admin')
-                        ->onIcon('heroicon-s-lightning-bolt')
-                        ->offIcon('heroicon-s-user')
+                    UserResource::getNameFormField(),
+                    UserResource::getSurnameFormField(),
+                    UserResource::getGenderFormField(),
+                    UserResource::getIsAdminFormField(),
                 ]),
             Step::make('Contact Info')
                 ->description('contact info of the user')
                 ->schema([
-                    TextInput::make('email')
-
-                        ->required()
-                        ->email(),
-                    TextInput::make('phone')
-                    ->required()
-                        ->numeric()
-                        ->minValue(10),
-                    Textarea::make('address')
-                    ->required()
-                        ->rows(12)
-                        ->cols(20)
+                    UserResource::getEmailFormField(),
+                    UserResource::getPhoneFormField(),
+                    UserResource::getAddressFormField(),
                 ]),
 
             Step::make('Security Info')
                 ->description('registering your login credentials')
                 ->schema([
-                    TextInput::make('password')
-                    ->required()
-                    ->password()
-                    ->disableAutocomplete(),
+                    UserResource::getPasswordFormField()
                 ]),
         ];
     }
+
+    
 }

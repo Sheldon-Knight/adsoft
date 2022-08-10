@@ -17,10 +17,12 @@ class CreateOmsSettingsTable extends Migration
             $table->id();
             $table->string("oms_name")->nullable();
             $table->string("oms_company_name")->nullable();
+            $table->string("oms_email")->nullable();
             $table->string("oms_company_tel")->nullable();
             $table->string("oms_company_address")->nullable();
             $table->string("oms_company_vat")->nullable();
             $table->string("oms_company_registration")->nullable();
+            $table->string("oms_logo")->nullable();
             $table->boolean("oms_status")->default(true);
             $table->timestamps();
         });
