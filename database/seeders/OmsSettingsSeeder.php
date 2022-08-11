@@ -15,14 +15,18 @@ class OmsSettingsSeeder extends Seeder
     public function run()
     {
         OmsSetting::create([
-            'oms_name' => config('oms.settings.oms_name'),
-            'oms_company_name' => config('oms.settings.oms_company_name'),
-            'oms_status' => config('oms.settings.oms_status'),
-            'oms_company_tel' => config('oms.settings.oms_company_tel'),
-            'oms_company_address' => config('oms.settings.oms_company_address'),
-            'oms_company_vat' => config('oms.settings.oms_company_vat'),
-            'oms_company_registration' => config('oms.settings.oms_company_registration'),
-            'oms_email' => config('oms.settings.oms_email'),
+            'oms_name' => "Your Office Managment Name",
+            'oms_company_name' => 'Company Name',          
+            'oms_company_tel' => "012-345-6789",
+            'oms_company_address' => 'Your Address',
+            'oms_company_vat' => '123456789',
+            'oms_company_registration' => '987654321',
+            'oms_email' => 'youremail@example.com',
+            'oms_logo' => 'demo-logo.png',      
+            'quote_notes' => 'This Is A Note For The Quote',      
+            'invoice_notes' =>'This Is A Note For The Invoice', 
         ]);
+
+        cache()->forever("oms_name", OmsSetting::first()->oms_name);
     }
 }

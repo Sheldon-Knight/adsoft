@@ -7,7 +7,7 @@ use App\Models\InvoiceStatus;
 use App\Models\Status;
 use Illuminate\Database\Seeder;
 
-class JobsStatusesSeeder extends Seeder
+class StatusesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -22,11 +22,25 @@ class JobsStatusesSeeder extends Seeder
         ]);
 
         Status::create([
-            'name' => "In Progress",
+            'name' => "In Progress",          
         ]);
 
         Status::create([
             'name' => "Done",
         ]);
+
+        Status::create([
+            'name' => "Paid",
+        ]);
+
+        Status::create([
+            'name' => "Cancelled",
+        ]);
+        Status::create([
+            'name' => "UnPaid",
+        ]);
+
+
+        
     }
 }

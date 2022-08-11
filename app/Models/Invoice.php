@@ -38,9 +38,9 @@ class Invoice extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function invoiceStatus()
+    public function status()
     {
-        return $this->belongsTo(InvoiceStatus::class, 'invoice_status');
+        return $this->belongsTo(Status::class, 'invoice_status');
     }
 
     public function UserJobs()

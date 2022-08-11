@@ -10,6 +10,14 @@ class ViewQuote extends ViewRecord
 {
     protected static string $resource = QuoteResource::class;
 
+    protected function getBreadcrumbs(): array
+    {
+        return [
+            url()->current() => 'Quotes',
+        ];
+    }
+    
+
     protected function getActions(): array
     {
         return [

@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceBasicInfo;
 use App\Models\InvoiceStatus;
+use App\Models\Status;
 use Closure;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -33,8 +34,9 @@ class QuoteResource extends Resource
 
     protected static ?string $navigationLabel = 'Quotes';
 
+
     protected static ?string $title = 'Quotes';
-  
+
     protected static ?string $slug = 'quotes';
 
     protected static ?string $navigationGroup = 'Finance';
@@ -45,6 +47,8 @@ class QuoteResource extends Resource
         return parent::getEloquentQuery()->where('is_quote', true);
     }
 
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -54,29 +58,31 @@ class QuoteResource extends Resource
                         Card::make()
                             ->schema([
                                 TextInput::make('invoice_number')
-                                ->default('ABC-' . random_int(10000, 999999))
-                                 ->required()
-                                 ->label('Quote Number'),
+                                    ->default('ABC-' . random_int(10000, 999999))
+                                    ->required()
+                                    ->label('Quote Number'),
 
                                 Select::make('client_id')
-                                ->label('Client')
-                                ->required()
-                                ->options(Client::query()->pluck('client_name', 'id')),
+                                    ->label('Client')
+                                    ->required()
+                                    ->searchable()
+                                    ->options(Client::query()->pluck('client_name', 'id')),
 
                                 Select::make('invoice_status')
-                                ->label('Status')
-                                ->required()                               
-                                ->options(InvoiceStatus::where('is_quote',true)->get()->pluck('name', 'id')),
+                                    ->label('Status')
+                                    ->required()
+                                    ->searchable()
+                                    ->options(Status::pluck('name', 'id')),
 
                                 DatePicker::make('invoice_date')
-                                ->default(now())
+                                    ->default(now())
                                     ->required()
-                                           ->label('Quote Date'),
+                                    ->label('Quote Date'),
 
                                 DatePicker::make('invoice_due_date')
-                                ->default(now()->addDays(7))
+                                    ->default(now()->addDays(7))
                                     ->required()
-                        ->label('Quote Due Date'),
+                                    ->label('Quote Due Date'),
 
                             ])->columns([
                                 'sm' => 2,
@@ -88,49 +94,49 @@ class QuoteResource extends Resource
                                 Placeholder::make('Products'),
 
                                 Repeater::make('items')
-                                ->schema([
+                                    ->schema([
 
-                                    TextInput::make('item')
-                                    ->required()
-                                        ->columnSpan([
-                                            'md' => 5,
-                                        ]),
+                                        TextInput::make('item')
+                                            ->required()
+                                            ->columnSpan([
+                                                'md' => 5,
+                                            ]),
 
-                                    TextInput::make('price')
-                                    ->required()
-                                        ->numeric()
-                                        ->prefix('R')
-                                        ->reactive()
-                                        ->label('price')
-                                        ->afterStateUpdated(function ($state, callable $set, $get) {
-                                            $set('amount', number_format($state * $get('qty'), 2));
-                                        })
-                                        ->columnSpan([
-                                            'md' => 2,
-                                        ]),
+                                        TextInput::make('price')
+                                            ->required()
+                                            ->numeric()
+                                            ->prefix('R')
+                                            ->reactive()
+                                            ->label('price')
+                                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                                $set('amount', number_format($state * $get('qty'), 2));
+                                            })
+                                            ->columnSpan([
+                                                'md' => 2,
+                                            ]),
 
-                                    TextInput::make('qty')
-                                    ->required()
-                                        ->numeric()
-                                        ->default(1)
-                                        ->reactive()
-                                        ->afterStateUpdated(function ($state, callable $set, $get) {
-                                            $set('amount', number_format($get('price') * $state, 2));
-                                        })
-                                        ->columnSpan([
-                                            'md' => 1,
-                                        ]),
+                                        TextInput::make('qty')
+                                            ->required()
+                                            ->numeric()
+                                            ->default(1)
+                                            ->reactive()
+                                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                                $set('amount', number_format($get('price') * $state, 2));
+                                            })
+                                            ->columnSpan([
+                                                'md' => 1,
+                                            ]),
 
-                                    TextInput::make('amount')
-                                    ->disabled()
-                                        ->numeric()
-                                        ->prefix('R')
-                                        ->columnSpan([
-                                            'md' => 2,
-                                        ]),
+                                        TextInput::make('amount')
+                                            ->disabled()
+                                            ->numeric()
+                                            ->prefix('R')
+                                            ->columnSpan([
+                                                'md' => 2,
+                                            ]),
 
 
-                                ])
+                                    ])
                                     ->defaultItems(1)
                                     ->columns([
                                         'md' => 10,
@@ -145,8 +151,8 @@ class QuoteResource extends Resource
                         Card::make()
                             ->schema([
                                 TextInput::make("invoice_subtotal")
-                                ->label("Sub Total")
-                                ->numeric()
+                                    ->label("Sub Total")
+                                    ->numeric()
                                     ->prefix('R')
                                     ->disabled()
                                     ->placeholder(function (Closure $get, $set) {
@@ -170,8 +176,8 @@ class QuoteResource extends Resource
                                     ]),
 
                                 TextInput::make("invoice_discount")
-                                ->label("Discount")
-                                ->numeric()
+                                    ->label("Discount")
+                                    ->numeric()
                                     ->prefix('R')
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
@@ -187,8 +193,8 @@ class QuoteResource extends Resource
                                     ]),
 
                                 TextInput::make("invoice_tax")
-                                ->label("Tax")
-                                ->numeric()
+                                    ->label("Tax")
+                                    ->numeric()
                                     ->prefix('R')
                                     ->disabled()
                                     ->placeholder(function (Closure $get, $set) {
@@ -201,8 +207,8 @@ class QuoteResource extends Resource
                                     ]),
 
                                 TextInput::make("invoice_total")
-                                ->label("Total Amount")
-                                ->numeric()
+                                    ->label("Total Amount")
+                                    ->numeric()
                                     ->prefix('R')
                                     ->disabled()
                                     ->placeholder(function (Closure $get, $set) {
@@ -230,30 +236,61 @@ class QuoteResource extends Resource
     public static function table(Table $table): Table
     {
 
-        $defualtConvertedStatus =  InvoiceBasicInfo::first()->default_converted_status;
+
+
+        $defualtConvertedStatus =  Status::where('default_converted_status', true)->first()->id;
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('invoice_number')->label('Quote Number'),
                 Tables\Columns\TextColumn::make('invoice_date')->label('Quote Invoice Date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_due_date')->label('Quote Due Date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_total')->label('Quote Total')->sortable()->searchable()->money('zar', true),
-                Tables\Columns\TextColumn::make('invoiceStatus.name')->label('Quote Status')->sortable()->searchable(),
-                
+                Tables\Columns\TextColumn::make('status.name')->label('Quote Status')->sortable()->searchable(),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(), 
-                 Action::make('Convert To Invoice')->icon('heroicon-o-arrow-circle-down')->action(fn (Invoice $record) => $record->update(['is_quote' => false, 'invoice_status' => $defualtConvertedStatus]))->requiresConfirmation(),
-            Tables\Actions\DeleteAction::make(),                
+                Tables\Actions\ViewAction::make(),
+
+
+                Tables\Actions\EditAction::make()
+                    ->label('Change Status')
+                    ->form([
+                        Select::make('invoice_status')
+                            ->label('Status')
+                            ->options(Status::pluck('name', 'id'))
+                            ->required(),
+                    ]),
+
+
+                Action::make('Convert To Invoice')
+                    ->icon('heroicon-o-arrow-circle-down')
+                    ->form([
+                        Select::make('invoice_status')
+                            ->label('Status')
+                            ->options(Status::pluck('name', 'id'))
+                            ->required(),
+                    ])
+                    ->action(fn (Invoice $record,$data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
+                    ->requiresConfirmation()
+                    ->color('success'),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
 
-            BulkAction::make('Convert To Invoice')
-            ->action(fn (Collection $records) => $records->each->update(['is_quote' => false,'invoice_status' => $defualtConvertedStatus]))
-            ->deselectRecordsAfterCompletion()
-            ->requiresConfirmation()
+                BulkAction::make('Convert To Invoice')
+            ->form([
+                Select::make('invoice_status')
+                    ->label('Status')
+                    ->options(Status::pluck('name', 'id'))
+                    ->required(),
+            ])
+                    ->action(fn (Collection $records,$data) => $records->each->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
+                    ->deselectRecordsAfterCompletion()
+                    ->requiresConfirmation()
             ]);
     }
 
@@ -264,13 +301,13 @@ class QuoteResource extends Resource
         ];
     }
 
-    
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListQuotes::route('/'),
             'create' => Pages\CreateQuote::route('/create'),
-            'view' => Pages\ViewQuote::route('/{record}'),          
+            'view' => Pages\ViewQuote::route('/{record}'),
         ];
     }
 }

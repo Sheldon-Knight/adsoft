@@ -10,6 +10,16 @@ class CreateQuote extends CreateRecord
 {
     protected static string $resource = QuoteResource::class;
 
+    protected static ?string $title = 'Quotes';
+
+    protected function getBreadcrumbs(): array
+    {
+        return [
+            url()->current() => 'Quotes',
+        ];
+    }
+    
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = auth()->id();

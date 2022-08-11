@@ -7,6 +7,7 @@ use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceStatus;
+use App\Models\Status;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -22,7 +23,8 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Pages\Actions\Action;
+
+
 
 class InvoiceResource extends Resource
 {
@@ -64,9 +66,9 @@ class InvoiceResource extends Resource
                                     ->required(),
 
                                 Select::make('invoice_status')
-                                ->label('Status')
-                                ->required()
-                                ->options(InvoiceStatus::where('is_quote', false)->get()->pluck('name', 'id')),
+                                    ->label('Status')
+                                    ->required()
+                                    ->options(Status::pluck('name', 'id')),
 
                             ])->columns([
                                 'sm' => 2,
@@ -79,7 +81,6 @@ class InvoiceResource extends Resource
 
                                 Repeater::make('items')
                                     ->schema([
-
                                         TextInput::make('item')
                                             ->required()
                                             ->columnSpan([
@@ -223,20 +224,24 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_number')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_due_date')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('invoice_total')->sortable()->searchable()->money('zar',true),
-                Tables\Columns\TextColumn::make('invoiceStatus.name')->sortable()->searchable(),                
+                Tables\Columns\TextColumn::make('invoice_total')->sortable()->searchable()->money('zar', true),
+                Tables\Columns\TextColumn::make('status.name')->sortable()->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-               
-                  
+                Tables\Actions\EditAction::make()
+                    ->label('Change Status')
+                    ->form([
+                        Forms\Components\Select::make('invoice_status')
+                            ->label('Status')
+                            ->options(Status::pluck('name', 'id'))
+                            ->required(),
+                    ]),          
             ])
-            ->bulkActions([
-             
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -250,7 +255,7 @@ class InvoiceResource extends Resource
     {
         return [
             'index' => Pages\ListInvoices::route('/'),
-            'create' => Pages\CreateInvoice::route('/create'),          
+            'create' => Pages\CreateInvoice::route('/create'),
             'view' => Pages\ViewInvoice::route('/{record}'),
         ];
     }

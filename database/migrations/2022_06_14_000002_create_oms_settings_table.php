@@ -24,8 +24,10 @@ class CreateOmsSettingsTable extends Migration
             $table->string("oms_company_registration")->nullable();
             $table->string("oms_logo")->nullable();
             $table->string("date_format")->nullable()->default('d/m/Y');
-            $table->string("series")->nullable()->default('INV');        
+            $table->string("invoice_series")->nullable()->default('INV');        
+            $table->string("quote_series")->nullable()->default('QUOTE');        
             $table->longText("invoice_notes")->nullable();
+            $table->longText("quote_notes")->nullable();
             $table->timestamps();
         });
     }

@@ -20,6 +20,10 @@ class OmsSetting extends Model
         'oms_company_vat',
         'oms_company_registration',
         'oms_logo',
-        'oms_status',
-    ];
+        'date_format',
+        'invoice_series',
+        'quote_series',
+        'invoice_notes',
+        'quote_notes',
+    ];  
 }

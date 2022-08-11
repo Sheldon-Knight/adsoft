@@ -12,7 +12,15 @@ class ListQuotes extends ListRecords
     protected static string $resource = QuoteResource::class;
 
     protected static ?string $title = 'Quotes';
-   
+
+
+    protected function getBreadcrumbs(): array
+    {
+        return [
+            url()->current() => 'Quotes',
+        ];
+    }
+
 
     protected function getActions(): array
     {
