@@ -5,6 +5,7 @@ namespace App\Providers;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
 use Illuminate\Support\ServiceProvider;
+use Filament\Tables\Columns\Column;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,6 +38,13 @@ class AppServiceProvider extends ServiceProvider
                 ->icon('heroicon-s-cash')
                 ->collapsed(),
             ]);
-        });  
+        });
+
+        Column::configureUsing(function (Column $column): void {
+            $column
+                ->toggleable()
+                ->sortable();
+        });
+
     }
 }

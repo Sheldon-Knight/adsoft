@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InvoiceStatusResource\Pages;
 use App\Filament\Resources\InvoiceStatusResource\RelationManagers;
+use App\Models\InvoiceBasicInfo;
 use App\Models\InvoiceStatus;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -22,8 +23,6 @@ class InvoiceStatusResource extends Resource
     protected static ?string $navigationGroup = 'Settings';
 
     protected static ?int $navigationSort = 4;
-
-
 
     public static function getEloquentQuery(): Builder
     {
@@ -46,6 +45,15 @@ class InvoiceStatusResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
+                Tables\Columns\BooleanColumn::make('convertedStatus')->getStateUsing(function (InvoiceStatus $record) {
+                    $defualtConvertedStatus = InvoiceBasicInfo::First()->default_converted_status;
+
+                    if ($defualtConvertedStatus == $record->id) {
+                        return true;
+                    }
+
+                    return false;
+                }),
             ])
             ->filters([
                 //
@@ -54,16 +62,20 @@ class InvoiceStatusResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(function () {
+                    ->visible(function (InvoiceStatus $record) {
+
                         if (InvoiceStatus::where('is_quote', false)->count() == 1) {
+                            return false;
+                        }
+
+                        if (InvoiceBasicInfo::first()->default_converted_status == $record->id) {
                             return false;
                         }
 
                         return true;
                     }),
             ])
-            ->bulkActions([          
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array

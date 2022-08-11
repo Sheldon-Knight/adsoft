@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInvoiceEmailInfoSettingTable extends Migration
+class CreateEmailTemplates extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,10 @@ class CreateInvoiceEmailInfoSettingTable extends Migration
 
     public function up()
     {
-        Schema::create('invoice_email_info_settings', function (Blueprint $table) {
+        Schema::create('email_templates', function (Blueprint $table) {
             $table->id();
-            $table->longText("message");
+            $table->longText("message")->nullable();
+            $table->string("model")->nullable();
             $table->timestamps();
         });
     }

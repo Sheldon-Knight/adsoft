@@ -6,6 +6,8 @@ use App\Filament\Resources\QuoteResource\Pages;
 use App\Filament\Resources\QuoteResource\RelationManagers;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceBasicInfo;
+use App\Models\InvoiceStatus;
 use Closure;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -53,13 +55,18 @@ class QuoteResource extends Resource
                             ->schema([
                                 TextInput::make('invoice_number')
                                 ->default('ABC-' . random_int(10000, 999999))
-                                    ->required()
-                        ->label('Quote Number'),
+                                 ->required()
+                                 ->label('Quote Number'),
 
                                 Select::make('client_id')
                                 ->label('Client')
                                 ->required()
-                                    ->options(Client::query()->pluck('client_name', 'id')),
+                                ->options(Client::query()->pluck('client_name', 'id')),
+
+                                Select::make('invoice_status')
+                                ->label('Status')
+                                ->required()                               
+                                ->options(InvoiceStatus::where('is_quote',true)->get()->pluck('name', 'id')),
 
                                 DatePicker::make('invoice_date')
                                 ->default(now())
@@ -222,26 +229,29 @@ class QuoteResource extends Resource
 
     public static function table(Table $table): Table
     {
+
+        $defualtConvertedStatus =  InvoiceBasicInfo::first()->default_converted_status;
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('invoice_number')->label('Quote Number'),
                 Tables\Columns\TextColumn::make('invoice_date')->label('Quote Invoice Date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_due_date')->label('Quote Due Date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_total')->label('Quote Total')->sortable()->searchable()->money('zar', true),
-                Tables\Columns\TextColumn::make('invoice_status')->label('Quote Status')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('invoiceStatus.name')->label('Quote Status')->sortable()->searchable(),
+                
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(), 
-                 Action::make('Convert To Invoice')->icon('heroicon-o-arrow-circle-down')->action(fn (Invoice $record) => $record->update(['is_quote' => false]))->requiresConfirmation(), 
-                                 
+                 Action::make('Convert To Invoice')->icon('heroicon-o-arrow-circle-down')->action(fn (Invoice $record) => $record->update(['is_quote' => false, 'invoice_status' => $defualtConvertedStatus]))->requiresConfirmation(),
+            Tables\Actions\DeleteAction::make(),                
             ])
             ->bulkActions([
 
             BulkAction::make('Convert To Invoice')
-            ->action(fn (Collection $records) => $records->each->update(['is_quote' => false]))
+            ->action(fn (Collection $records) => $records->each->update(['is_quote' => false,'invoice_status' => $defualtConvertedStatus]))
             ->deselectRecordsAfterCompletion()
             ->requiresConfirmation()
             ]);

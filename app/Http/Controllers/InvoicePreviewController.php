@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use LaravelDaily\Invoices\Invoice;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
+use LaravelDaily\Invoices\Classes\Party;
 
 class InvoicePreviewController extends Controller
 {  
@@ -27,19 +28,38 @@ class InvoicePreviewController extends Controller
             'invoice_logo' => $invoiceBasicInfo->invoice_logo,
         ];      
 
-        dd($data);
+ 
+        $seller = new Party([
+            'name'          => $invoiceBasicInfo->oms_company_name,
+            'phone'         => $invoiceBasicInfo->oms_company_tel,
+            'address' => $invoiceBasicInfo->oms_company_address,   
+            'custom_fields' => [              
+                          
+                'email' => $invoiceBasicInfo->oms_company_email,
+                'vat' => $invoiceBasicInfo->oms_company_vat,
+                'registration' => $invoiceBasicInfo->oms_company_registration,             
+ 
+         
+            ],
+        ]);
+        
 
-        $customer = new Buyer([
-            'name'          => 'John Doe',
+        $customer = new Buyer([           
+            'name'          => "John Doe",
+            'phone'         => '012-345-6789',
+            'address' => "Random Street, Random City, Random Country",   
             'custom_fields' => [
-                'email' => 'test@example.com',
+                'email' => 'test@example.com',        
+                'vat' => '123456789',
+                'registration' => '987654321' 
             ],
         ]);
 
-        $item = (new InvoiceItem())->title('Service 1')->pricePerUnit(2);
+        $item = (new InvoiceItem())->title('Fake Item 1')->pricePerUnit(1);
 
         $invoice = Invoice::make()
             ->buyer($customer)
+            ->seller($seller)
             ->discountByPercent(10)
             ->taxRate(15)
             ->shipping(1.99)

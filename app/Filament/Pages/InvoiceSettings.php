@@ -3,10 +3,12 @@
 namespace App\Filament\Pages;
 
 use App\Models\InvoiceBasicInfo;
+use App\Models\InvoiceStatus;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -46,11 +48,14 @@ class InvoiceSettings extends Page
     public $series;
     public $data;
     public $is_quote = false;
+    public $default_converted_status;
 
     public function mount()
     {
 
         $this->invoiceBasicInfo = InvoiceBasicInfo::find(1);
+
+        
 
         $this->form->fill([
             'oms_company_name' => $this->invoiceBasicInfo->oms_company_name,
@@ -63,6 +68,7 @@ class InvoiceSettings extends Page
             'date_format' => $this->invoiceBasicInfo->date_format,
             'series' => $this->invoiceBasicInfo->series,
             'invoice_logo' => $this->invoiceBasicInfo->invoice_logo,
+            'default_converted_status' => $this->invoiceBasicInfo->default_converted_status,
         ]);
     }
 
@@ -135,6 +141,11 @@ class InvoiceSettings extends Page
                         ->required()
                         ->rows(3)
                         ->cols(3),
+
+                Select::make('default_converted_status')
+                ->label('Default Invoice Status When Converting A Quote')
+                ->options(InvoiceStatus::where('is_quote',false)->get()->pluck('name', 'id'))
+                ->searchable()
                 ]),
         ];
     }

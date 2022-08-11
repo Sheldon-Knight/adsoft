@@ -6,6 +6,7 @@ use App\Filament\Resources\InvoiceResource\Pages;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceStatus;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -61,6 +62,11 @@ class InvoiceResource extends Resource
                                 DatePicker::make('invoice_due_date')
                                     ->default(now()->addDays(7))
                                     ->required(),
+
+                                Select::make('invoice_status')
+                                ->label('Status')
+                                ->required()
+                                ->options(InvoiceStatus::where('is_quote', false)->get()->pluck('name', 'id')),
 
                             ])->columns([
                                 'sm' => 2,
@@ -214,17 +220,18 @@ class InvoiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('invoice_number'),
+                Tables\Columns\TextColumn::make('invoice_number')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_due_date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_total')->sortable()->searchable()->money('zar',true),
-                Tables\Columns\TextColumn::make('invoice_status')->sortable()->searchable(),                
+                Tables\Columns\TextColumn::make('invoiceStatus.name')->sortable()->searchable(),                
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+               
                   
             ])
             ->bulkActions([

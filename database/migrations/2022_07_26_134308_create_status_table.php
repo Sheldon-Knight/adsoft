@@ -11,11 +11,14 @@ class CreateStatusTable extends Migration
      *
      * @return void
      */
+
     public function up()
     {
         Schema::create('status', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            $table->string("name")->nullable();
+            $table->string("model")->nullable();
+            $table->boolean("default_converted_status")->nullable()->unique();
             $table->timestamps();
         });
     }
@@ -25,6 +28,7 @@ class CreateStatusTable extends Migration
      *
      * @return void
      */
+
     public function down()
     {
         Schema::dropIfExists('status');
