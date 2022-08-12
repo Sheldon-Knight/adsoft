@@ -235,11 +235,6 @@ class QuoteResource extends Resource
 
     public static function table(Table $table): Table
     {
-
-
-
-        $defualtConvertedStatus =  Status::where('default_converted_status', true)->first()->id;
-
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('invoice_number')->label('Quote Number'),
