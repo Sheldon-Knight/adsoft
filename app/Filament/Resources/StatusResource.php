@@ -30,7 +30,7 @@ class StatusResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['invoices'])->orderBy('default_converted_status', 'desc');
+        return parent::getEloquentQuery()->with(['invoices']);
     }
 
     public static function form(Form $form): Form
@@ -64,6 +64,7 @@ class StatusResource extends Resource
                         if ($record->invoices()->count() > 0) {
                             return false;
                         }
+                        
 
                         return true;
                     }),
