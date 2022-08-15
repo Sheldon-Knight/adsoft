@@ -68,6 +68,7 @@ class StatusResource extends Resource
 
                         return true;
                     }),
+           
             ])
             ->bulkActions([]);
     }

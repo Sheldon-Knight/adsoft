@@ -114,7 +114,7 @@ class OmsSettings extends Page
                 ->columns(2)
                 ->schema([
                     TextInput::make('oms_name')
-                        ->label('Office MAnagement System Name')
+                        ->label('Office Management System Name')
                         ->required(),
 
 

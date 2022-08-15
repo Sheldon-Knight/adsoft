@@ -148,7 +148,7 @@
                                 <strong>{{ $invoice->status }}</strong>
                             </h4>
                         @endif
-                        <p>{{ __('invoices::invoice.serial') }} <strong>{{ $invoice->getSerialNumber() }}</strong></p>
+                        <p>invoice number: <strong>{{ $invoice->getCustomData()['invoice_number'] ?? 1 }}</strong></p>
                         <p>{{ __('invoices::invoice.date') }}: <strong>{{ $invoice->getDate() }}</strong></p>
                         <p>{{ __('invoice due date') }}: <strong>{{ $invoice->getCustomData()['invoice_due_date'] }}</strong></p>
                     </td>
@@ -363,14 +363,7 @@
             <p>
                 {{ trans('invoices::invoice.notes') }}: {!! $invoice->notes !!}
             </p>
-        @endif
-
-        <p>
-            {{ trans('invoices::invoice.amount_in_words') }}: {{ $invoice->getTotalAmountInWords() }}
-        </p>
-        <p>
-            {{ trans('invoices::invoice.pay_until') }}: {{ $invoice->getPayUntilDate() }}
-        </p>
+        @endif     
 
         <script type="text/php">
             if (isset($pdf) && $PAGE_COUNT > 1) {

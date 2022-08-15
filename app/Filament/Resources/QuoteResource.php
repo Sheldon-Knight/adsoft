@@ -3,12 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuoteResource\Pages;
-use App\Filament\Resources\QuoteResource\RelationManagers;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\InvoiceBasicInfo;
-use App\Models\InvoiceStatus;
 use App\Models\Status;
+use App\Services\PdfInvoice;
 use Closure;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -17,14 +15,21 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class QuoteResource extends Resource
 {
@@ -248,6 +253,165 @@ class QuoteResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('email')
+                    ->color('success')
+                    ->action(
+                        function (Invoice $record, $data) {
+
+                            $removedItems = [];
+
+                            foreach ($data['cc'] as $key => $email) {
+
+                                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                    $removedItems[] = $email;
+                                    unset($data['cc'][$key]);
+                                }
+                            }
+
+
+
+
+
+                            if ($data['attached_invoice'] == true) {
+
+                                $pdfInvoice = new PdfInvoice();
+
+                                $attachement =  $pdfInvoice->GetAttachedInvoice($record,$isInvoice = false);
+
+                                Mail::send(
+                                    'mails.invoice',
+                                    ['body' => $data['body']],
+                                    function ($message) use ($data, $attachement) {
+
+
+                                        $message->from('john@johndoe.com', 'John Doe');
+                                        $message->to($data['to']);
+                                        $message->cc(array_values($data['cc']));
+                                        $message->subject($data['subject']);
+                                        $message->attach($attachement);
+
+                                        if ($data['attachments']) {
+
+                                            foreach ($data["attachments"] as $key => $at) {
+
+                                                $at = $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                            }
+                                        };
+                                    }
+                                );
+
+                                unlink($attachement);
+                            } else {
+                                Mail::send('mails.invoice', ['body' => $data['body']], function ($message) use ($data) {
+                                    $message->from('john@johndoe.com', 'John Doe');
+                                    $message->to($data['to']);
+                                    $message->cc(array_values($data['cc']));
+                                    $message->subject($data['subject']);
+                                    if ($data['attachments']) {
+
+                                        foreach ($data["attachments"] as $key => $at) {
+
+                                            $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                        }
+                                    };
+                                });
+                            }
+
+                            if ($data['attachments']) {
+
+                                try {
+                                    foreach ($data["attachments"] as $key => $at) {
+                                        unlink(public_path("storage/{$data["attachments"][$key]}"));
+                                    }
+                                } catch (\Exception $e) {
+                                    Log::error($e->getMessage());
+                                }
+                            }
+
+
+
+
+                            Notification::make()
+                                ->title("Emails Send Succesfully")
+                                ->body('send')
+                                ->success()
+                                ->send();
+
+
+                            if (count($removedItems) > 0) {
+                                Notification::make()
+                                    ->title("Some Emails Were Removed From The CC")
+                                    ->body('the folowing emails were not valid so it had been removed from the cc:' . implode(PHP_EOL, $removedItems))
+                                    ->danger()
+                                    ->persistent()
+                                    ->send();
+
+                                return;
+                            }
+                        }
+
+
+                    )
+                    ->label('Email Quote')
+                    ->form([
+                        Card::make()
+                            ->schema([
+                                TextInput::make('to')
+                                    ->label('Email')
+                                    ->default(function (Invoice $record) {
+                                        return $record->client->email;
+                                    })
+                                    ->email()
+                                    ->required(),
+
+                                TagsInput::make('cc')
+                                    ->label('CC')
+                                    ->placeholder(fn () => auth()->user()->email),
+
+
+
+                                TextInput::make('subject')
+                                    ->label('Subject')
+                                    ->placeholder('Enter A Subject')
+                                    ->required()
+                                    ->columnSpan('full'),
+
+                                Toggle::make('attached_invoice')
+                                    ->label('Automatic Attach Quote')
+                                    ->onIcon('heroicon-s-lightning-bolt')
+                                    ->offIcon('heroicon-s-user')
+                                    ->default(true),
+
+                                FileUpload::make('attachments')
+                                    ->multiple()
+                                    ->preserveFilenames()
+                                    ->directory('form-attachments'),
+
+                                RichEditor::make('body')
+                                    ->toolbarButtons([
+                                        'blockquote',
+                                        'bold',
+                                        'bulletList',
+                                        'codeBlock',
+                                        'h2',
+                                        'h3',
+                                        'italic',
+                                        'link',
+                                        'orderedList',
+                                        'redo',
+                                        'strike',
+                                        'undo',
+                                    ])->label('Email Body')
+                                    ->placeholder('Enter email body')
+                                    ->required()
+                                    ->columnSpan('full'),
+
+
+                            ])
+
+                            ->columns(2),
+
+                    ]),
                 Tables\Actions\ViewAction::make(),
 
 
@@ -269,7 +433,7 @@ class QuoteResource extends Resource
                             ->options(Status::pluck('name', 'id'))
                             ->required(),
                     ])
-                    ->action(fn (Invoice $record,$data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
+                    ->action(fn (Invoice $record, $data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
                     ->requiresConfirmation()
                     ->color('success'),
                 Tables\Actions\DeleteAction::make(),
@@ -277,13 +441,13 @@ class QuoteResource extends Resource
             ->bulkActions([
 
                 BulkAction::make('Convert To Invoice')
-            ->form([
-                Select::make('invoice_status')
-                    ->label('Status')
-                    ->options(Status::pluck('name', 'id'))
-                    ->required(),
-            ])
-                    ->action(fn (Collection $records,$data) => $records->each->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
+                    ->form([
+                        Select::make('invoice_status')
+                            ->label('Status')
+                            ->options(Status::pluck('name', 'id'))
+                            ->required(),
+                    ])
+                    ->action(fn (Collection $records, $data) => $records->each->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
                     ->deselectRecordsAfterCompletion()
                     ->requiresConfirmation()
             ]);
