@@ -36,12 +36,12 @@ class InstructionResource extends Resource
                     ->searchable()
                     ->options(User::query()->pluck('name', 'id')),
 
-            Select::make('created_by')
-                ->label('Created By')
-                ->required()
-                ->searchable()
-                ->options(User::query()->pluck('name', 'id'))
-                ->visibleOn('view'),
+                Select::make('created_by')
+                    ->label('Created By')
+                    ->required()
+                    ->searchable()
+                    ->options(User::query()->pluck('name', 'id'))
+                    ->visibleOn('view'),
 
                 Forms\Components\TextInput::make('title')
                     ->required()
@@ -49,15 +49,15 @@ class InstructionResource extends Resource
                 Forms\Components\Textarea::make('instruction')
                     ->required(),
 
-            Forms\Components\DatePicker::make('due_date')
-                ->required(),
-            
-               
-                     Forms\Components\DatePicker::make('date_completed')
+                Forms\Components\DatePicker::make('due_date')
+                    ->required(),
+
+
+                Forms\Components\DatePicker::make('date_completed')
                     ->required()
                     ->visibleOn('view'),
 
- Forms\Components\DatePicker::make('created_at')
+                Forms\Components\DatePicker::make('created_at')
                     ->required()
                     ->visibleOn('view'),
             ]);
@@ -126,6 +126,7 @@ class InstructionResource extends Resource
         return [
             'index' => Pages\ListInstructions::route('/'),
             'create' => Pages\CreateInstruction::route('/create'),
+            'view' => Pages\ViewInstruction::route('/view/{record}'),
         ];
     }
 }
