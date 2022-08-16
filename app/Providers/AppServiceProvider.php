@@ -27,26 +27,31 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Filament::serving(function () {
-            Filament::registerNavigationGroups([             
+            Filament::registerNavigationGroups([
                 NavigationGroup::make()
                     ->label('User Management')
                     ->icon('heroicon-s-user-group')
-                    ->collapsed(),     
-                                        
-                    NavigationGroup::make()
+                    ->collapsed(),
+
+                NavigationGroup::make()
                     ->label('Settings')
                     ->icon('heroicon-s-cog')
                     ->collapsed(),
 
                 NavigationGroup::make()
-                ->label('Finance')
-                ->icon('heroicon-s-cash')
-                ->collapsed(),
+                    ->label('Finance')
+                    ->icon('heroicon-s-cash')
+                    ->collapsed(),
 
                 NavigationGroup::make()
-                ->label('Jobs')
-                ->icon('heroicon-s-book-open')
-                ->collapsed(),
+                    ->label('Jobs')
+                    ->icon('heroicon-s-book-open')
+                    ->collapsed(),
+
+                NavigationGroup::make()
+                    ->label('Instructions')
+                    ->icon('heroicon-s-switch-horizontal')
+                    ->collapsed(),
             ]);
         });
 
@@ -55,6 +60,5 @@ class AppServiceProvider extends ServiceProvider
                 ->toggleable()
                 ->sortable();
         });
-
     }
 }

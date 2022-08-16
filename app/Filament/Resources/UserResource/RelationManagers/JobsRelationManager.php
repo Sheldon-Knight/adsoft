@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ClientResource\RelationManagers;
+namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Invoice;
 use App\Models\Status;
@@ -85,7 +85,11 @@ class JobsRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
-                        $data['user_id'] = auth()->id();
+                        $data['created_by'] = auth()->id();
+
+                        $invoice = Invoice::find($data['invoice_id']);
+
+                        $data['client_id'] = $invoice->client_id;
 
                         return $data;
                     })

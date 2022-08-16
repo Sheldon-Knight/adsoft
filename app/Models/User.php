@@ -47,4 +47,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'is_admin' => 'boolean',
     ];
+
+    public function jobs()
+    {
+        return $this->hasMany(Job::class);
+    }
+    public function instructions()
+    {
+        return $this->hasMany(Instruction::class,'assigned_to');
+    }
 }

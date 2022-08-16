@@ -9,7 +9,15 @@ class Instruction extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'title',
+        'instruction',
+        'due_date',
+        'date_completed',
+        'status',
+        'created_by',
+        'assigned_to',
+    ];
 
     public function createdBy()
     {
@@ -20,5 +28,4 @@ class Instruction extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
-    
 }

@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages; 
+use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
+use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\InstructionsRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as RelationManagersJobsRelationManager;
 use App\Models\User; 
 use Filament\Forms\Components\Card; 
 use Filament\Forms\Components\Select; 
@@ -14,7 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table; 
 use Filament\Tables\Actions\DeleteAction; 
 use Filament\Tables\Actions\DeleteBulkAction; 
-use Filament\Tables\Actions\EditAction; 
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn; 
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn; 
@@ -136,7 +140,8 @@ class UserResource extends Resource
             ->defaultSort('name')
             ->actions([
                 EditAction::make(),
-                DeleteAction::make()
+                DeleteAction::make(),
+                ViewAction::make()
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
@@ -146,7 +151,8 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagersJobsRelationManager::class,
+            InstructionsRelationManager::class,
         ];
     }
 
