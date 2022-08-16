@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InstructionResource\Pages;
 use App\Filament\Resources\InstructionResource\RelationManagers;
+use App\Filament\Resources\InstructionResource\Widgets\Comments;
 use App\Models\Instruction;
 use App\Models\User;
 use Filament\Forms;
@@ -120,6 +121,14 @@ class InstructionResource extends Resource
             //
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            Comments::class,
+        ];
+    }
+   
 
     public static function getPages(): array
     {
