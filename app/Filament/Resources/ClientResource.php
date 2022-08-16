@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
+use App\Filament\Resources\ClientResource\RelationManagers\InvoicesRelationManager;
+use App\Filament\Resources\ClientResource\RelationManagers\QuotesRelationManager;
+use App\Filament\Resources\ClientResource\Widgets\ClientInvoices;
 use App\Models\Client;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -71,29 +74,29 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('postal_address'),
-                Tables\Columns\TextColumn::make('physical_address'),
-                Tables\Columns\TextColumn::make('branch_name'),
-                Tables\Columns\TextColumn::make('vat_number'),
-                Tables\Columns\TextColumn::make('client_name'),
-                Tables\Columns\TextColumn::make('client_surname'),
-                Tables\Columns\TextColumn::make('tel_num'),
-                Tables\Columns\TextColumn::make('cell_num'),
-                Tables\Columns\TextColumn::make('fax_num'),
-                Tables\Columns\TextColumn::make('contact_person'),
-                Tables\Columns\TextColumn::make('reg_type'),
-                Tables\Columns\TextColumn::make('reg_number'),
-                Tables\Columns\TextColumn::make('account_name'),
-                Tables\Columns\TextColumn::make('account_number'),
-                Tables\Columns\TextColumn::make('account_type'),
-                Tables\Columns\TextColumn::make('branch_code'),
-                Tables\Columns\TextColumn::make('bank_name'),
-                Tables\Columns\TextColumn::make('client_status'),
+                Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('postal_address')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('physical_address')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('branch_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('vat_number')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('client_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('client_surname')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('tel_num')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('cell_num')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('fax_num')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('contact_person')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('reg_type')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('reg_number')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('account_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('account_number')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('account_type')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('branch_code')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('bank_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('client_status')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(),
+                    ->dateTime()->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime(),
+                    ->dateTime()->searchable()->sortable(),
             ])
             ->filters([
                 //
@@ -111,7 +114,8 @@ class ClientResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            QuotesRelationManager::class,
+           InvoicesRelationManager::class,
         ];
     }
     
@@ -120,7 +124,8 @@ class ClientResource extends Resource
         return [
             'index' => Pages\ListClients::route('/'),
             'create' => Pages\CreateClient::route('/create'),
-            'edit' => Pages\ViewClient::route('/{record}/edit'),
+            'edit' => Pages\EditClient::route('/{record}/edit'),
+            'view' => Pages\ViewClient::route('/view/{record}'),
         ];
-    }    
+    }
 }

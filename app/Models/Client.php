@@ -34,6 +34,11 @@ class Client extends Model
 
     public function invoices()
     {
-        return $this->hasMany(Invoice::class, 'client_id');
+        return $this->hasMany(Invoice::class, 'client_id')->where('is_quote',false);
+    }
+
+    public function quotes()
+    {
+        return $this->hasMany(Invoice::class, 'client_id')->where('is_quote', true);
     }
 }
