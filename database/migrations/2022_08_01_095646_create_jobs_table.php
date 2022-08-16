@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserjobsTable extends Migration
+class CreateJobsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateUserjobsTable extends Migration
      */
     public function up()
     {
-        Schema::create('userjobs', function (Blueprint $table) {
+        Schema::create('jobs', function (Blueprint $table) {
             $table->id();   
             $table->string("title");   
             $table->longText("description");
             $table->date('date_completed')->nullable();         
             $table->foreignId("client_id")->nullable()->constrained('clients')  ;      
             $table->foreignId("user_id")->nullable()->constrained('users') ;      
+            $table->foreignId("created_by")->nullable()->constrained('users') ;      
             $table->foreignId("department_id")->nullable()->constrained('departments');      
             $table->foreignId("invoice_id")->nullable()->constrained('invoices');      
             $table->foreignId("status_id")->nullable()->constrained('status');  

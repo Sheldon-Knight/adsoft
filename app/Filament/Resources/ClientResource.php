@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\InvoicesRelationManager;
+use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\QuotesRelationManager;
 use App\Filament\Resources\ClientResource\Widgets\ClientInvoices;
 use App\Models\Client;
@@ -20,7 +21,17 @@ class ClientResource extends Resource
 {
     protected static ?string $model = Client::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationGroup = 'User Management';
+
+    protected static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }   
+
 
     public static function form(Form $form): Form
     {
@@ -116,6 +127,7 @@ class ClientResource extends Resource
         return [
             QuotesRelationManager::class,
            InvoicesRelationManager::class,
+           JobsRelationManager::class,
         ];
     }
     

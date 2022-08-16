@@ -41,4 +41,9 @@ class Client extends Model
     {
         return $this->hasMany(Invoice::class, 'client_id')->where('is_quote', true);
     }
+
+    public function jobs()
+    {
+        return $this->hasMany(Job::class, 'client_id');
+    }
 }

@@ -65,6 +65,7 @@ class InvoiceResource extends Resource
                                 Select::make('client_id')
                                     ->label('Client')
                                     ->required()
+                                    ->searchable()
                                     ->options(Client::query()->pluck('client_name', 'id')),
 
                                 DatePicker::make('invoice_date')
@@ -78,6 +79,7 @@ class InvoiceResource extends Resource
                                 Select::make('invoice_status')
                                     ->label('Status')
                                     ->required()
+                                    ->searchable()
                                     ->options(Status::pluck('name', 'id')),
 
                             ])->columns([

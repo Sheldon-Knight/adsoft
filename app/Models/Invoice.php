@@ -43,9 +43,9 @@ class Invoice extends Model
         return $this->belongsTo(Status::class, 'invoice_status');
     }
 
-    public function UserJobs()
+    public function jobs()
     {
-        return $this->hasOne(UserJob::class, 'invoice_id');
+        return $this->hasMany(Job::class, 'invoice_id');
     }
 
     public function comments()
