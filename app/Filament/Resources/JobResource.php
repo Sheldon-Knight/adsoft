@@ -164,6 +164,7 @@ class JobResource extends Resource
         return [
             'index' => Pages\ListJobs::route('/'),
             'create' => Pages\CreateJob::route('/create'),        
+            'view' => Pages\ViewJob::route('/view/{record}'),        
         ];
     }
 }

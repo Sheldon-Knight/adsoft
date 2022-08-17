@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Concerns\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Instruction extends Model
 {
+    use HasComments;
+    
     use HasFactory;
 
     protected $fillable = [

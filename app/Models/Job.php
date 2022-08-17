@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Concerns\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Job extends Model
 {
-    use HasFactory;
+    use HasFactory, HasComments;
+    
 
     protected $fillable =   [
         'title',

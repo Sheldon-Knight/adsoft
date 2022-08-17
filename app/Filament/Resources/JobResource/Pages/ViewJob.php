@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\InstructionResource\Pages;
+namespace App\Filament\Resources\JobResource\Pages;
 
-use App\Filament\Resources\InstructionResource;
+use App\Filament\Resources\JobResource;
 use App\Filament\Resources\InstructionResource\Widgets\Comments;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewInstruction extends ViewRecord
+class ViewJob extends ViewRecord
 {
-    protected static string $resource = InstructionResource::class;
+    protected static string $resource = JobResource::class;
 
   
     protected function getFooterWidgets(): array
