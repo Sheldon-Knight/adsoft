@@ -14,27 +14,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Comment extends Model implements IsComment
 {
     use HasFactory;
+    
     use SoftDeletes;
 
     protected $guarded = [];
 
     public function commentable(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo()->where("parent_id");
+    } 
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(config('comments.user'), 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(static::class, 'parent_id');
-    }
-
-    public function children(): HasMany
-    {
-        return $this->hasMany(static::class, 'parent_id');
-    }
 }

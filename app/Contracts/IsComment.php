@@ -13,9 +13,7 @@ interface IsComment
 {
     public function commentable(): MorphTo;
 
-    public function parent(): BelongsTo;
-
-    public function children(): HasMany;
+    public function replies(): HasMany;
 
     public function user(): BelongsTo;
 }
