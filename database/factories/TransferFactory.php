@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Account;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,6 +31,7 @@ class TransferFactory extends Factory
             'from_account' => $fromAccount,
             'to_account' => $toAccount,
             'amount' => $this->faker->numberBetween(0, 10000),
+            'transaction_id' => Transaction::factory(),
         ];
     }
 }

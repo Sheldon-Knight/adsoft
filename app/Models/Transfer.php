@@ -12,6 +12,7 @@ class Transfer extends Model
     protected $fillable = [
         'from_account',
         'to_account',
+        'transaction_id',
         'amount',
     ];
 
@@ -25,7 +26,8 @@ class Transfer extends Model
         return $this->belongsTo(Account::class, 'to_account');
     }
 
-  
-
-    
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }   
 }

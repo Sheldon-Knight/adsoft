@@ -23,16 +23,17 @@ use PhpParser\Node\Stmt\Label;
 class TransferResource extends Resource
 {
     protected static ?string $model = Transfer::class;
-
-
+    
+    
     protected static ?string $navigationIcon = 'heroicon-o-switch-horizontal';
-
+    
     protected static ?int $navigationSort = 2;
-
-    protected static ?string $navigationGroup = 'Bank';
-
+    
+    protected static ?string $navigationGroup = 'Banking';
+    
     public static function form(Form $form): Form
     {
+       
         return $form
             ->schema([
                 Select::make('from_account')
@@ -84,16 +85,23 @@ class TransferResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('fromAccount.account_name'),
-                Tables\Columns\TextColumn::make('toAccount.account_name'),
+                Tables\Columns\TextColumn::make('fromAccount.account_number')
+            ->searchable(),
+                Tables\Columns\TextColumn::make('toAccount.account_number')
+            ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->prefix('R')
                     ->getStateUsing(function (Transfer $record) {
                         return number_format($record->amount / 100, 2);
-                    }),
+                    })
+                ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Transfer Date')
-                    ->dateTime(),
+                    ->dateTime()
+                ->searchable(),
+            Tables\Columns\TextColumn::make('transaction.transaction_id')->searchable()
+            ->label('Transaction ID')->searchable(),
+
             ])
             ->filters([
                 //
@@ -101,8 +109,7 @@ class TransferResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->bulkActions([               
             ]);
     }
 

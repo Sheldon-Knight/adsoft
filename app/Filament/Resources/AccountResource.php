@@ -27,7 +27,7 @@ class AccountResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $navigationGroup = 'Bank';
+    protected static ?string $navigationGroup = 'Banking';
 
     public static function form(Form $form): Form
     {

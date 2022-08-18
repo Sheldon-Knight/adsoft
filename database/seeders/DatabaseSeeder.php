@@ -23,13 +23,8 @@ class DatabaseSeeder extends Seeder
     {    
         $this->call(
             [
-                // AdminSeeder::class,
-                // UserSeeder::class,
-                // OmsSettingsSeeder::class,
-                // StatusesSeeder::class,
-                // DepartmentSeeder::class,
-                // InstructionSeeder::class,
-                AccountSeeder::class,
+           
+                TransactionSeeder::class,
                 TransferSeeder::class,
             ]
         );

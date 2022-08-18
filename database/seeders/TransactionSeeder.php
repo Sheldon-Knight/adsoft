@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Transfer;
+use App\Models\Transaction;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class TransferSeeder extends Seeder
+class TransactionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class TransferSeeder extends Seeder
      */
     public function run()
     {
-        Transfer::factory()->times(5)->create();
+        Transaction::factory()->times(5)->create();
     }
 }

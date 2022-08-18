@@ -32,5 +32,10 @@ class Account extends Model
     {
         return $this->account_number .  ':' . 'R' . number_format($this->balance / 100,2);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
     
 }

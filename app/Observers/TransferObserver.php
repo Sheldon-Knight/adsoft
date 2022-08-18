@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Transaction;
 use App\Models\Transfer;
 
 class TransferObserver
@@ -13,10 +14,25 @@ class TransferObserver
      * @return void
      */
     public function created(Transfer $transfer)
-    {         
+    {
         $transfer->fromAccount->balance -= $transfer->amount;
-        $transfer->fromAccount->save();
+
         $transfer->toAccount->balance += $transfer->amount;
+    
+        $transaction = Transaction::create([
+            'transaction_id' => str()->uuid(),
+            'account_id' =>  $transfer->fromAccount->id,
+            'description' =>  'Transfer Made to ' . $transfer->toAccount->account_number,
+            'type' =>  'credit',
+            'amount' =>  $transfer->amount,
+        ]);
+   
+        $transfer->transaction_id = $transaction->id;
+
+        $transfer->save();
+
+        $transfer->fromAccount->save();
+        
         $transfer->toAccount->save();
     }
 

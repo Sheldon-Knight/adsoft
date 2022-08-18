@@ -22,7 +22,7 @@ class StatusResource extends Resource
     protected static ?string $model = Status::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-
+   
     protected static ?string $navigationGroup = 'Settings';
 
     protected static ?int $navigationSort = 2;
