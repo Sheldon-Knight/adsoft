@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicePreviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,8 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', HomeController::class);
 
 Route::get('/download/pdf-preview',InvoicePreviewController::class)->name('invoice-settings.downloadPdf');

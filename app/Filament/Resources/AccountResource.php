@@ -26,11 +26,14 @@ class AccountResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('account_name')
+               ->required()
+               ->maxLength(255),
                 Forms\Components\TextInput::make('account_number')
                     ->integer(),
                 Forms\Components\TextInput::make('bank_name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255), 
                 Forms\Components\TextInput::make('branch')
                     ->required()
                     ->maxLength(255),
@@ -56,6 +59,7 @@ class AccountResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('account_name'),
                 Tables\Columns\TextColumn::make('account_number'),
                 Tables\Columns\TextColumn::make('bank_name'),
                 Tables\Columns\TextColumn::make('balance')

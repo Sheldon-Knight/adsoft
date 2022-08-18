@@ -17,6 +17,7 @@ class AccountFactory extends Factory
     public function definition()
     {
         return [
+            'account_name' => $this->faker->unique()->name,
             'account_number' => $this->faker->numberBetween(100000000, 999999999),
             'bank_name' => $this->faker->company(),
             'branch' => $this->faker->name,
