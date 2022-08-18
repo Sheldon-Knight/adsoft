@@ -2,14 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Account;
-use App\Models\Department;
-use App\Models\Instruction;
-use App\Models\Invoice;
-use App\Models\OmsSetting;
-use App\Models\Status;
-use App\Models\Transfer;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,9 +15,16 @@ class DatabaseSeeder extends Seeder
     {    
         $this->call(
             [
-           
-                TransactionSeeder::class,
+                AdminSeeder::class,
+                UserSeeder::class,
+                OmsSettingsSeeder::class,
+                StatusesSeeder::class,
+                DepartmentSeeder::class,
+                InstructionSeeder::class,
+                AccountSeeder::class,
                 TransferSeeder::class,
+                TransactionSeeder::class,
+                StatementSeeder::class,
             ]
         );
     }

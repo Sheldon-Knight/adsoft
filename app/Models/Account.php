@@ -37,5 +37,10 @@ class Account extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function statement()
+    {
+        return $this->hasMany(Statement::class);
+    }
     
 }

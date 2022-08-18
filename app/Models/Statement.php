@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class Statement extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'transaction_id',
         'account_id',
+        'transaction_id',
         'description',
         'type',
         'amount',
@@ -19,13 +19,11 @@ class Transaction extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class,'account_id');
+        return $this->belongsTo(Account::class);
     }
 
-    public function statement()
+    public function transaction()
     {
-        return $this->hasMany(Statement::class,'transaction_id');
+        return $this->belongsTo(Transaction::class);
     }
-
-   
 }
