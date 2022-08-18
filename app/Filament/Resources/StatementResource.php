@@ -23,7 +23,7 @@ class StatementResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-   
+
 
     public static function form(Form $form): Form
     {
@@ -48,13 +48,32 @@ class StatementResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('transaction_id'),
                 Tables\Columns\TextColumn::make('account_id'),
-                Tables\Columns\TextColumn::make('debit'),
-                Tables\Columns\TextColumn::make('credit'),
-                Tables\Columns\TextColumn::make('opening_balance'),
-                Tables\Columns\TextColumn::make('closing_balance'),
+                Tables\Columns\TextColumn::make('debit')
+                    ->prefix('R')
+                    ->getStateUsing(function (Statement $record) {
+                        return number_format($record->debit / 100, 2);
+                    })
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('credit')
+                    ->prefix('R')
+                    ->getStateUsing(function (Statement $record) {
+                        return number_format($record->credit / 100, 2);
+                    })
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('opening_balance')
+                    ->prefix('R')
+                    ->getStateUsing(function (Statement $record) {
+                        return number_format($record->opening_balance / 100, 2);
+                    })
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('closing_balance')
+                    ->prefix('R')
+                    ->getStateUsing(function (Statement $record) {
+                        return number_format($record->closing_balance / 100, 2);
+                    })
+                    ->searchable(),          
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')
+                    ->label("Opened At")
                     ->dateTime(),
             ])
             ->filters([
