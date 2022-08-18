@@ -17,10 +17,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onCasscadeDelete();
             $table->foreignId('account_id')->nullable()->constrained('accounts')->onCasscadeDelete();
-            $table->integer('debtit');
+            $table->string('description');
+            $table->integer('debit');
             $table->integer('credit');
-            $table->integer('opening_balance');
-            $table->integer('closing_balance');
+            $table->integer('opening_balance')->default(0);
+            $table->integer('closing_balance')->default(0);
             $table->timestamps();
         });
     }

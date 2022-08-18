@@ -31,7 +31,7 @@ class StatementResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('transaction_id'),
                 Forms\Components\TextInput::make('account_id'),
-                Forms\Components\TextInput::make('debtit')
+                Forms\Components\TextInput::make('debit')
                     ->required(),
                 Forms\Components\TextInput::make('credit')
                     ->required(),
@@ -48,7 +48,7 @@ class StatementResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('transaction_id'),
                 Tables\Columns\TextColumn::make('account_id'),
-                Tables\Columns\TextColumn::make('debtit'),
+                Tables\Columns\TextColumn::make('debit'),
                 Tables\Columns\TextColumn::make('credit'),
                 Tables\Columns\TextColumn::make('opening_balance'),
                 Tables\Columns\TextColumn::make('closing_balance'),

@@ -13,8 +13,10 @@ class Statement extends Model
         'account_id',
         'transaction_id',
         'description',
-        'type',
-        'amount',
+        'debit',
+        'credit',        
+        'opening_balance',
+        'closing_balance',
     ];
 
     public function account()

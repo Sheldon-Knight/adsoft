@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Account;
 use App\Models\Transfer;
+use App\Observers\AccountObserver;
 use App\Observers\TransferObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -30,6 +32,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
       Transfer::observe(TransferObserver::class);
+      Account::observe(AccountObserver::class);
     }
 
     /**

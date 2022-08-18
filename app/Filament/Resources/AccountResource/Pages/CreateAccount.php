@@ -5,6 +5,7 @@ namespace App\Filament\Resources\AccountResource\Pages;
 use App\Filament\Resources\AccountResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateAccount extends CreateRecord
 {
@@ -16,5 +17,4 @@ class CreateAccount extends CreateRecord
 
         return $data;
     }
-
 }
