@@ -61,7 +61,7 @@ class TransferResource extends Resource
                 TextInput::make('amount')
                     ->integer()
                     ->reactive()
-                    ->minValue(0.01)
+                    ->minValue(1)
                     ->rule(function (callable $get) {
                         $account = Account::where('id', $get('from_account'))->first();
                         $balance = $account->balance / 100;
@@ -73,7 +73,7 @@ class TransferResource extends Resource
                             ->numeric()
                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
                             ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                            ->minValue(0) // Set the minimum value that the number can be.                     
+                            ->minValue(1) // Set the minimum value that the number can be.                     
                     )
                     ->required()
                     ->hiddenOn('edit'),

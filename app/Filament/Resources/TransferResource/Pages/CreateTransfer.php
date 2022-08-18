@@ -10,12 +10,16 @@ class CreateTransfer extends CreateRecord
 {
     protected static string $resource = TransferResource::class;
 
+    protected function getCreatedNotificationMessage(): ?string
+    {
+        return 'Transfer Succefull';
+    }
+
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-    
         $data['amount'] *= 100;
 
         return $data;
     }
-
 }

@@ -4,13 +4,20 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AccountResource\Pages;
 use App\Models\Account;
+use App\Models\Invoice;
+use App\Models\Transfer;
+use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TextInput\Mask;
+use Filament\Notifications\Notification;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-
+use Illuminate\Database\Eloquent\Model;
 
 class AccountResource extends Resource
 {
@@ -27,13 +34,13 @@ class AccountResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('account_name')
-               ->required()
-               ->maxLength(255),
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('account_number')
                     ->integer(),
                 Forms\Components\TextInput::make('bank_name')
                     ->required()
-                    ->maxLength(255), 
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('branch')
                     ->required()
                     ->maxLength(255),
@@ -73,6 +80,159 @@ class AccountResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
+                Tables\Actions\Action::make("add_funds")
+                    ->label("Add Funds")
+                    ->color('success')
+                    ->action(function ($data, Model $record) {
+                        $record->balance += $data['amount'] * 100;
+                        $record->save();
+
+                        Notification::make()
+                            ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
+                            ->success()
+                            ->duration(5000)
+                            ->persistent()
+                            ->send();
+                    })->form([
+                        Card::make()
+                            ->schema([
+                                TextInput::make('current_balance')
+                                    ->integer()
+                                    ->prefix('R')
+                                    ->placeholder(function (model $record) {
+                                        return number_format($record->balance / 100, 2);
+                                    })
+                                    ->mask(
+                                        fn (Mask $mask) => $mask
+                                            ->numeric()
+                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
+                                            ->minValue(0) // Set the minimum value that the number can be.                     
+                                    )
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->columnSpan('full'),
+
+                                TextInput::make('amount')
+                                    ->integer()
+                                    ->reactive()
+                                    ->minValue(1)
+                                    ->afterStateUpdated(function (Closure $set, $state, Model $record) {
+                                        $newValue = strval($record->balance + $state * 100);
+
+                                        $set('new_balance', number_format($newValue / 100, 2));
+                                    })
+                                    ->prefix('R')
+                                    ->mask(
+                                        fn (Mask $mask) => $mask
+                                            ->numeric()
+                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
+                                            ->minValue(1) // Set the minimum value that the number can be.                     
+                                    )
+                                    ->required(),
+
+
+                                TextInput::make('new_balance')
+                                    ->integer()
+                                    ->prefix('R')
+                                    ->default(function (model $record) {
+                                        return number_format($record->balance / 100, 2);
+                                    })
+                                    ->mask(
+                                        fn (Mask $mask) => $mask
+                                            ->numeric()
+                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
+                                            ->minValue(0) // Set the minimum value that the number can be.                     
+                                    )
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->columnSpan('full'),
+                            ]),
+                    ]),
+
+                Tables\Actions\Action::make('Transfer')
+                    ->color('secondary')
+                    ->visible(function (Model $record) {
+
+                        if ($record->balance < 100) {
+
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    ->label("Transfer")
+                    ->icon("heroicon-s-switch-vertical")
+                    ->action(function ($data, Model $record) {
+                        $data['from_account'] = $record->id;
+                        $data['amount'] *= 100;
+                        Transfer::create($data);
+
+                        $toAccount = Account::find($data['to_account']);
+
+                        Notification::make()
+                            ->title("Transfer Succesfull")
+                            ->body("Transfer of R" . number_format($data['amount'] / 100, 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
+                            ->duration(5000)
+                            ->persistent()
+                            ->success()
+                            ->send();
+                    })->form([
+                        Card::make()
+                            ->schema([
+                                TextInput::make('current_balance')
+                                    ->integer()
+                                    ->prefix('R')
+                                    ->placeholder(function (model $record) {
+                                        return number_format($record->balance / 100, 2);
+                                    })
+                                    ->mask(
+                                        fn (Mask $mask) => $mask
+                                            ->numeric()
+                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
+                                            ->minValue(0) // Set the minimum value that the number can be.                     
+                                    )
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->columnSpan('full'),
+
+                                Select::make('to_account')
+                                    ->label('Transfer To:')
+                                    ->searchable()
+                                    ->reactive()
+                                    ->options(function (Model $record) {
+                                        $accounts = Account::where('id', '!=', $record->id)->get();
+                                        return $accounts->pluck('full_name', 'id')->toArray();
+                                    })
+                                    ->required(),
+
+
+                                TextInput::make('amount')
+                                    ->integer()
+                                    ->reactive()
+                                    ->minValue(1)
+                                    ->rule(function (model $record) {
+                                        $balance = $record->balance / 100;
+                                        return $record->balance ? "max:{$balance}" : null;
+                                    })
+                                    ->prefix('R')
+                                    ->mask(
+                                        fn (Mask $mask) => $mask
+                                            ->numeric()
+                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
+                                            ->minValue(1) // Set the minimum value that the number can be.                     
+                                    )
+                                    ->required()
+                                    ->hiddenOn('edit'),
+                            ])
+
+                            ->columns(2),
+                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
