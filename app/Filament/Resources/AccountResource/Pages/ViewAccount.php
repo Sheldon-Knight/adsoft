@@ -10,6 +10,7 @@ use App\Models\Transfer;
 use Closure;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TextInput\Mask;
 use Filament\Notifications\Notification;
@@ -178,8 +179,7 @@ class ViewAccount extends ViewRecord
                         ->success()
                         ->send();
 
-                $this->emit('refreshTable');
-                
+                    $this->emit('refreshTable');
                 })
                 ->form([
                     Select::make('to_account')
@@ -212,6 +212,76 @@ class ViewAccount extends ViewRecord
                         )
                         ->required()
                         ->hiddenOn('edit'),
+                ]),
+
+            Action::make('Transact')
+                ->color('secondary')
+                ->label("Transact")
+                ->icon("heroicon-s-switch-vertical")
+                ->action(function ($data) {                   
+
+                    Transaction::create([
+                        'transaction_id' => str()->uuid(),
+                        'account_id' => $this->record->id,
+                        'description' => $data['description'],
+                        'type' => $data['type'],
+                        'amount' => $data['amount'] * 100,
+                    ]);                  
+
+                    $this->emit('refreshTable');
+                })
+                ->form([
+
+                    Select::make('type')
+                        ->label('Type')
+                        ->options(["credit" => "Credit", "debit" => "Debit"])
+                        ->reactive()
+                        ->required()
+                        ->searchable(),
+
+                    TextInput::make('transaction_id')
+                        ->label('Transaction Id')
+                        ->default(str()->uuid())
+                        ->required()
+                        ->disabled()
+                        ->columnSpan('full'),
+
+                    Textarea::make('description')
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpan('full'),
+
+                    TextInput::make('amount')
+                        ->label(function () {
+                            return 'Transaction Amount ' . '(current-balance: ' . 'R' . number_format($this->record->balance / 100, 2) . ')';
+                        })
+                        ->integer()
+                        ->reactive()
+                        ->minValue(1)
+                        ->rules([
+
+                            function () {
+                                $balance = $this->record->balance / 100;
+
+                                return $this->record->balance ? "max:{$balance}" : null;
+                            }
+
+
+                        ])
+                        ->prefix('R')
+                        ->mask(
+                            fn (Mask $mask) => $mask
+                                ->numeric()
+                                ->decimalPlaces(2) // Set the number of digits after the decimal point.
+                                ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
+                                ->minValue(1) // Set the minimum value that the number can be.                     
+                        )
+                        ->required(),
+
+
+
+
+
                 ]),
 
 

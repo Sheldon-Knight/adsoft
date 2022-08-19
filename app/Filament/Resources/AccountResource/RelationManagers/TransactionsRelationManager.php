@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\AccountResource\RelationManagers;
 
+use App\Models\Transaction;
+use App\Models\Transfer;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -20,9 +22,7 @@ class TransactionsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(255),
+                
             ]);
     }
 
@@ -30,20 +30,35 @@ class TransactionsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('transaction_id'),
+                Tables\Columns\TextColumn::make('account.account_number'),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(50),
+                Tables\Columns\BadgeColumn::make('type')
+                    ->colors([
+                        'success' => 'credit',
+                        'danger' => 'debit',
+                    ]),
+                Tables\Columns\TextColumn::make('amount')
+                    ->prefix('R')
+                    ->getStateUsing(function (Transaction $record) {
+                        return number_format($record->amount / 100, 2);
+                    })
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label("Transaction Date")
+                    ->dateTime(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+          
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->actions([        
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+              
             ]);
     }    
 }

@@ -31,7 +31,7 @@ class TransferObserver
         $transaction = Transaction::create([
             'transaction_id' => str()->uuid(),
             'account_id' =>  $transfer->fromAccount->id,
-            'description' =>  "Transfer made from account:" . $transfer->fromAccount->name . " to account:" . $transfer->toAccount->name . " for R" . number_format($transfer->amount / 100, 2),
+            'description' =>  "Transfer made from account:" . $transfer->fromAccount->account_number . " to account:" . $transfer->toAccount->account_number . " for R" . number_format($transfer->amount / 100, 2),
             'type' =>  'debit',
             'amount' =>  $transfer->amount,
         ]);

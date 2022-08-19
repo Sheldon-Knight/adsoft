@@ -106,7 +106,8 @@ class TransferResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([               
+            ->actions([
+               
             ])
             ->bulkActions([               
             ]);
