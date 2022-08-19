@@ -260,10 +260,19 @@ class ViewAccount extends ViewRecord
                         ->minValue(1)
                         ->rules([
 
-                            function () {
-                                $balance = $this->record->balance / 100;
+                            function (Closure $get) {
+                                    $type = $get('type');                             
 
-                                return $this->record->balance ? "max:{$balance}" : null;
+                                    if($type == 'debit'){
+
+                                        $balance = $this->record->balance / 100;
+
+                                        return "max:{$balance}";
+                                        
+                                    }
+                                    else{
+                                        return null;
+                                    }                             
                             }
 
 
