@@ -106,8 +106,7 @@ class TransferResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->actions([               
             ])
             ->bulkActions([               
             ]);
