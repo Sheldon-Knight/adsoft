@@ -14,7 +14,7 @@ class AccountObserver
             'transaction_id' => str()->uuid(),
             'account_id' => $account->id,
             'description' => 'New Account Created',
-            'type' => 'debit',
+            'type' => 'credit',
             'amount' => $account->balance,
         ]);
 
@@ -24,7 +24,7 @@ class AccountObserver
             'description' => $transaction->description,         
             'debit' => $transaction->type === 'debit' ? $account->balance : 0,
             'credit' => $transaction->type === 'credit' ? $account->balance : 0,
-            'opening_balance' => $account->balance,
+            'opening_balance' => 0,
             'closing_balance' => $account->balance,
         ]);
     }

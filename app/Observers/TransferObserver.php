@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Statement;
 use App\Models\Transaction;
 use App\Models\Transfer;
 
@@ -15,6 +16,14 @@ class TransferObserver
      */
     public function created(Transfer $transfer)
     {
+        $openingBalanceFromAccount = $transfer->fromAccount->balance;
+
+        $closingBalanceFromAccount = $openingBalanceFromAccount - $transfer->amount;
+        
+        $openingBalanceToAccount = $transfer->toaccount->balance;
+
+        $closingBalanceToAccount = $openingBalanceToAccount + $transfer->amount;
+
         $transfer->fromAccount->balance -= $transfer->amount;
 
         $transfer->toAccount->balance += $transfer->amount;
@@ -22,9 +31,30 @@ class TransferObserver
         $transaction = Transaction::create([
             'transaction_id' => str()->uuid(),
             'account_id' =>  $transfer->fromAccount->id,
-            'description' =>  'Transfer Made to ' . $transfer->toAccount->account_number,
-            'type' =>  'credit',
+            'description' =>  "Transfer made from account:" . $transfer->fromAccount->name . " to account:" . $transfer->toAccount->name . " for R" . number_format($transfer->amount / 100, 2),
+            'type' =>  'debit',
             'amount' =>  $transfer->amount,
+        ]);
+
+       Statement::create([
+            'account_id' => $transfer->fromAccount->id,
+            'transaction_id' => $transaction->id,
+            'description' => $transaction->description,
+            'debit' => $transfer->amount,
+            'credit' => 0,
+            'opening_balance' => $openingBalanceFromAccount,
+            'closing_balance' => $closingBalanceFromAccount,
+        ]);
+
+
+       Statement::create([
+            'account_id' => $transfer->toAccount->id,
+            'transaction_id' => $transaction->id,
+            'description' => $transaction->description,
+            'debit' => 0,
+            'credit' => $transfer->amount,
+            'opening_balance' => $openingBalanceToAccount,
+            'closing_balance' => $closingBalanceToAccount,
         ]);
    
         $transfer->transaction_id = $transaction->id;

@@ -105,8 +105,8 @@ class TransactionResource extends Resource
                     ->limit(50),
                 Tables\Columns\BadgeColumn::make('type')
                     ->colors([
-                        'danger' => 'credit',
-                        'success' => 'debit',
+                        'success' => 'credit',
+                        'danger' => 'debit',
                     ]),
                 Tables\Columns\TextColumn::make('amount')
                     ->prefix('R')
@@ -135,6 +135,8 @@ class TransactionResource extends Resource
             //
         ];
     }
+
+  
 
     public static function getPages(): array
     {

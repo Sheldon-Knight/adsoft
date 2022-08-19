@@ -33,6 +33,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';  
 
+
+    
     
     protected static function getNavigationBadge(): ?string
     {

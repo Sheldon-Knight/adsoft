@@ -3,8 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AccountResource\Pages;
+use App\Filament\Resources\AccountResource\RelationManagers\StatementsRelationManager;
+use App\Filament\Resources\AccountResource\RelationManagers\TransfersRelationManager;
 use App\Models\Account;
 use App\Models\Invoice;
+use App\Models\Statement;
+use App\Models\Transaction;
 use App\Models\Transfer;
 use Closure;
 use Filament\Forms;
@@ -79,15 +83,44 @@ class AccountResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-
                 Tables\Actions\Action::make("add_funds")
                     ->label("Add Funds")
                     ->color('success')
                     ->action(function ($data, Model $record) {
-                        $record->balance += $data['amount'] * 100;
+
+                        $openingBalance = $record->balance;
+                        $closingBalance = $record->balance + $data['amount'] * 100;
+
+                        $record->balance += $data['amount'] * 100;      
+                                     
                         $record->save();
 
+                        $transaction = Transaction::create([
+                            'transaction_id' => str()->uuid(),
+                            'account_id' => $record->id,
+                            'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
+                            'type' => 'credit',
+                            'amount' => $data['amount'] * 100,
+                        ]);
+
+                        $account = $record;
+
+                        $statement = Statement::create([
+                            'account_id' => $account->id,
+                            'transaction_id' => $transaction->id,
+                            'description' => $transaction->description,
+                            'debit' => 0,
+                            'credit' => $data['amount'] * 100,
+                            'opening_balance' => $openingBalance,
+                            'closing_balance' => $closingBalance,
+                        ]);
+
+                        $statement->update([
+                            'closing_balance' => $account->balance,
+                        ]);
+                    
                         Notification::make()
                             ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
                             ->success()
@@ -180,6 +213,7 @@ class AccountResource extends Resource
                             ->persistent()
                             ->success()
                             ->send();
+                            
                     })->form([
                         Card::make()
                             ->schema([
@@ -242,7 +276,8 @@ class AccountResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            StatementsRelationManager::class,
+            TransfersRelationManager::class,
         ];
     }
 
@@ -252,6 +287,7 @@ class AccountResource extends Resource
             'index' => Pages\ListAccounts::route('/'),
             'create' => Pages\CreateAccount::route('/create'),
             'edit' => Pages\EditAccount::route('/{record}/edit'),
+            'view' => Pages\ViewAccount::route('/view/{record}'),
         ];
     }
 }
