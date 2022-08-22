@@ -10,6 +10,7 @@ use App\Filament\Resources\UserResource\RelationManagers\InstructionsRelationMan
 use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as RelationManagersJobsRelationManager;
 use App\Models\Department;
 use App\Models\User;
+use Filament\Forms\Components\BelongsToManyMultiSelect;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -28,6 +29,7 @@ use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class UserResource extends Resource
 {
@@ -58,8 +60,7 @@ class UserResource extends Resource
                     static::getEmailFormField(),
                     static::getPhoneFormField(),
                     static::getAddressFormField(),
-                    static::getPasswordFormField(),
-                    static::getIsAdminFormField(),
+                    static::getPasswordFormField(), static::getIsAdminFormField(),                   
                 ])
             ]);
     }
@@ -85,8 +86,8 @@ class UserResource extends Resource
             ->required()
             ->numeric()
             ->minValue(10);
-    }
-
+    }      
+ 
     public static function getAddressFormField()
     {
         return Textarea::make('address')

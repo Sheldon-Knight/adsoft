@@ -89,15 +89,14 @@ class AccountResource extends Resource
 
             ])
             ->filters([
-                
                 MultiSelectFilter::make('account_name')
-                ->options(Account::pluck('account_name', 'account_name')->toArray())
-                ->column('account_name'),
+                    ->options(Account::pluck('account_name', 'account_name')->toArray())
+                    ->column('account_name'),
 
-            MultiSelectFilter::make('account_number')
-            ->options(Account::pluck('account_number', 'account_number')->toArray())
-            ->column('account_number'),
-                
+                MultiSelectFilter::make('account_number')
+                    ->options(Account::pluck('account_number', 'account_number')->toArray())
+                    ->column('account_number'),
+
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
