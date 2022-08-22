@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DepartmentResource\Pages;
 use App\Filament\Resources\DepartmentResource\RelationManagers;
+use App\Filament\Resources\DepartmentResource\RelationManagers\UsersRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\DepartmentRelationManager;
 use App\Models\Department;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -24,6 +26,8 @@ class DepartmentResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
+    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -41,20 +45,16 @@ class DepartmentResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->actions([               
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->bulkActions([               
             ]);
     }
     
     public static function getRelations(): array
     {
-        return [
-            //
+        return [   
+            UsersRelationManager::class,
         ];
     }
     

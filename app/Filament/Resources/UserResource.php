@@ -4,45 +4,50 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\DepartmentRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\InstructionsRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as RelationManagersJobsRelationManager;
-use App\Models\User; 
-use Filament\Forms\Components\Card; 
-use Filament\Forms\Components\Select; 
-use Filament\Forms\Components\Textarea; 
-use Filament\Forms\Components\TextInput; 
-use Filament\Forms\Components\Toggle; 
-use Filament\Resources\Form; 
-use Filament\Resources\Resource; 
-use Filament\Resources\Table; 
-use Filament\Tables\Actions\DeleteAction; 
-use Filament\Tables\Actions\DeleteBulkAction; 
+use App\Models\Department;
+use App\Models\User;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\BadgeColumn; 
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Columns\TextColumn; 
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
-    
+
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $navigationGroup = 'User Management';  
+    protected static ?string $navigationGroup = 'User Management';
 
 
-    
-    
+
+
     protected static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
-    }   
+    }
 
     public static function form(Form $form): Form
-    {        
+    {
         return $form
             ->schema([
                 Card::make([
@@ -83,7 +88,7 @@ class UserResource extends Resource
 
     public static function getAddressFormField()
     {
-        return Textarea::make('address')            
+        return Textarea::make('address')
             ->rows(12)
             ->cols(20);
     }
@@ -125,6 +130,7 @@ class UserResource extends Resource
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('surname')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
+                TextColumn::make('department.name')->sortable()->searchable(),
                 TextColumn::make('address')->getStateUsing(function (User $record) {
                     return substr($record->address, 0, 10);
                 })->sortable(),
@@ -143,7 +149,28 @@ class UserResource extends Resource
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
-                ViewAction::make()
+                ViewAction::make(),
+                Action::make('Assign To Department')->action(function (User $record, $data) {
+                    $record->update(['department_id' => $data['department_id']]);
+
+                    Notification::make()
+                        ->title("User Assigned To Department")
+                        ->body('send')
+                        ->success()
+                        ->send();
+                })->form([
+                    Select::make('department_id')
+                        ->required()
+                        ->options(function (User $record) {
+
+                            if ($record->department_id != null) {
+                                return Department::where('id', '!=', $record->department_id)->get()->pluck('name', 'id')->toArray();
+                            } else {
+
+                                return Department::get()->pluck('name', 'id')->toArray();
+                            }
+                        }),
+                ]),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
@@ -155,6 +182,7 @@ class UserResource extends Resource
         return [
             RelationManagersJobsRelationManager::class,
             InstructionsRelationManager::class,
+            DepartmentRelationManager::class,
         ];
     }
 
@@ -163,7 +191,7 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),           
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
-    }    
+    }
 }
