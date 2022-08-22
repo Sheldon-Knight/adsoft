@@ -91,43 +91,21 @@ class AccountResource extends Resource
                     ->color('success')
                     ->action(function ($data, Model $record) {
 
-                        $openingBalance = $record->balance;
-                        $closingBalance = $record->balance + $data['amount'] * 100;
-
-                        $record->balance += $data['amount'] * 100;
-
-                        $record->save();
-
-                        $transaction = Transaction::create([
+                            $transaction = Transaction::create([
                             'transaction_id' => str()->uuid(),
                             'account_id' => $record->id,
                             'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
                             'type' => 'credit',
                             'amount' => $data['amount'] * 100,
                         ]);
-
-                        $account = $record;
-
-                        $statement = Statement::create([
-                            'account_id' => $account->id,
-                            'transaction_id' => $transaction->id,
-                            'description' => $transaction->description,
-                            'debit' => 0,
-                            'credit' => $data['amount'] * 100,
-                            'opening_balance' => $openingBalance,
-                            'closing_balance' => $closingBalance,
-                        ]);
-
-                        $statement->update([
-                            'closing_balance' => $account->balance,
-                        ]);
-
+                 
                         Notification::make()
                             ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
                             ->success()
                             ->duration(5000)
                             ->persistent()
                             ->send();
+                            
                     })->form([
                         Card::make()
                             ->schema([

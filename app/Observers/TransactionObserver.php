@@ -13,9 +13,8 @@ class TransactionObserver
 
         $account = Account::find($transaction->account_id);
 
-
-
         $openingBalance =  $account->balance;
+        
         $closingBalance =  $transaction->type === 'debit' ? $openingBalance - $transaction->amount : $openingBalance + $transaction->amount;
 
         $account->update([

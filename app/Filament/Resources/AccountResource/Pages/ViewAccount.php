@@ -58,14 +58,7 @@ class ViewAccount extends ViewRecord
                 ->color('success')
                 ->action(function ($data) {
                     $record = $this->record;
-
-                    $openingBalance = $record->balance;
-                    $closingBalance = $record->balance + $data['amount'] * 100;
-
-
-                    $record->balance += $data['amount'] * 100;
-
-                    $record->save();
+                                 
 
                     $transaction = Transaction::create([
                         'transaction_id' => str()->uuid(),
@@ -74,22 +67,7 @@ class ViewAccount extends ViewRecord
                         'type' => 'credit',
                         'amount' => $data['amount'] * 100,
                     ]);
-
-                    $account = $record;
-
-                    $statement = Statement::create([
-                        'account_id' => $account->id,
-                        'transaction_id' => $transaction->id,
-                        'description' => $transaction->description,
-                        'debit' => 0,
-                        'credit' => $data['amount'] * 100,
-                        'opening_balance' => $openingBalance,
-                        'closing_balance' => $closingBalance,
-                    ]);
-
-                    $statement->update([
-                        'closing_balance' => $account->balance,
-                    ]);
+                            
 
                     Notification::make()
                         ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
@@ -221,7 +199,7 @@ class ViewAccount extends ViewRecord
                 ->action(function ($data) {                   
 
                     Transaction::create([
-                        'transaction_id' => str()->uuid(),
+                        'transaction_id' => $data["transaction_id"],
                         'account_id' => $this->record->id,
                         'description' => $data['description'],
                         'type' => $data['type'],

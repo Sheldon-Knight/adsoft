@@ -5,11 +5,8 @@ namespace App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource;
 use App\Models\Account;
 use App\Models\Statement;
-use App\Models\Transaction;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
-
 class CreateTransaction extends CreateRecord
 {
     protected static string $resource = TransactionResource::class;
@@ -23,7 +20,6 @@ class CreateTransaction extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-
         $transaction = static::getModel()::create($data);
 
         $account = Account::find($data['account_id']);       
@@ -40,8 +36,7 @@ class CreateTransaction extends CreateRecord
 
         $statement->update([          
             'closing_balance' => $account->balance,
-        ]);
-      
+        ]);      
 
         return $transaction;
     }
