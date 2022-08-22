@@ -78,8 +78,9 @@ class AccountResource extends Resource
                     ->prefix('R')
                     ->getStateUsing(function (Account $record) {
                         return number_format($record->balance / 100, 2);
-                    }),
-            ])
+                    }),                              
+      
+            ]) 
             ->filters([
                 //
             ])

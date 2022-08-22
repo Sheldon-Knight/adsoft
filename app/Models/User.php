@@ -66,4 +66,32 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function checkIn()
+    {
+        $now = $this->freshTimestamp();
+
+        return $this->attendances()->create([
+            'day' => $now->format('Y-m-d'),
+            'time_in' => $now->format('H:i:s')
+        ]);
+    }
+
+    public function checkOut()
+    {
+        $now = $this->freshTimestamp();
+
+        return $this->attendances()
+            ->where('day', $now->format('Y-m-d'))
+            ->whereNull('time_out')
+            ->firstOrFail()
+            ->update([
+                'time_out' => $now->format('H:i:s'),
+            ]);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\AttendancesRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\DepartmentRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\InstructionsRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as RelationManagersJobsRelationManager;
@@ -183,6 +184,7 @@ class UserResource extends Resource
             RelationManagersJobsRelationManager::class,
             InstructionsRelationManager::class,
             DepartmentRelationManager::class,
+            AttendancesRelationManager::class,
         ];
     }
 

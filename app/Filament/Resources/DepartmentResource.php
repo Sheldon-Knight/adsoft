@@ -33,14 +33,16 @@ class DepartmentResource extends Resource
         return $form
             ->schema([Forms\Components\TextInput::make('name')
                 ->maxLength(255),
+         
             ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(Table $table): Table   
     {
         return $table
             ->columns([
-                TextColumn::make('name')->sortable()->searchable(),          
+                TextColumn::make('name')->sortable()->searchable(),
+            TextColumn::make('users_count')->counts('users')  ,     
             ])
             ->filters([
                 //
