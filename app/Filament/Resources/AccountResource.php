@@ -13,6 +13,7 @@ use App\Models\Transaction;
 use App\Models\Transfer;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,6 +23,9 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
 
 class AccountResource extends Resource
@@ -33,7 +37,7 @@ class AccountResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationGroup = 'Banking';
-
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -71,18 +75,20 @@ class AccountResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('account_name'),
-                Tables\Columns\TextColumn::make('account_number'),
-                Tables\Columns\TextColumn::make('bank_name'),
-                Tables\Columns\TextColumn::make('balance')
+                Tables\Columns\TextColumn::make('account_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('account_number')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('bank_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('balance')->searchable()->sortable()
                     ->prefix('R')
                     ->getStateUsing(function (Account $record) {
                         return number_format($record->balance / 100, 2);
-                    }),                              
-      
-            ]) 
+                    }),
+
+            ])
             ->filters([
-                //
+            MultiSelectFilter::make('account_name') 
+            ->options(Account::pluck('account_name', 'id')->toArray())         
+            ->column('account_name')                    
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -92,21 +98,20 @@ class AccountResource extends Resource
                     ->color('success')
                     ->action(function ($data, Model $record) {
 
-                            $transaction = Transaction::create([
+                        $transaction = Transaction::create([
                             'transaction_id' => str()->uuid(),
                             'account_id' => $record->id,
                             'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
                             'type' => 'credit',
                             'amount' => $data['amount'] * 100,
                         ]);
-                 
+
                         Notification::make()
                             ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
                             ->success()
                             ->duration(5000)
                             ->persistent()
                             ->send();
-                            
                     })->form([
                         Card::make()
                             ->schema([
@@ -327,7 +332,7 @@ class AccountResource extends Resource
 
                             ->columns(2),
                     ]),
-          
+
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
