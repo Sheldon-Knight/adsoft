@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string("branch_code");
             $table->integer("balance");
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

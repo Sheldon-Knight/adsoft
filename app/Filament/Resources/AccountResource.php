@@ -23,10 +23,13 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AccountResource extends Resource
 {
@@ -37,7 +40,7 @@ class AccountResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationGroup = 'Banking';
-    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -86,11 +89,10 @@ class AccountResource extends Resource
 
             ])
             ->filters([
-            MultiSelectFilter::make('account_name') 
-            ->options(Account::pluck('account_name', 'id')->toArray())         
-            ->column('account_name')                    
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
+
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make("add_funds")
@@ -331,11 +333,16 @@ class AccountResource extends Resource
                             ])
 
                             ->columns(2),
+
                     ]),
 
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
             ]);
     }
 
@@ -356,5 +363,13 @@ class AccountResource extends Resource
             'edit' => Pages\EditAccount::route('/{record}/edit'),
             'view' => Pages\ViewAccount::route('/view/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): EloquentBuilder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

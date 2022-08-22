@@ -23,11 +23,12 @@ class CreateInvoicesTable extends Migration
             $table->decimal('invoice_tax');
             $table->decimal('invoice_discount');
             $table->json('items');
-            $table->foreignId('user_id')->constrained('users');           
-            $table->foreignId('client_id')->constrained('clients');    
-            $table->foreignId('invoice_status')->nullable()->constrained('status');  
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');           
+            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');    
+            $table->foreignId('invoice_status')->nullable()->constrained('status')->onDelete('cascade'); 
             $table->boolean("is_quote")->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

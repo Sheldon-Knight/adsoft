@@ -15,7 +15,5 @@ class ListAccounts extends ListRecords
         return [
             Actions\CreateAction::make(),
         ];
-    }
-
-   
+    }   
 }

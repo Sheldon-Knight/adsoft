@@ -10,7 +10,6 @@ class TransactionObserver
 {
     public function created(Transaction $transaction)
     {
-
         $account = Account::find($transaction->account_id);
 
         $openingBalance =  $account->balance;

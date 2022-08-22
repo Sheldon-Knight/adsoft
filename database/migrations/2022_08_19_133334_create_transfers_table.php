@@ -15,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('transfers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('from_account')->nullable()->constrained('accounts')->onCasscadeDelete();
-            $table->foreignId('to_account')->nullable()->constrained('accounts')->onCasscadeDelete();
-            $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onCasscadeDelete('null');
+            $table->foreignId('from_account')->nullable()->constrained('accounts')->onDelete('cascade');
+            $table->foreignId('to_account')->nullable()->constrained('accounts')->onDelete('cascade');
+            $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onDelete('cascade');
             $table->integer('amount');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

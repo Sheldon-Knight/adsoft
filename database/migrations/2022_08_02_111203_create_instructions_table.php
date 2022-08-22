@@ -20,9 +20,10 @@ class CreateInstructionsTable extends Migration
             $table->date("due_date");
             $table->date("date_completed")->nullable();
             $table->boolean("status")->default(0);
-            $table->foreignId("created_by")->nullable()->constrained('users');
-            $table->foreignId("assigned_to")->nullable()->constrained('users');
+            $table->foreignId("created_by")->nullable()->constrained('users')->onDelete('cascade');   
+            $table->foreignId("assigned_to")->nullable()->constrained('users')->onDelete('cascade');   
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

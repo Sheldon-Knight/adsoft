@@ -15,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->boolean('present')->default(0);
             $table->date('day');
             $table->time('time_in')->nullable();
             $table->time('time_out')->nullable();
+            $table->softDeletes();
         });
     }
 
