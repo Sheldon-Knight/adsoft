@@ -26,40 +26,57 @@ class DepartmentResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withoutGlobalScopes([
+            SoftDeletingScope::class,
+        ]);
+    }
+
+
+
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([Forms\Components\TextInput::make('name')
-                ->maxLength(255),
-         
+            ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->maxLength(255)
+                ->required()
+                ->unique(column: 'name'),
+
             ]);
     }
 
-    public static function table(Table $table): Table   
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('name')->sortable()->searchable(),
-            TextColumn::make('users_count')->counts('users')  ,     
+                TextColumn::make('users_count')->counts('users'),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
-            ->actions([               
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
             ])
-            ->bulkActions([               
-            ]);
+            ->bulkActions([]);
     }
-    
+
     public static function getRelations(): array
     {
-        return [   
+        return [
             UsersRelationManager::class,
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -68,5 +85,5 @@ class DepartmentResource extends Resource
             'view' => Pages\ViewDepartment::route('/{record}'),
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];
-    }    
+    }
 }

@@ -30,6 +30,10 @@ class StatusPolicy
      */
     public function view(User $user, Status $status)
     {
+        if ($status->deleted_at != null ) {
+            return false;
+        }
+
          return $user->can('view statuses');
     }
 
@@ -53,6 +57,10 @@ class StatusPolicy
      */
     public function update(User $user, Status $status)
     {
+        if ($status->deleted_at != null) {
+            return false;
+        }
+
         return $user->can('update statuses');
     }
 
@@ -77,6 +85,9 @@ class StatusPolicy
      */
     public function restore(User $user, Status $status)
     {
+        if ($status->deleted_at === null) {
+            return false;
+        }
        return $user->can('restore statuses');
     }
 
@@ -89,6 +100,9 @@ class StatusPolicy
      */
     public function forceDelete(User $user, Status $status)
     {
+        if ($status->deleted_at != null) {
+            return true;
+        }
          return $user->can('force delete statuses');
     }
 }

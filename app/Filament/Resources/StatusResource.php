@@ -22,7 +22,7 @@ class StatusResource extends Resource
     protected static ?string $model = Status::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-   
+
     protected static ?string $navigationGroup = 'Settings';
 
     protected static ?int $navigationSort = 2;
@@ -30,11 +30,13 @@ class StatusResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['invoices']);
+        return parent::getEloquentQuery()->withoutGlobalScopes([
+            SoftDeletingScope::class,
+        ])->with(['invoices']);
     }
 
     public static function form(Form $form): Form
-    {     
+    {
 
         return $form
             ->schema([
@@ -49,26 +51,20 @@ class StatusResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),               
-               ])
+                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
+            ])
 
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
-            ->actions([              
+            ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
 
-                Tables\Actions\DeleteAction::make()
-                    ->visible(function (Status $record) {                                                                
 
-                        if ($record->invoices()->count() > 0) {
-                            return false;
-                        }
-                        
-
-                        return true;
-                    }),
-           
             ])
             ->bulkActions([]);
     }

@@ -30,6 +30,11 @@ class DepartmentPolicy
      */
     public function view(User $user, Department $department)
     {
+
+        if ($department->deleted_at != null) {
+            return true;
+        }
+
          return $user->can('view departments');
     }
 
@@ -53,6 +58,11 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department)
     {
+
+        if ($department->deleted_at != null) {
+            return true;
+        }
+
         return $user->can('update departments');
     }
 
@@ -65,6 +75,10 @@ class DepartmentPolicy
      */
     public function delete(User $user, Department $department)
     {
+        if ($department->deleted_at != null) {
+            return true;
+        }
+
         return $user->can('delete departments');
     }
 
@@ -77,6 +91,9 @@ class DepartmentPolicy
      */
     public function restore(User $user, Department $department)
     {
+        if ($department->deleted_at === null) {
+            return false;
+        }
        return $user->can('restore departments');
     }
 
@@ -89,6 +106,10 @@ class DepartmentPolicy
      */
     public function forceDelete(User $user, Department $department)
     {
+        if ($department->deleted_at != null) {
+            return true;
+        }
+        
          return $user->can('force delete departments');
     }
 }
