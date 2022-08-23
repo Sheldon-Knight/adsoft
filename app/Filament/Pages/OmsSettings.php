@@ -16,11 +16,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Support\Facades\Hash;
-use Livewire\TemporaryUploadedFile;
-
-
-
 
 class OmsSettings extends Page
 {
@@ -38,9 +33,15 @@ class OmsSettings extends Page
 
     public $data;
 
+    protected static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->can("change application settings");
+    }
 
     public function mount()
     {
+
+        abort_unless(auth()->user()->can("change application settings"), 403);
 
         $this->omsSetting = OmsSetting::find(1);
 

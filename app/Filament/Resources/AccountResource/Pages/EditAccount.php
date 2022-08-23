@@ -13,14 +13,14 @@ class EditAccount extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $data['balance'] *= 100;
+    // protected function mutateFormDataBeforeSave(array $data): array
+    // {
+    //     $data['balance'] *= 100;
 
-        return $data;
-    }
+    //     return $data;
+    // }
 }

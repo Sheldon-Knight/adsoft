@@ -8,8 +8,10 @@ use App\Filament\Resources\UserResource\RelationManagers\AttendancesRelationMana
 use App\Filament\Resources\UserResource\RelationManagers\DepartmentRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\InstructionsRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as RelationManagersJobsRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\Department;
 use App\Models\User;
+use Closure;
 use Filament\Forms\Components\BelongsToManyMultiSelect;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
@@ -24,12 +26,18 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ForceDeleteAction;
+use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+
 
 class UserResource extends Resource
 {
@@ -41,8 +49,11 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
-
-
+    public static function getEloquentQuery(): EloquentBuilder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes();
+    }
 
     protected static function getNavigationBadge(): ?string
     {
@@ -60,7 +71,7 @@ class UserResource extends Resource
                     static::getEmailFormField(),
                     static::getPhoneFormField(),
                     static::getAddressFormField(),
-                    static::getPasswordFormField(), static::getIsAdminFormField(),                   
+                    static::getPasswordFormField(),
                 ])
             ]);
     }
@@ -86,8 +97,8 @@ class UserResource extends Resource
             ->required()
             ->numeric()
             ->minValue(10);
-    }      
- 
+    }
+
     public static function getAddressFormField()
     {
         return Textarea::make('address')
@@ -118,13 +129,6 @@ class UserResource extends Resource
             ]);
     }
 
-    public static function getIsAdminFormField()
-    {
-        return Toggle::make('is_admin')
-            ->onIcon('heroicon-s-lightning-bolt')
-            ->offIcon('heroicon-s-user');
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -133,50 +137,111 @@ class UserResource extends Resource
                 TextColumn::make('surname')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('department.name')->sortable()->searchable(),
-                TextColumn::make('address')->getStateUsing(function (User $record) {
-                    return substr($record->address, 0, 10);
-                })->sortable(),
                 TextColumn::make('phone')->sortable()->searchable(),
                 TextColumn::make('gender')->sortable(),
-                BadgeColumn::make('Role')
-                    ->getStateUsing(function (User $record) {
-                        return $record->is_admin ? "Admin" : "Users";
-                    })->colors([
-                        'success'  => "Admin",
-                        'warning'  => "Users",
-                    ]),
-                BooleanColumn::make('is_admin'),
+                TextColumn::make('roles.name')->sortable()->searchable(),
             ])
-            ->defaultSort('name')
+            ->filters([
+                TrashedFilter::make(),
+            ])
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
                 ViewAction::make(),
-                Action::make('Assign To Department')->action(function (User $record, $data) {
-                    $record->update(['department_id' => $data['department_id']]);
+                Action::make('Remove from Department')
+                    ->visible(function (User $record) {
 
-                    Notification::make()
-                        ->title("User Assigned To Department")
-                        ->body('send')
-                        ->success()
-                        ->send();
-                })->form([
-                    Select::make('department_id')
-                        ->required()
-                        ->options(function (User $record) {
+                        if ($record->department_id != null and auth()->user()->can('remove users from departments', $record)) {
+                            return true;
+                        }
 
-                            if ($record->department_id != null) {
-                                return Department::where('id', '!=', $record->department_id)->get()->pluck('name', 'id')->toArray();
-                            } else {
+                        return false;
+                    })
+                    ->color('danger')
+                    ->action(function (User $record) {
 
-                                return Department::get()->pluck('name', 'id')->toArray();
-                            }
-                        }),
-                ]),
+
+                        $record->update(['department_id' => null]);
+
+                        Notification::make()
+                            ->title("User Removed From Department")
+                            ->body('send')
+                            ->danger()
+                            ->send();
+                    }),
+                Action::make('Assign To Department')
+                    ->visible(function (User $record) {
+
+                        if ($record->deleted_at === null and auth()->user()->can('assign users to departments', $record)) {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    ->label(function (User $record) {
+
+                        if ($record->department_id == null) {
+                            return "assign to department";
+                        }
+
+                        return "reassign to another department";
+                    })
+                    ->action(function (User $record, $data) {
+                        $record->update(['department_id' => $data['department_id']]);
+
+                        Notification::make()
+                            ->title("User Assigned To Department")
+                            ->body('send')
+                            ->success()
+                            ->send();
+                    })->form([
+                        Select::make('department_id')
+                            ->required()
+                            ->options(function (User $record) {
+
+                                if ($record->department_id != null) {
+                                    return Department::where('id', '!=', $record->department_id)->get()->pluck('name', 'id')->toArray();
+                                } else {
+
+                                    return Department::get()->pluck('name', 'id')->toArray();
+                                }
+                            }),
+                    ]),
+
+                DeleteAction::make()->visible(function (User $user) {
+
+                    if ($user->deleted_at != null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('delete users', $user);
+                }),
+
+              
+
+                RestoreAction::make()->visible(function ($record) {   
+                                
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('restore users', $record);
+                }),
+
+
+
+            ForceDeleteAction::make()->visible(function ($record) {
+
+                if ($record->deleted_at === null) {
+                    return false;
+                }
+
+                return auth()->user()->can('force delete users', $record);
+            }),
+
+
             ])
-            ->bulkActions([
-                DeleteBulkAction::make(),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -186,6 +251,7 @@ class UserResource extends Resource
             InstructionsRelationManager::class,
             DepartmentRelationManager::class,
             AttendancesRelationManager::class,
+            RolesRelationManager::class,
         ];
     }
 

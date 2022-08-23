@@ -56,6 +56,7 @@ class ViewAccount extends ViewRecord
             Action::make("add_funds")
                 ->label("Add Funds")
                 ->color('success')
+                ->visible(fn (): bool => auth()->user()->can('add funds to accounts', $this->record))
                 ->action(function ($data) {
                     $record = $this->record;
                                  
@@ -139,6 +140,7 @@ class ViewAccount extends ViewRecord
             Action::make("transfer")
                 ->label("Make Transfer")
                 ->color('primary')
+                ->visible(fn (): bool => auth()->user()->can('create transfers', $this->record))
                 ->action(function ($data) {
                     $record = $this->record;
 
@@ -195,6 +197,7 @@ class ViewAccount extends ViewRecord
             Action::make('Transact')
                 ->color('secondary')
                 ->label("Transact")
+                ->visible(fn (): bool => auth()->user()->can('create transactions', $this->record))
                 ->icon("heroicon-s-switch-vertical")
                 ->action(function ($data) {                   
 

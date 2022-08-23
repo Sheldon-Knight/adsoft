@@ -8,6 +8,7 @@ use App\Filament\Resources\AccountResource\RelationManagers\TransactionsRelation
 use App\Filament\Resources\AccountResource\RelationManagers\TransfersRelationManager;
 use App\Models\Account;
 use App\Models\Invoice;
+use App\Models\OmsSetting;
 use App\Models\Statement;
 use App\Models\Transaction;
 use App\Models\Transfer;
@@ -106,6 +107,7 @@ class AccountResource extends Resource
                 Tables\Actions\Action::make("add_funds")
                     ->label("Add Funds")
                     ->color('success')
+                    ->visible(fn (Account $record): bool => auth()->user()->can('add funds to accounts', $record))
                     ->action(function ($data, Model $record) {
 
                         $transaction = Transaction::create([
@@ -185,9 +187,8 @@ class AccountResource extends Resource
                     ->color('secondary')
                     ->visible(function (Model $record) {
 
-                        if ($record->balance < 100) {
-
-                            return false;
+                        if (auth()->user()->can('create transfers',$record) and $record->balance >= 100) {
+                            return true;
                         }
 
                         return true;
@@ -260,98 +261,36 @@ class AccountResource extends Resource
                             ])
 
                             ->columns(2),
-                    ]),
+                    ]),                
 
-                Tables\Actions\Action::make('Transfer')
-                    ->color('secondary')
-                    ->visible(function (Model $record) {
+                Tables\Actions\DeleteAction::make()->visible(function (Account $record) {
 
-                        if ($record->balance < 100) {
+                    if ($record->deleted_at != null) {
+                        return false;
+                    }
 
-                            return false;
-                        }
+                    return auth()->user()->can('delete accounts', $record);
+                }),
 
-                        return true;
-                    })
-                    ->label("Transfer")
-                    ->icon("heroicon-s-switch-vertical")
-                    ->action(function ($data, Model $record) {
-                        $data['from_account'] = $record->id;
-                        $data['amount'] *= 100;
-                        Transfer::create($data);
+                Tables\Actions\RestoreAction::make()->visible(function (Account $record) {
 
-                        $toAccount = Account::find($data['to_account']);
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
 
-                        Notification::make()
-                            ->title("Transfer Succesfull")
-                            ->body("Transfer of R" . number_format($data['amount'] / 100, 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
-                            ->duration(5000)
-                            ->persistent()
-                            ->success()
-                            ->send();
-                    })->form([
-                        Card::make()
-                            ->schema([
-                                TextInput::make('current_balance')
-                                    ->integer()
-                                    ->prefix('R')
-                                    ->placeholder(function (model $record) {
-                                        return number_format($record->balance / 100, 2);
-                                    })
-                                    ->mask(
-                                        fn (Mask $mask) => $mask
-                                            ->numeric()
-                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(0) // Set the minimum value that the number can be.                     
-                                    )
-                                    ->disabled()
-                                    ->dehydrated(false)
-                                    ->columnSpan('full'),
+                    return auth()->user()->can('restore accounts', $record);
+                }),
 
-                                Select::make('to_account')
-                                    ->label('Transfer To:')
-                                    ->searchable()
-                                    ->reactive()
-                                    ->options(function (Model $record) {
-                                        $accounts = Account::where('id', '!=', $record->id)->get();
-                                        return $accounts->pluck('full_name', 'id')->toArray();
-                                    })
-                                    ->required(),
+                Tables\Actions\ForceDeleteAction::make()->visible(function (Account $record) {
 
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
 
-                                TextInput::make('amount')
-                                    ->integer()
-                                    ->reactive()
-                                    ->minValue(1)
-                                    ->rule(function (model $record) {
-                                        $balance = $record->balance / 100;
-                                        return $record->balance ? "max:{$balance}" : null;
-                                    })
-                                    ->prefix('R')
-                                    ->mask(
-                                        fn (Mask $mask) => $mask
-                                            ->numeric()
-                                            ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(1) // Set the minimum value that the number can be.                     
-                                    )
-                                    ->required()
-                                    ->hiddenOn('edit'),
-                            ])
-
-                            ->columns(2),
-
-                    ]),
-
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
+                    return auth()->user()->can('force delete accounts', $record);
+                }),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\RestoreBulkAction::make(),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array

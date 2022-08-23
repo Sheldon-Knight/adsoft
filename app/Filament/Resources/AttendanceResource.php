@@ -14,7 +14,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Validation\Rules\Unique;
 use phpDocumentor\Reflection\Types\Callable_;
@@ -43,7 +43,7 @@ class AttendanceResource extends Resource
                         function (?callable $get) {
                             $userId = $get('user_id');
 
-                            return function (string $attribute, $value, Closure $fail) use ($userId) {                               
+                            return function (string $attribute, $value, Closure $fail) use ($userId) {
                                 $value = Carbon::parse($value)->format('Y-m-d');
                                 $attendance = Attendance::where('user_id', $userId)->where('day', $value)->first();
                                 if ($attendance) {
@@ -101,14 +101,41 @@ class AttendanceResource extends Resource
                 Tables\Columns\TextColumn::make('time_out'),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+
+                Tables\Actions\DeleteAction::make()->visible(function (Attendance $record) {
+
+                    if ($record->deleted_at != null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('delete attendances', $record);
+                }),
+
+                Tables\Actions\RestoreAction::make()->visible(function (Attendance $record) {
+
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('restore attendances', $record);
+                }),
+
+                Tables\Actions\ForceDeleteAction::make()->visible(function (Attendance $record) {
+
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('force delete attendances', $record);
+                }),
+
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -125,5 +152,13 @@ class AttendanceResource extends Resource
             'create' => Pages\CreateAttendance::route('/create'),
             'edit' => Pages\EditAttendance::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): EloquentBuilder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

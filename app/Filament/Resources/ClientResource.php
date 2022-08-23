@@ -14,7 +14,10 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreAction;
+use Filament\Tables\Actions\ViewAction;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ClientResource extends Resource
@@ -30,7 +33,7 @@ class ClientResource extends Resource
     protected static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
-    }   
+    }
 
 
     public static function form(Form $form): Form
@@ -49,9 +52,11 @@ class ClientResource extends Resource
                 Forms\Components\TextInput::make('vat_number')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('client_name')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->required(),
                 Forms\Components\TextInput::make('client_surname')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->required(),
                 Forms\Components\TextInput::make('tel_num')
                     ->tel()
                     ->maxLength(255),
@@ -75,9 +80,6 @@ class ClientResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('bank_name')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('client_status')
-                    ->required()
-                    ->maxLength(255),
             ]);
     }
 
@@ -85,52 +87,58 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('postal_address')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('physical_address')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('branch_name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('vat_number')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('client_name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('client_surname')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('tel_num')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('cell_num')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('fax_num')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('contact_person')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('reg_type')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('reg_number')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('account_name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('account_number')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('account_type')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('branch_code')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('bank_name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('client_status')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()->searchable()->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make(),
+                EditAction::make(),
+                ViewAction::make(),
+                Tables\Actions\DeleteAction::make()->visible(function (Client $record) {
+
+                    if ($record->deleted_at != null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('delete clients', $record);
+                }),      
+
+                Tables\Actions\RestoreAction::make()->visible(function (Client $record) {
+                   
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('restore clients', $record);
+                }),
+
+                Tables\Actions\ForceDeleteAction::make()->visible(function (Client $record) {
+
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
+
+                    return auth()->user()->can('force delete clients', $record);
+                }),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            ->bulkActions([]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             QuotesRelationManager::class,
-           InvoicesRelationManager::class,
-           JobsRelationManager::class,
+            InvoicesRelationManager::class,
+            JobsRelationManager::class,
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -139,5 +147,13 @@ class ClientResource extends Resource
             'edit' => Pages\EditClient::route('/{record}/edit'),
             'view' => Pages\ViewClient::route('/view/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): EloquentBuilder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

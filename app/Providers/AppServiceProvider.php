@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Columns\Column;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +27,8 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
+    {        
+    
         Filament::serving(function () {
             Filament::registerNavigationGroups([
                 NavigationGroup::make()

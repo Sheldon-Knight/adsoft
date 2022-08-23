@@ -19,7 +19,7 @@ class CreateUser extends CreateRecord
 
     protected static string $resource = UserResource::class;
 
-    protected function getSteps(): array
+     protected function getSteps(): array
     {
         return [
             Step::make('Basic Info')
@@ -27,8 +27,7 @@ class CreateUser extends CreateRecord
                 ->schema([
                     UserResource::getNameFormField(),
                     UserResource::getSurnameFormField(),
-                    UserResource::getGenderFormField(),
-                    UserResource::getIsAdminFormField(),
+                    UserResource::getGenderFormField(),                 
                 ]),
             Step::make('Contact Info')
                 ->description('contact info of the user')
