@@ -25,8 +25,7 @@ class DatabaseSeeder extends Seeder
                 // TransferSeeder::class,
                 // TransactionSeeder::class,
                 // StatementSeeder::class,
-                RoleSeeder::class,
-         
+                RoleSeeder::class,         
             ]
         );
     }
