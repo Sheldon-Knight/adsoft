@@ -16,11 +16,15 @@ class UserAttendanceChart extends BarChartWidget
 
     public ?string $filter = 'month';
 
+    public string $presentLabel;
+    public string $absentLabel;
+
 
     protected function getFilters(): ?array
     {
         return [
-            'day' => 'Day To Day',
+            'last_month' => 'Last Month',
+            'this_month' => 'This Month',
             'month' => 'Month To Month',
             'year' => 'This Year',
         ];
@@ -57,11 +61,21 @@ class UserAttendanceChart extends BarChartWidget
                 ->count();
         }
 
-        if ($activeFilter == 'day') {
+        if ($activeFilter == 'this_month') {
             $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
                 ->between(
-                    start: now()->startOfYear(),
-                    end: now()->endOfYear(),
+                    start: now()->startOfMonth(),
+                    end: now()->endOfMonth(),
+                )
+                ->perDay()
+                ->count();
+        }
+
+        if ($activeFilter == 'last_month') {
+            $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
+                ->between(
+                    start: now()->subMonth(1)->startOfMonth(),
+                    end: now()->subMonth(1)->endOfMonth(),
                 )
                 ->perDay()
                 ->count();
@@ -70,28 +84,75 @@ class UserAttendanceChart extends BarChartWidget
         return $query;
     }
 
+    protected function getLabelsCount($presentAttendances, $absentAttendances): array
+    {
+        $countPresents = $presentAttendances->sum('aggregate');
 
+        $countAbscents = $absentAttendances->sum('aggregate');
+
+        if ($this->filter == 'month' or $this->filter == 'year') {
+            $countPresents = $presentAttendances->sum('aggregate');       
+
+            $countAbscents = $absentAttendances->sum('aggregate');
+        }       
+
+        return [
+            'countPresents' => $countPresents,
+            'countAbsents' => $countAbscents
+        ];
+    }
+
+    protected function getLabels($presentAttendances, $absentAttendances)
+    {
+        $counts = $this->getLabelsCount($presentAttendances, $absentAttendances);
+
+
+        $activeFilter = $this->filter;
+
+        $this->presentLabel = "Present Per Month ({$counts['countPresents']})";
+        $this->absentLabel = "Abscents Per Month ({$counts['countAbsents']})";
+
+
+        if ($activeFilter == 'last_month') {
+            $this->presentLabel = "Present Last Month ({$counts['countPresents']})";
+
+            $this->absentLabel = "Abscents Last Month ({$counts['countAbsents']})";
+        }
+
+        if ($activeFilter == 'this_month') {
+            $this->presentLabel = "Present This Month ({$counts['countPresents']})";
+
+            $this->absentLabel = "Abscents This Month ({$counts['countAbsents']})";
+        }
+
+        if ($activeFilter == 'year') {
+            $this->presentLabel = "Present This Year ({$counts['countPresents']})";
+
+            $this->absentLabel = "Abscents This Year ({$counts['countAbsents']})";
+        }
+    }
 
     protected function getData(): array
     {
-     
-        $presentAttendances = $this->getFilteredQuery(true);   
+
+        $presentAttendances = $this->getFilteredQuery(true);
 
         $absentAttendances = $this->getFilteredQuery();
-           
 
+        $this->getLabels($presentAttendances, $absentAttendances);
+   
         $chart =
             [
                 'datasets' => [
                     [
-                        'label' => 'Present Per ' . ucfirst($this->filter),
+                        'label' => $this->presentLabel,
                         'data' => $presentAttendances->map(fn (TrendValue $value) => $value->aggregate),
                         'backgroundColor' =>  [
                             'rgba(0,255,0, 0.7)'
                         ],
                     ],
                     [
-                        'label' => 'Absent Per ' . ucfirst($this->filter),
+                        'label' => $this->absentLabel,
                         'data' => $absentAttendances->map(fn (TrendValue $value) => $value->aggregate),
                         'backgroundColor' =>  [
                             'rgba(255,0,0, 0.7)'
