@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable,SoftDeletes,HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -58,7 +58,7 @@ class User extends Authenticatable
     }
     public function instructions()
     {
-        return $this->hasMany(Instruction::class,'assigned_to');
+        return $this->hasMany(Instruction::class, 'assigned_to');
     }
     public function comments()
     {
@@ -74,6 +74,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class);
     }
+    
+    public function getTodaysAttendance()
+    {
+        $now = $this->freshTimestamp();
+
+       return $this->attendances()
+            ->where('day', $now->format('Y-m-d'))            
+            ->first();
+    }
 
     public function checkIn()
     {
@@ -81,7 +90,7 @@ class User extends Authenticatable
 
         return $this->attendances()->create([
             'day' => $now->format('Y-m-d'),
-            'time_in' => $now->format('H:i:s')
+            'time_in' => $now->format('H:i')
         ]);
     }
 
@@ -94,7 +103,7 @@ class User extends Authenticatable
             ->whereNull('time_out')
             ->firstOrFail()
             ->update([
-                'time_out' => $now->format('H:i:s'),
+                'time_out' => $now->format('H:i'),
             ]);
     }
 }
