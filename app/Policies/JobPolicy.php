@@ -30,7 +30,10 @@ class JobPolicy
      */
     public function view(User $user, Job $job)
     {
-         return $user->can('view jobs');
+        if ($job->deleted_at != null) {
+            return false;
+        }
+        return $user->can('view jobs');
     }
 
     /**
@@ -53,6 +56,9 @@ class JobPolicy
      */
     public function update(User $user, Job $job)
     {
+        if ($job->deleted_at != null) {
+            return false;
+        }
         return $user->can('update jobs');
     }
 
@@ -65,6 +71,9 @@ class JobPolicy
      */
     public function delete(User $user, Job $job)
     {
+        if ($job->deleted_at != null) {
+            return false;
+        }
         return $user->can('delete jobs');
     }
 
@@ -77,7 +86,10 @@ class JobPolicy
      */
     public function restore(User $user, Job $job)
     {
-       return $user->can('restore jobs');
+        if ($job->deleted_at === null) {
+            return false;
+        }
+        return $user->can('restore jobs');
     }
 
     /**
@@ -89,6 +101,9 @@ class JobPolicy
      */
     public function forceDelete(User $user, Job $job)
     {
-         return $user->can('force delete jobs');
+        if ($job->deleted_at === null) {
+            return false;
+        }
+        return $user->can('force delete jobs');
     }
 }

@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use League\CommonMark\Input\MarkdownInput;
 use NunoMaduro\Collision\Adapters\Phpunit\State;
+use Spatie\Permission\Models\Permission;
 
 class InvoiceResource extends Resource
 {
@@ -47,7 +48,9 @@ class InvoiceResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('is_quote', false);
+        return parent::getEloquentQuery()
+            ->where('is_quote', false)
+            ->withoutGlobalScopes();
     }
 
     public static function form(Form $form): Form
@@ -239,8 +242,7 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_total')->sortable()->searchable()->money('zar', true),
                 Tables\Columns\TextColumn::make('status.name')->sortable()->searchable(),
             ])
-            ->filters([
-                //
+            ->filters([Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\Action::make('email')
@@ -346,6 +348,13 @@ class InvoiceResource extends Resource
 
                     )
                     ->label('Email Invoice')
+                ->visible(function (Invoice $record) {
+
+                    if (auth()->user()->can("email invoices") and $record->deleted_at === null) {
+                        return true;
+                    }
+                    return false;
+                })
                     ->form([
                         Card::make()
                             ->schema([
@@ -416,6 +425,8 @@ class InvoiceResource extends Resource
                             ->required(),
                     ]),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
 
             ])
             ->bulkActions([]);

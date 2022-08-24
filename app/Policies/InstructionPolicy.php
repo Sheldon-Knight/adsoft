@@ -30,7 +30,11 @@ class InstructionPolicy
      */
     public function view(User $user, Instruction $instruction)
     {
-         return $user->can('view instructions');
+        if ($instruction->deleted_at != null) {
+            return false;
+        }
+        
+        return $user->can('view instructions');
     }
 
     /**
@@ -53,6 +57,9 @@ class InstructionPolicy
      */
     public function update(User $user, Instruction $instruction)
     {
+        if ($instruction->deleted_at != null) {
+            return false;
+        }
         return $user->can('update instructions');
     }
 
@@ -65,6 +72,11 @@ class InstructionPolicy
      */
     public function delete(User $user, Instruction $instruction)
     {
+
+        if ($instruction->deleted_at != null) {
+            return false;
+        }
+
         return $user->can('delete instructions');
     }
 
@@ -77,7 +89,11 @@ class InstructionPolicy
      */
     public function restore(User $user, Instruction $instruction)
     {
-       return $user->can('restore instructions');
+        if ($instruction->deleted_at === null) {
+            return false;
+        }
+
+        return $user->can('restore instructions');
     }
 
     /**
@@ -89,6 +105,10 @@ class InstructionPolicy
      */
     public function forceDelete(User $user, Instruction $instruction)
     {
-         return $user->can('force delete instructions');
+        if ($instruction->deleted_at === null) {
+            return false;
+        }
+
+        return $user->can('force delete instructions');
     }
 }

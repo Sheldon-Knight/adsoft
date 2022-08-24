@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\RoleResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Contracts\HasRelationshipTable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Artisan;
@@ -59,6 +62,23 @@ class PermissionsRelationManager extends RelationManager
                     })
 
             ])
-            ->bulkActions([]);
+            ->bulkActions([
+            BulkAction::make('bulk detach')
+            ->action(function(Collection $records) {
+
+                foreach($records as $record)
+                {
+                    $record->removeRole($record->role_id);
+                }
+
+                Artisan::call('cache:clear');
+                
+                return Notification::make()
+                    ->title('Removed successfully')
+                    ->success()
+                    ->send();                              
+            })
+            ->deselectRecordsAfterCompletion()
+            ]);
     }
 }

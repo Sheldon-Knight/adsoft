@@ -105,6 +105,9 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model)
     {
+        if ($model->deleted_at === null) {
+            return false;
+        }
          return auth()->user()->can('force delete users');
     }   
 }

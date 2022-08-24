@@ -32,7 +32,7 @@ class DepartmentPolicy
     {
 
         if ($department->deleted_at != null) {
-            return true;
+            return false;
         }
 
          return $user->can('view departments');
@@ -60,7 +60,7 @@ class DepartmentPolicy
     {
 
         if ($department->deleted_at != null) {
-            return true;
+            return false;
         }
 
         return $user->can('update departments');
@@ -76,7 +76,7 @@ class DepartmentPolicy
     public function delete(User $user, Department $department)
     {
         if ($department->deleted_at != null) {
-            return true;
+            return false;
         }
 
         return $user->can('delete departments');
@@ -106,8 +106,8 @@ class DepartmentPolicy
      */
     public function forceDelete(User $user, Department $department)
     {
-        if ($department->deleted_at != null) {
-            return true;
+        if ($department->deleted_at === null) {
+            return false;
         }
         
          return $user->can('force delete departments');

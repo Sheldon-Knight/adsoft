@@ -27,10 +27,9 @@ class RoleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    // protected static function shouldRegisterNavigation(): bool
-    // {
-    //     return auth()->user()->can('view any roles');
-    // }
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationGroup = 'User Management';
 
     public static function form(Form $form): Form
     {

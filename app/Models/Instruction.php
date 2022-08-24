@@ -5,12 +5,11 @@ namespace App\Models;
 use App\Concerns\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Instruction extends Model
 {
-    use HasComments;
-    
-    use HasFactory;
+    use HasFactory, HasComments,SoftDeletes;
 
     protected $fillable = [
         'title',

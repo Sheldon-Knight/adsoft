@@ -13,6 +13,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -84,7 +85,7 @@ class InstructionResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                //
+             TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
@@ -109,11 +110,23 @@ class InstructionResource extends Resource
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),             
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+              
             ]);
     }
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
 
     public static function getRelations(): array
     {

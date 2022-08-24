@@ -112,9 +112,9 @@ class AccountPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function forceDelete(User $user, Account $account)
-    {
-        if ($account->deleted_at != null) {
-            return true;
+    {    
+        if ($account->deleted_at === null) {
+            return false;
         }
         
         return $user->can('force delete accounts');

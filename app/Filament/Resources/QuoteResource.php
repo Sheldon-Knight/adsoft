@@ -27,9 +27,14 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\ForceDeleteAction;
+use Filament\Tables\Actions\RestoreAction;
+use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Permission;
 
 class QuoteResource extends Resource
 {
@@ -47,12 +52,43 @@ class QuoteResource extends Resource
     protected static ?string $navigationGroup = 'Finance';
 
 
-    public static function getEloquentQuery(): Builder
+    public static function canViewAny(): bool
     {
-        return parent::getEloquentQuery()->where('is_quote', true);
+        return auth()->user()->can('view any quotes');
     }
 
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete quotes');
+    }
 
+    public static function canView(Model $record): bool
+    {
+        return auth()->user()->can('view quotes');
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return auth()->user()->can('restore quotes');
+    }
+    public static function canForceDelete(Model $record): bool
+    {
+        return auth()->user()->can('force delete quotes');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create quotes');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('is_quote', true)
+            ->withoutGlobalScopes(
+               
+            );
+    }
 
     public static function form(Form $form): Form
     {
@@ -60,6 +96,7 @@ class QuoteResource extends Resource
             ->schema([
                 Group::make()
                     ->schema([
+
                         Card::make()
                             ->schema([
                                 TextInput::make('invoice_number')
@@ -110,6 +147,7 @@ class QuoteResource extends Resource
                                         TextInput::make('price')
                                             ->required()
                                             ->numeric()
+                                            ->minValue(0)                                         
                                             ->prefix('R')
                                             ->reactive()
                                             ->label('price')
@@ -174,7 +212,7 @@ class QuoteResource extends Resource
                                             $sum += $value;
                                         }
                                         $set('invoice_subtotal', number_format($sum, 2));
-                                        return number_format($sum, 2);
+                                        return number_format($sum, 2) ?? 0;
                                     })
                                     ->columnSpan([
                                         'md' => 3,
@@ -233,7 +271,8 @@ class QuoteResource extends Resource
                             ]),
 
 
-                    ])->columnSpan('full')
+                    ])
+                    ->columnSpan('full')
 
             ]);
     }
@@ -250,11 +289,18 @@ class QuoteResource extends Resource
 
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\Action::make('email')
                     ->color('success')
+                    ->visible(function (Invoice $record) {
+
+                        if (auth()->user()->can("email quotes") and $record->deleted_at === null) {
+                            return true;
+                        }
+                        return false;
+                    })
                     ->action(
                         function (Invoice $record, $data) {
 
@@ -276,7 +322,7 @@ class QuoteResource extends Resource
 
                                 $pdfInvoice = new PdfInvoice();
 
-                                $attachement =  $pdfInvoice->GetAttachedInvoice($record,$isInvoice = false);
+                                $attachement =  $pdfInvoice->GetAttachedInvoice($record, $isInvoice = false);
 
                                 Mail::send(
                                     'mails.invoice',
@@ -353,6 +399,7 @@ class QuoteResource extends Resource
 
                     )
                     ->label('Email Quote')
+                    ->icon('heroicon-o-mail')
                     ->form([
                         Card::make()
                             ->schema([
@@ -412,21 +459,56 @@ class QuoteResource extends Resource
                             ->columns(2),
 
                     ]),
-                Tables\Actions\ViewAction::make(),
+
+                Action::make('View')
+                    ->url(function (Invoice $record) {
+                        return route('filament.resources.quotes.view', $record);
+                    })
+                    ->visible(function (Invoice $record) {
+
+                        if (auth()->user()->can("view quotes") and $record->deleted_at === null) {
+                            return true;
+                        }
+                        return false;
+                    }),
 
 
-                Tables\Actions\EditAction::make()
-                    ->label('Change Status')
+                Action::make('Change Status')
+                    ->icon('heroicon-o-arrows-expand')
+                    ->visible(function (Invoice $record) {
+                        if (auth()->user()->can("update quotes") and $record->deleted_at === null) {
+                            return true;
+                        }
+                        return false;
+                    })
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
                             ->options(Status::pluck('name', 'id'))
                             ->required(),
-                    ]),
+                    ])
+                    ->action(function (Invoice $record, $data) {
+                        $record->update(['invoice_status' => $data['invoice_status']]);
+                        return Notification::make()
+                            ->title('Status Updated')
+                            ->success()
+                            ->send();
+                    })
+
+
+
+                    ->requiresConfirmation()
+                    ->color('secondary'),
 
 
                 Action::make('Convert To Invoice')
                     ->icon('heroicon-o-arrow-circle-down')
+                    ->visible(function (Invoice $record) {
+                        if (auth()->user()->can("convert quotes to invoices") and $record->deleted_at === null) {
+                            return true;
+                        }
+                        return false;
+                    })
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
@@ -435,8 +517,10 @@ class QuoteResource extends Resource
                     ])
                     ->action(fn (Invoice $record, $data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
                     ->requiresConfirmation()
-                    ->color('success'),
+                    ->color('warning'),
                 Tables\Actions\DeleteAction::make(),
+                RestoreAction::make(),
+                ForceDeleteAction::make(),
             ])
             ->bulkActions([
 
@@ -447,6 +531,9 @@ class QuoteResource extends Resource
                             ->options(Status::pluck('name', 'id'))
                             ->required(),
                     ])
+                    ->visible(function () {
+                        return auth()->user()->can("convert quotes to invoices");
+                    })
                     ->action(fn (Collection $records, $data) => $records->each->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
                     ->deselectRecordsAfterCompletion()
                     ->requiresConfirmation()

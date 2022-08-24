@@ -104,17 +104,19 @@ class RoleSeeder extends Seeder
 
         Permission::create(['name' => 'view any quotes']);
         Permission::create(['name' => 'create quotes']);
-        Permission::create(['name' => 'update quotes']);
         Permission::create(['name' => 'view quotes']);
         Permission::create(['name' => 'delete quotes']);
         Permission::create(['name' => 'restore quotes']);
+        Permission::create(['name' => 'update quotes']);
         Permission::create(['name' => 'force delete quotes']);
-        Permission::create(['name' => 'convert quotes to invoices']);
-
-
-
+        Permission::create(['name' => 'convert quotes to invoices']);     
+        Permission::create(['name' => 'email quotes']);
+        
+        
+        
+        
         //Invoices Permissions
-
+        
         Permission::create(['name' => 'view any invoices']);
         Permission::create(['name' => 'create invoices']);
         Permission::create(['name' => 'update invoices']);
@@ -122,7 +124,8 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'delete invoices']);
         Permission::create(['name' => 'restore invoices']);
         Permission::create(['name' => 'force delete invoices']);
-
+        Permission::create(['name' => 'email invoices']);
+        
         //Jobs Permissions
 
         Permission::create(['name' => 'view any jobs']);
@@ -147,7 +150,7 @@ class RoleSeeder extends Seeder
 
         //Oms Settings Permissions
 
-        Permission::create(['name' => 'Change Application Settings']);   
+        Permission::create(['name' => 'change application settings']);   
         
         
 
@@ -163,6 +166,16 @@ class RoleSeeder extends Seeder
         $user =  User::find(1);  
 
         $user->assignRole('Super Admin');
+
+        $permissions = [];
+        
+        foreach(Permission::all() as $permission)
+        {
+
+            $permissions[] = $permission->name; 
+        }
+       
+        $role->givePermissionTo([$permissions]);
 
     }
 }

@@ -31,7 +31,7 @@ class AttendancePolicy
     public function view(User $user, Attendance $attendance)
     {
         if ($attendance->deleted_at != null) {
-            return true;
+            return false;
         }
 
          return $user->can('view attendances');
@@ -58,7 +58,7 @@ class AttendancePolicy
     public function update(User $user, Attendance $attendance)
     {
         if ($attendance->deleted_at != null) {
-            return true;
+            return false;
         }
 
         return $user->can('update attendances');
@@ -75,7 +75,7 @@ class AttendancePolicy
     {
 
         if ($attendance->deleted_at != null) {
-            return true;
+            return false;
         }
 
         return $user->can('delete attendances');
@@ -107,8 +107,8 @@ class AttendancePolicy
     public function forceDelete(User $user, Attendance $attendance)
     {
 
-        if ($attendance->deleted_at != null) {
-            return true;
+        if ($attendance->deleted_at === null) {
+            return false;
         }
          return $user->can('force delete attendances');
     }

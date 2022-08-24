@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Account;
+use App\Models\Role;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Observers\AccountObserver;
+use App\Observers\RoleObserver;
 use App\Observers\TransactionObserver;
 use App\Observers\TransferObserver;
 use Illuminate\Auth\Events\Registered;
@@ -36,6 +38,7 @@ class EventServiceProvider extends ServiceProvider
       Transfer::observe(TransferObserver::class);
       Account::observe(AccountObserver::class);
       Transaction::observe(TransactionObserver::class);
+      Role::observe(RoleObserver::class);
     }
 
     /**

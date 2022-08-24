@@ -6,6 +6,7 @@ use App\Filament\Resources\QuoteResource;
 use App\Models\Invoice;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Model;
 
 class ListQuotes extends ListRecords
 {
@@ -21,6 +22,11 @@ class ListQuotes extends ListRecords
         ];
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('update quotes',$record);
+    }
+ 
 
     protected function getActions(): array
     {

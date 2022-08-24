@@ -16,7 +16,8 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TrashedFilter;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -28,6 +29,16 @@ class JobResource extends Resource
 
     protected static ?string $navigationGroup = 'Jobs';
 
+
+    public static function getEloquentQuery(): EloquentBuilder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -38,20 +49,18 @@ class JobResource extends Resource
                     ->searchable()
                     ->options(User::query()->pluck('name', 'id')),
 
-            Select::make('created_by')
-                ->label('Created by User')             
-                ->options(User::query()->pluck('name', 'id'))
-                ->visibleOn('view'),
+                Select::make('created_by')
+                    ->label('Created by User')
+                    ->options(User::query()->pluck('name', 'id'))
+                    ->visibleOn('view'),
 
-            DatePicker::make('created_at')
-            ->label('Created At')
-            ->visibleOn('view'),
+                DatePicker::make('created_at')
+                    ->label('Created At')
+                    ->visibleOn('view'),
 
-            DatePicker::make('date_completed')
-            ->label('Comepleted At')
-            ->visibleOn('view'),
-             
-
+                DatePicker::make('date_completed')
+                    ->label('Comepleted At')
+                    ->visibleOn('view'),
 
                 Select::make('invoice_id')
                     ->label('Job Invoice')
@@ -64,6 +73,7 @@ class JobResource extends Resource
                     ->required()
                     ->searchable()
                     ->options(Status::query()->pluck('name', 'id')),
+
                 Forms\Components\TextInput::make('title')
                     ->required(),
                 Forms\Components\Textarea::make('description')
@@ -76,7 +86,7 @@ class JobResource extends Resource
 
 
         return $table
-                  ->columns([
+            ->columns([
                 Tables\Columns\TextColumn::make('client.client_name')->searchable(),
                 Tables\Columns\TextColumn::make('user.name')->searchable(),
                 Tables\Columns\TextColumn::make('department.name')->searchable(),
@@ -85,12 +95,12 @@ class JobResource extends Resource
                 Tables\Columns\TextColumn::make('title')->searchable(),
                 Tables\Columns\TextColumn::make('description')->searchable(),
                 Tables\Columns\TextColumn::make('date_completed')
-                ->date()->searchable(),
+                    ->date()->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()->searchable(),
+                    ->dateTime()->searchable(),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
@@ -145,10 +155,11 @@ class JobResource extends Resource
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
 
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->bulkActions([             
             ]);
     }
 
@@ -159,12 +170,14 @@ class JobResource extends Resource
         ];
     }
 
+    
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListJobs::route('/'),
-            'create' => Pages\CreateJob::route('/create'),        
-            'view' => Pages\ViewJob::route('/view/{record}'),        
+            'create' => Pages\CreateJob::route('/create'),
+            'view' => Pages\ViewJob::route('/view/{record}'),
         ];
     }
 }

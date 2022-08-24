@@ -30,7 +30,7 @@ class StatusPolicy
      */
     public function view(User $user, Status $status)
     {
-        if ($status->deleted_at != null ) {
+        if ($status->deleted_at != null) {
             return false;
         }
 
@@ -73,6 +73,9 @@ class StatusPolicy
      */
     public function delete(User $user, Status $status)
     {
+        if ($status->deleted_at != null) {
+            return false;
+        }
         return $user->can('delete statuses');
     }
 
@@ -100,8 +103,8 @@ class StatusPolicy
      */
     public function forceDelete(User $user, Status $status)
     {
-        if ($status->deleted_at != null) {
-            return true;
+        if ($status->deleted_at === null) {
+            return false;
         }
          return $user->can('force delete statuses');
     }

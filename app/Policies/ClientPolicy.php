@@ -29,13 +29,13 @@ class ClientPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, Client $client)
-    {      
-        
+    {
+
         if ($client->deleted_at != null) {
-            return true;
+            return false;
         }
 
-         return $user->can('view clients');
+        return $user->can('view clients');
     }
 
     /**
@@ -60,7 +60,7 @@ class ClientPolicy
     {
 
         if ($client->deleted_at != null) {
-            return true;
+            return false;
         }
 
         return $user->can('update clients');
@@ -77,7 +77,7 @@ class ClientPolicy
     {
 
         if ($client->deleted_at != null) {
-            return true;
+            return false;
         }
 
         return $user->can('delete clients');
@@ -95,8 +95,8 @@ class ClientPolicy
         if ($client->deleted_at === null) {
             return false;
         }
-        
-       return $user->can('restore clients');
+
+        return $user->can('restore clients');
     }
 
     /**
@@ -108,9 +108,9 @@ class ClientPolicy
      */
     public function forceDelete(User $user, Client $client)
     {
-        if ($client->deleted_at != null) {
-            return true;
+        if ($client->deleted_at === null) {
+            return false;
         }
-         return $user->can('force delete clients');
+        return $user->can('force delete clients');
     }
 }

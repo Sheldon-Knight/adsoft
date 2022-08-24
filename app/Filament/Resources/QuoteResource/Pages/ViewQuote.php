@@ -5,6 +5,7 @@ namespace App\Filament\Resources\QuoteResource\Pages;
 use App\Filament\Resources\QuoteResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class ViewQuote extends ViewRecord
 {
@@ -23,5 +24,12 @@ class ViewQuote extends ViewRecord
         return [
             Actions\EditAction::make(),
         ];
+    }
+
+    public static function canView(Model $record): bool
+    {
+
+        return true;
+        // return auth()->user()->can('view quotes', $record);
     }
 }

@@ -30,6 +30,10 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice)
     {
+        if($invoice->deleted_at != null)
+        {
+            return false;
+        }
          return $user->can('view invoices');
     }
 
@@ -53,6 +57,9 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice)
     {
+        if ($invoice->deleted_at != null) {
+            return false;
+        }
         return $user->can('update invoices');
     }
 
@@ -77,6 +84,9 @@ class InvoicePolicy
      */
     public function restore(User $user, Invoice $invoice)
     {
+        if ($invoice->deleted_at === null) {
+            return false;
+        }
        return $user->can('restore invoices');
     }
 
@@ -89,6 +99,9 @@ class InvoicePolicy
      */
     public function forceDelete(User $user, Invoice $invoice)
     {
+        if ($invoice->deleted_at === null) {
+            return false;
+        }
          return $user->can('force delete invoices');
     }
 }

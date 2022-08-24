@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Concerns\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Job extends Model
 {
-    use HasFactory, HasComments;
+    use HasFactory, HasComments,SoftDeletes;
     
 
     protected $fillable =   [
