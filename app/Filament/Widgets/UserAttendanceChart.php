@@ -30,14 +30,10 @@ class UserAttendanceChart extends BarChartWidget
         ];
     }
 
-
     protected function getHeading(): string
     {
-        return 'My Present/Absent Attendances Counts Chart';
+        return 'My ' . $this->presentLabel . ' / ' . $this->absentLabel . ' Chart';
     }
-
-
-
 
     protected function getFilteredQuery($present = false)
     {
@@ -106,10 +102,10 @@ class UserAttendanceChart extends BarChartWidget
     {
         $counts = $this->getLabelsCount($presentAttendances, $absentAttendances);
 
-
         $activeFilter = $this->filter;
 
         $this->presentLabel = "Present Per Month ({$counts['countPresents']})";
+
         $this->absentLabel = "Abscents Per Month ({$counts['countAbsents']})";
 
 
