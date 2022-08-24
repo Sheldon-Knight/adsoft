@@ -20,6 +20,7 @@ class UserAttendantWidget extends Widget implements HasForms
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?int $sort = 2;
 
     public Attendance $attendance;
 

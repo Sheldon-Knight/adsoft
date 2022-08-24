@@ -59,6 +59,10 @@ class User extends Authenticatable
     public function instructions()
     {
         return $this->hasMany(Instruction::class, 'assigned_to');
+    }  
+     public function incompleteInstructions()
+    {
+        return $this->hasMany(Instruction::class, 'assigned_to')->where("status",0);
     }
     public function comments()
     {
