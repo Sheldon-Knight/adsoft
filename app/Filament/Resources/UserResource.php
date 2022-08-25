@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\AttendancesRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\DepartmentRelationManager;
@@ -11,33 +10,26 @@ use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as 
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\Department;
 use App\Models\User;
-use Closure;
-use Filament\Forms\Components\BelongsToManyMultiSelect;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class UserResource extends Resource
 {
@@ -142,6 +134,11 @@ class UserResource extends Resource
                 TextColumn::make('roles.name')->sortable()->searchable(),
             ])
             ->filters([
+                TextFilter::make('name'),
+                SelectFilter::make('department')->relationship('department','name'),
+                SelectFilter::make('roles')->relationship('roles','name'),
+                SelectFilter::make('gender')->options(["male" => "male", "female" => "female", "other" => "other"]),
+                TextFilter::make('phone'),
                 TrashedFilter::make(),
             ])
             ->actions([
@@ -181,10 +178,10 @@ class UserResource extends Resource
                     ->label(function (User $record) {
 
                         if ($record->department_id == null) {
-                            return "assign to department";
+                            return "Assign to department";
                         }
 
-                        return "reassign to another department";
+                        return "Reassign to another department";
                     })
                     ->action(function (User $record, $data) {
                         $record->update(['department_id' => $data['department_id']]);
@@ -217,10 +214,10 @@ class UserResource extends Resource
                     return auth()->user()->can('delete users', $user);
                 }),
 
-              
 
-                RestoreAction::make()->visible(function ($record) {   
-                                
+
+                RestoreAction::make()->visible(function ($record) {
+
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -230,18 +227,22 @@ class UserResource extends Resource
 
 
 
-            ForceDeleteAction::make()->visible(function ($record) {
+                ForceDeleteAction::make()->visible(function ($record) {
 
-                if ($record->deleted_at === null) {
-                    return false;
-                }
+                    if ($record->deleted_at === null) {
+                        return false;
+                    }
 
-                return auth()->user()->can('force delete users', $record);
-            }),
+                    return auth()->user()->can('force delete users', $record);
+                }),
 
 
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+            ])
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 
@@ -264,4 +265,6 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+
+    
 }
