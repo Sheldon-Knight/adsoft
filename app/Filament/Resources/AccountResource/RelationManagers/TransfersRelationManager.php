@@ -13,7 +13,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class TransfersRelationManager extends RelationManager
 {
@@ -68,7 +67,7 @@ class TransfersRelationManager extends RelationManager
                             );
                     }),
                 NumberFilter::make('amount'),
-            DateFilter::make('created_at')
+                DateFilter::make('created_at')
             ])
             ->headerActions([])
             ->actions([])

@@ -7,7 +7,10 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-
+use Filament\Tables\Filters\SelectFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class TransactionsRelationManager extends RelationManager
 {
@@ -18,9 +21,7 @@ class TransactionsRelationManager extends RelationManager
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
@@ -47,15 +48,37 @@ class TransactionsRelationManager extends RelationManager
                     ->dateTime(),
             ])
             ->filters([
-                //
+                DateFilter::make('created_at'),
+                TextFilter::make('transaction_id'),
+                TextFilter::make('description'),
+                NumberFilter::make('amount'),
+                SelectFilter::make('account')->relationship('account', 'account_number'),
+                SelectFilter::make('type')->options([
+                    'debit' => 'debit',
+                    'credit' => 'credit',
+                ])
+
             ])
             ->headerActions([
-          
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
             ])
-            ->actions([        
-            ])
+            ->actions([])
             ->bulkActions([
-              
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
-    }    
+    }
+
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
+
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
+    }
 }
