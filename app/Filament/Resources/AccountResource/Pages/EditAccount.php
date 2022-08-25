@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\AccountResource\Pages;
 
 use App\Filament\Resources\AccountResource;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditAccount extends EditRecord
@@ -16,11 +15,4 @@ class EditAccount extends EditRecord
             
         ];
     }
-
-    // protected function mutateFormDataBeforeSave(array $data): array
-    // {
-    //     $data['balance'] *= 100;
-
-    //     return $data;
-    // }
 }

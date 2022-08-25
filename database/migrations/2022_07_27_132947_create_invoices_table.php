@@ -18,10 +18,10 @@ class CreateInvoicesTable extends Migration
             $table->string('invoice_date');
             $table->string('invoice_number');
             $table->string('invoice_due_date');         
-            $table->decimal('invoice_total');
-            $table->decimal('invoice_subtotal');
-            $table->decimal('invoice_tax');
-            $table->decimal('invoice_discount');
+            $table->decimal('invoice_total',8,2);
+            $table->decimal('invoice_subtotal',8,2);
+            $table->decimal('invoice_tax',8,2);
+            $table->decimal('invoice_discount',8,2);
             $table->json('items');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');           
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');    

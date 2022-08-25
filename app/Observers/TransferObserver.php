@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Statement;
 use App\Models\Transaction;
 use App\Models\Transfer;
+use Illuminate\Support\Facades\DB;
 
 class TransferObserver
 {
@@ -19,7 +20,7 @@ class TransferObserver
         $openingBalanceFromAccount = $transfer->fromAccount->balance;
 
         $closingBalanceFromAccount = $openingBalanceFromAccount - $transfer->amount;
-        
+
         $openingBalanceToAccount = $transfer->toaccount->balance;
 
         $closingBalanceToAccount = $openingBalanceToAccount + $transfer->amount;
@@ -27,16 +28,22 @@ class TransferObserver
         $transfer->fromAccount->balance -= $transfer->amount;
 
         $transfer->toAccount->balance += $transfer->amount;
-    
-        $transaction = Transaction::create([
-            'transaction_id' => str()->uuid(),
+
+        $uuid = str()->uuid();
+        
+        DB::table('transactions')->insert([
+            'transaction_id' => $uuid,
             'account_id' =>  $transfer->fromAccount->id,
-            'description' =>  "Transfer made from account:" . $transfer->fromAccount->account_number . " to account:" . $transfer->toAccount->account_number . " for R" . number_format($transfer->amount / 100, 2),
+            'description' =>  "Transfer made from account:" . $transfer->fromAccount->account_number . " to account:" . $transfer->toAccount->account_number . " for R" . number_format($transfer->amount, 2),
             'type' =>  'debit',
             'amount' =>  $transfer->amount,
+            'created_at' =>  now(),
+            'updated_at' =>  now(),
         ]);
 
-       Statement::create([
+        $transaction = Transaction::where('transaction_id', $uuid)->first();
+
+        Statement::create([
             'account_id' => $transfer->fromAccount->id,
             'transaction_id' => $transaction->id,
             'description' => $transaction->description,
@@ -47,7 +54,7 @@ class TransferObserver
         ]);
 
 
-       Statement::create([
+        Statement::create([
             'account_id' => $transfer->toAccount->id,
             'transaction_id' => $transaction->id,
             'description' => $transaction->description,
@@ -56,13 +63,13 @@ class TransferObserver
             'opening_balance' => $openingBalanceToAccount,
             'closing_balance' => $closingBalanceToAccount,
         ]);
-   
+
         $transfer->transaction_id = $transaction->id;
 
         $transfer->save();
 
         $transfer->fromAccount->save();
-        
+
         $transfer->toAccount->save();
     }
 

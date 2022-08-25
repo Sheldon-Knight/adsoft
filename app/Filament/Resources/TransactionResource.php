@@ -3,10 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransactionResource\Pages;
-use App\Filament\Resources\TransactionResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Transaction;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -17,7 +15,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class TransactionResource extends Resource
 {
@@ -88,9 +86,9 @@ class TransactionResource extends Resource
                     ->minValue(1)
                     ->prefix('R')
                     ->placeholder(function (Model $record) {
-                   
-                       return number_format($record->amount / 100,2);
-                    })                    
+
+                        return number_format($record->amount, 2);
+                    })
                     ->required()
                     ->hiddenOn('create'),
             ]);
@@ -99,7 +97,8 @@ class TransactionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([Tables\Columns\TextColumn::make('transaction_id'),
+            ->columns([
+                Tables\Columns\TextColumn::make('transaction_id'),
                 Tables\Columns\TextColumn::make('account.account_number'),
                 Tables\Columns\TextColumn::make('description')
                     ->limit(50),
@@ -111,7 +110,7 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('amount')
                     ->prefix('R')
                     ->getStateUsing(function (Transaction $record) {
-                        return number_format($record->amount / 100, 2);
+                        return number_format($record->amount, 2);
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -124,7 +123,8 @@ class TransactionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 
@@ -135,13 +135,13 @@ class TransactionResource extends Resource
         ];
     }
 
-  
+
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListTransactions::route('/'),
-            'create' => Pages\CreateTransaction::route('/create'),          
+            'create' => Pages\CreateTransaction::route('/create'),
         ];
     }
 }

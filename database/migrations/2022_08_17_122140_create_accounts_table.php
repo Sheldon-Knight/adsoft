@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("bank_name");
             $table->string("branch");
             $table->string("branch_code");
-            $table->integer("balance");
+            $table->decimal("balance",8,2);
             $table->timestamps();
             $table->softDeletes();
         });

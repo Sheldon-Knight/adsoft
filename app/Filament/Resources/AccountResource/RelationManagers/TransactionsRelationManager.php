@@ -3,14 +3,11 @@
 namespace App\Filament\Resources\AccountResource\RelationManagers;
 
 use App\Models\Transaction;
-use App\Models\Transfer;
-use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class TransactionsRelationManager extends RelationManager
 {
@@ -42,7 +39,7 @@ class TransactionsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('amount')
                     ->prefix('R')
                     ->getStateUsing(function (Transaction $record) {
-                        return number_format($record->amount / 100, 2);
+                        return number_format($record->amount, 2);
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

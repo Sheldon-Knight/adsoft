@@ -25,9 +25,6 @@ class ViewAccount extends ViewRecord
 
     public $currentRouteName;
 
-
-
-
     public function __construct()
     {
         $this->currentRouteName = url()->current();
@@ -45,7 +42,7 @@ class ViewAccount extends ViewRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['balance'] = number_format($data['balance'] / 100, 2);
+        $data['balance'] = number_format($data['balance'], 2);
 
         return $data;
     }
@@ -58,15 +55,14 @@ class ViewAccount extends ViewRecord
                 ->color('success')
                 ->visible(fn (): bool => auth()->user()->can('add funds to accounts', $this->record))
                 ->action(function ($data) {
-                    $record = $this->record;
-                                 
+                    $record = $this->record;                                
 
                     $transaction = Transaction::create([
                         'transaction_id' => str()->uuid(),
                         'account_id' => $record->id,
                         'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
                         'type' => 'credit',
-                        'amount' => $data['amount'] * 100,
+                        'amount' => $data['amount'],
                     ]);
                             
 
@@ -85,7 +81,7 @@ class ViewAccount extends ViewRecord
                                 ->integer()
                                 ->prefix('R')
                                 ->placeholder(function (model $record) {
-                                    return number_format($record->balance / 100, 2);
+                                    return number_format($record->balance, 2);
                                 })
                                 ->mask(
                                     fn (Mask $mask) => $mask
@@ -103,9 +99,9 @@ class ViewAccount extends ViewRecord
                                 ->reactive()
                                 ->minValue(1)
                                 ->afterStateUpdated(function (Closure $set, $state, Model $record) {
-                                    $newValue = strval($record->balance + $state * 100);
+                                    $newValue = strval($record->balance + $state);
 
-                                    $set('new_balance', number_format($newValue / 100, 2));
+                                    $set('new_balance', number_format($newValue, 2));
                                 })
                                 ->prefix('R')
                                 ->mask(
@@ -122,7 +118,7 @@ class ViewAccount extends ViewRecord
                                 ->integer()
                                 ->prefix('R')
                                 ->default(function (Model $record) {
-                                    return number_format($record->balance / 100, 2);
+                                    return number_format($record->balance, 2);
                                 })
                                 ->mask(
                                     fn (Mask $mask) => $mask
@@ -144,8 +140,7 @@ class ViewAccount extends ViewRecord
                 ->action(function ($data) {
                     $record = $this->record;
 
-                    $data['from_account'] = $record->id;
-                    $data['amount'] *= 100;
+                    $data['from_account'] = $record->id;                  
 
                     Transfer::create($data);
 
@@ -153,7 +148,7 @@ class ViewAccount extends ViewRecord
 
                     Notification::make()
                         ->title("Transfer Succesfull")
-                        ->body("Transfer of R" . number_format($data['amount'] / 100, 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
+                        ->body("Transfer of R" . number_format($data['amount'], 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
                         ->duration(8000)
                         ->persistent()
                         ->success()
@@ -179,7 +174,7 @@ class ViewAccount extends ViewRecord
                         ->minValue(1)
                         ->rule(function () {
                             $account = Account::where('id', '!=', $this->record->id)->get();
-                            $balance = $this->record->balance / 100;
+                            $balance = $this->record->balance;
                             return $account ? "max:{$balance}" : null;
                         })
                         ->prefix('R')
@@ -206,7 +201,7 @@ class ViewAccount extends ViewRecord
                         'account_id' => $this->record->id,
                         'description' => $data['description'],
                         'type' => $data['type'],
-                        'amount' => $data['amount'] * 100,
+                        'amount' => $data['amount'],
                     ]);                  
 
                     $this->emit('refreshTable');
@@ -234,7 +229,7 @@ class ViewAccount extends ViewRecord
 
                     TextInput::make('amount')
                         ->label(function () {
-                            return 'Transaction Amount ' . '(current-balance: ' . 'R' . number_format($this->record->balance / 100, 2) . ')';
+                            return 'Transaction Amount ' . '(current-balance: ' . 'R' . number_format($this->record->balance, 2) . ')';
                         })
                         ->integer()
                         ->reactive()
@@ -246,7 +241,7 @@ class ViewAccount extends ViewRecord
 
                                     if($type == 'debit'){
 
-                                        $balance = $this->record->balance / 100;
+                                        $balance = $this->record->balance;
 
                                         return "max:{$balance}";
                                         

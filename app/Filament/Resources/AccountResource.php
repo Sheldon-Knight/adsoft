@@ -7,14 +7,10 @@ use App\Filament\Resources\AccountResource\RelationManagers\StatementsRelationMa
 use App\Filament\Resources\AccountResource\RelationManagers\TransactionsRelationManager;
 use App\Filament\Resources\AccountResource\RelationManagers\TransfersRelationManager;
 use App\Models\Account;
-use App\Models\Invoice;
-use App\Models\OmsSetting;
-use App\Models\Statement;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use Closure;
 use Filament\Forms;
-use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -24,10 +20,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\MultiSelectFilter;
-use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -85,7 +78,7 @@ class AccountResource extends Resource
                 Tables\Columns\TextColumn::make('balance')->searchable()->sortable()
                     ->prefix('R')
                     ->getStateUsing(function (Account $record) {
-                        return number_format($record->balance / 100, 2);
+                        return number_format($record->balance, 2);
                     }),
 
             ])
@@ -115,7 +108,7 @@ class AccountResource extends Resource
                             'account_id' => $record->id,
                             'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
                             'type' => 'credit',
-                            'amount' => $data['amount'] * 100,
+                            'amount' => $data['amount'],
                         ]);
 
                         Notification::make()
@@ -131,7 +124,7 @@ class AccountResource extends Resource
                                     ->integer()
                                     ->prefix('R')
                                     ->placeholder(function (model $record) {
-                                        return number_format($record->balance / 100, 2);
+                                        return number_format($record->balance, 2);
                                     })
                                     ->mask(
                                         fn (Mask $mask) => $mask
@@ -149,9 +142,9 @@ class AccountResource extends Resource
                                     ->reactive()
                                     ->minValue(1)
                                     ->afterStateUpdated(function (Closure $set, $state, Model $record) {
-                                        $newValue = strval($record->balance + $state * 100);
+                                        $newValue = strval($record->balance + $state);
 
-                                        $set('new_balance', number_format($newValue / 100, 2));
+                                        $set('new_balance', number_format($newValue, 2));
                                     })
                                     ->prefix('R')
                                     ->mask(
@@ -168,7 +161,7 @@ class AccountResource extends Resource
                                     ->integer()
                                     ->prefix('R')
                                     ->default(function (model $record) {
-                                        return number_format($record->balance / 100, 2);
+                                        return number_format($record->balance, 2);
                                     })
                                     ->mask(
                                         fn (Mask $mask) => $mask
@@ -187,7 +180,7 @@ class AccountResource extends Resource
                     ->color('secondary')
                     ->visible(function (Model $record) {
 
-                        if (auth()->user()->can('create transfers',$record) and $record->balance >= 100) {
+                        if (auth()->user()->can('create transfers', $record) and $record->balance >= 1) {
                             return true;
                         }
 
@@ -197,14 +190,14 @@ class AccountResource extends Resource
                     ->icon("heroicon-s-switch-vertical")
                     ->action(function ($data, Model $record) {
                         $data['from_account'] = $record->id;
-                        $data['amount'] *= 100;
+                        
                         Transfer::create($data);
 
                         $toAccount = Account::find($data['to_account']);
 
                         Notification::make()
                             ->title("Transfer Succesfull")
-                            ->body("Transfer of R" . number_format($data['amount'] / 100, 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
+                            ->body("Transfer of R" . number_format($data['amount'], 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
                             ->duration(5000)
                             ->persistent()
                             ->success()
@@ -216,7 +209,7 @@ class AccountResource extends Resource
                                     ->integer()
                                     ->prefix('R')
                                     ->placeholder(function (model $record) {
-                                        return number_format($record->balance / 100, 2);
+                                        return number_format($record->balance, 2);
                                     })
                                     ->mask(
                                         fn (Mask $mask) => $mask
@@ -245,7 +238,7 @@ class AccountResource extends Resource
                                     ->reactive()
                                     ->minValue(1)
                                     ->rule(function (model $record) {
-                                        $balance = $record->balance / 100;
+                                        $balance = $record->balance;
                                         return $record->balance ? "max:{$balance}" : null;
                                     })
                                     ->prefix('R')
@@ -261,7 +254,7 @@ class AccountResource extends Resource
                             ])
 
                             ->columns(2),
-                    ]),                
+                    ]),
 
                 Tables\Actions\DeleteAction::make()->visible(function (Account $record) {
 
@@ -291,7 +284,7 @@ class AccountResource extends Resource
                 }),
             ])
             ->bulkActions([
-            \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 

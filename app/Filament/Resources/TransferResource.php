@@ -3,11 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransferResource\Pages;
-use App\Filament\Resources\TransferResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Transfer;
-use Closure;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TextInput\Mask;
@@ -15,25 +12,21 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use NunoMaduro\Collision\Adapters\Phpunit\State;
-use PhpParser\Node\Stmt\Label;
 
 class TransferResource extends Resource
 {
     protected static ?string $model = Transfer::class;
-    
-    
+
+
     protected static ?string $navigationIcon = 'heroicon-o-switch-horizontal';
-    
+
     protected static ?int $navigationSort = 2;
-    
+
     protected static ?string $navigationGroup = 'Banking';
-    
+
     public static function form(Form $form): Form
     {
-       
+
         return $form
             ->schema([
                 Select::make('from_account')
@@ -65,7 +58,7 @@ class TransferResource extends Resource
                     ->minValue(1)
                     ->rule(function (callable $get) {
                         $account = Account::where('id', $get('from_account'))->first();
-                        $balance = $account->balance / 100;
+                        $balance = $account->balance;
                         return $account ? "max:{$balance}" : null;
                     }, fn (callable $get) => Account::where('id', $get('from_account'))->exists())
                     ->prefix('R')
@@ -86,30 +79,29 @@ class TransferResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('fromAccount.account_number')
-            ->searchable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('toAccount.account_number')
-            ->searchable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->prefix('R')
                     ->getStateUsing(function (Transfer $record) {
-                        return number_format($record->amount / 100, 2);
+                        return number_format($record->amount, 2);
                     })
-                ->searchable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Transfer Date')
                     ->dateTime()
-                ->searchable(),
-            Tables\Columns\TextColumn::make('transaction.transaction_id')->searchable()
-            ->label('Transaction ID')->searchable(),
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('transaction.transaction_id')->searchable()
+                    ->label('Transaction ID')->searchable(),
 
             ])
             ->filters([
                 //
             ])
-            ->actions([
-               
-            ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')            
+            ->actions([])
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 

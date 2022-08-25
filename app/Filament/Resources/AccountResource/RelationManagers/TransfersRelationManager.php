@@ -39,7 +39,7 @@ class TransfersRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('amount')
                     ->prefix('R')
                     ->getStateUsing(function (Transfer $record) {
-                        return number_format($record->amount / 100, 2);
+                        return number_format($record->amount , 2);
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

@@ -94,7 +94,8 @@ class User extends Authenticatable
 
         return $this->attendances()->create([
             'day' => $now->format('Y-m-d'),
-            'time_in' => $now->format('H:i')
+            'time_in' => $now->format('H:i'),
+            'present' => true
         ]);
     }
 

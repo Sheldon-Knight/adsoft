@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('account_id')->nullable()->constrained('accounts')->onDelete('cascade');
             $table->string("description");
             $table->string("type");
-            $table->integer("amount");
+            $table->decimal("amount",8,2);
             $table->timestamps();
             $table->softDeletes();
         });

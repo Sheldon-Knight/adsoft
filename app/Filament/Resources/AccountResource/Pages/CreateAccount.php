@@ -9,12 +9,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class CreateAccount extends CreateRecord
 {
-    protected static string $resource = AccountResource::class;
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['balance'] *= 100;
-
-        return $data;
-    }
+    protected static string $resource = AccountResource::class;  
 }

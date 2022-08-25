@@ -13,6 +13,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 
 class MyAttendances extends Page implements HasTable
 {
@@ -51,30 +52,13 @@ class MyAttendances extends Page implements HasTable
                     1 => 'Present',
                 ]),
 
-            Filter::make('day')
-                ->form([
-                    DatePicker::make('from_day'),
-                    DatePicker::make('to_day'),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['from_day'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('day', '>=', $date),
-                        )
-                        ->when(
-                            $data['to_day'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('day', '<=', $date),
-                        );
-                })
+            DateFilter::make('day'),
         ];
     }
 
     protected function getTableActions(): array
     {
-        return [
-            
-        ];
+        return [];
     }
 
     protected function getTableBulkActions(): array
@@ -82,5 +66,5 @@ class MyAttendances extends Page implements HasTable
         return [
             FilamentExportBulkAction::make('export')
         ];
-    } 
+    }
 }

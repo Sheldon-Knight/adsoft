@@ -9,14 +9,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 class CreateTransaction extends CreateRecord
 {
-    protected static string $resource = TransactionResource::class;
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['amount'] *= 100;
-
-        return $data;
-    }
+    protected static string $resource = TransactionResource::class;    
 
     protected function handleRecordCreation(array $data): Model
     {
