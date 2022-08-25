@@ -43,18 +43,13 @@ class AttendanceCalendarWidget extends FullCalendarWidget
                 $data[] =
                     [
                         'id' => $attendance->id,
-                    'title' => "Check Out: " . Carbon::parse($attendance->time_out)->format("H:i:a"),
+                        'title' => "Check Out: " . Carbon::parse($attendance->time_out)->format("H:i:a"),
                         'start' => $attendance->day,
                         "textColor" => '#fff',
                         "backgroundColor" => $backgroundColor,
                         "borderColor" => $backgroundColor,
                     ];
-
-
-
-
-
-            }             else {
+            } else {
 
                 $data[] =
 

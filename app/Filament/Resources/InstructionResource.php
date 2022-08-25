@@ -113,8 +113,7 @@ class InstructionResource extends Resource
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),             
             ])
-            ->bulkActions([
-              
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 

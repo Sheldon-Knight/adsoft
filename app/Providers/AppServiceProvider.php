@@ -27,8 +27,8 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {        
-    
+    {
+
         Filament::serving(function () {
             Filament::registerNavigationGroups([
                 NavigationGroup::make()
@@ -58,6 +58,12 @@ class AppServiceProvider extends ServiceProvider
                 NavigationGroup::make()
                     ->label('Instructions')
                     ->icon('heroicon-s-switch-horizontal')
+                    ->collapsed(),
+
+                    
+                NavigationGroup::make()
+                    ->label('My Workflow')
+                    ->icon('heroicon-s-briefcase')
                     ->collapsed(),
             ]);
         });

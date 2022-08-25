@@ -66,7 +66,8 @@ class StatusResource extends Resource
 
 
             ])
-            ->bulkActions([]);
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ]);
     }
 
     public static function getRelations(): array

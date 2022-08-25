@@ -523,7 +523,7 @@ class QuoteResource extends Resource
                 ForceDeleteAction::make(),
             ])
             ->bulkActions([
-
+    \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
                 BulkAction::make('Convert To Invoice')
                     ->form([
                         Select::make('invoice_status')

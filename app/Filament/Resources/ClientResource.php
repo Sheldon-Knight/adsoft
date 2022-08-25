@@ -127,7 +127,8 @@ class ClientResource extends Resource
                     return auth()->user()->can('force delete clients', $record);
                 }),
             ])
-            ->bulkActions([]);
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ]);
     }
 
     public static function getRelations(): array

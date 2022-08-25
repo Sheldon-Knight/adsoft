@@ -429,7 +429,8 @@ class InvoiceResource extends Resource
                 Tables\Actions\ForceDeleteAction::make(),
 
             ])
-            ->bulkActions([]);
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ]);
     }
 
     public static function getRelations(): array

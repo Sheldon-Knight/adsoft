@@ -109,7 +109,7 @@ class TransferResource extends Resource
             ->actions([
                
             ])
-            ->bulkActions([               
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')            
             ]);
     }
 

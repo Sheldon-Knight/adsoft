@@ -29,8 +29,7 @@ class AttendanceResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
-
-
+  
     public static function form(Form $form): Form
     {
         return $form
@@ -135,7 +134,8 @@ class AttendanceResource extends Resource
                 }),
 
             ])
-            ->bulkActions([]);
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ]);
     }
 
     public static function getRelations(): array
@@ -150,7 +150,7 @@ class AttendanceResource extends Resource
         return [
             'index' => Pages\ListAttendances::route('/'),
             'create' => Pages\CreateAttendance::route('/create'),
-            'edit' => Pages\EditAttendance::route('/{record}/edit'),
+            'edit' => Pages\EditAttendance::route('/{record}/edit'),          
         ];
     }
 

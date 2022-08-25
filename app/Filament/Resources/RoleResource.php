@@ -59,7 +59,8 @@ class RoleResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),           
             ])
-            ->bulkActions([]);
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ]);
     }
 
     public static function getRelations(): array

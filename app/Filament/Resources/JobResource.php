@@ -159,7 +159,7 @@ class JobResource extends Resource
                 Tables\Actions\ForceDeleteAction::make(),
 
             ])
-            ->bulkActions([             
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')           
             ]);
     }
 
