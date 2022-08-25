@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Attendance;
+use Carbon\Carbon;
 use Filament\Widgets\Widget;
 use Flowframe\Trend\Trend;
 use Saade\FilamentFullCalendar\Widgets\Concerns\CantManageEvents;
@@ -32,7 +33,7 @@ class AttendanceCalendarWidget extends FullCalendarWidget
                 $data[] =
                     [
                         'id' => $attendance->id,
-                        'title' => "Check In:" . $attendance->time_in,
+                        'title' => "Check In: " . Carbon::parse($attendance->time_in)->format("H:i:a"),
                         'start' => $attendance->day,
                         "textColor" => '#fff',
                         "backgroundColor" => $backgroundColor,
@@ -42,7 +43,7 @@ class AttendanceCalendarWidget extends FullCalendarWidget
                 $data[] =
                     [
                         'id' => $attendance->id,
-                    'title' => "Check Out:" . $attendance->time_out,
+                    'title' => "Check Out: " . Carbon::parse($attendance->time_out)->format("H:i:a"),
                         'start' => $attendance->day,
                         "textColor" => '#fff',
                         "backgroundColor" => $backgroundColor,
