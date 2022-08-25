@@ -29,12 +29,10 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Spatie\Permission\Models\Permission;
 
 class QuoteResource extends Resource
 {
@@ -85,9 +83,7 @@ class QuoteResource extends Resource
     {
         return parent::getEloquentQuery()
             ->where('is_quote', true)
-            ->withoutGlobalScopes(
-               
-            );
+            ->withoutGlobalScopes();
     }
 
     public static function form(Form $form): Form
@@ -147,7 +143,8 @@ class QuoteResource extends Resource
                                         TextInput::make('price')
                                             ->required()
                                             ->numeric()
-                                            ->minValue(0)                                         
+                                            ->type('number')
+                                            ->minValue(0)
                                             ->prefix('R')
                                             ->reactive()
                                             ->label('price')
@@ -161,6 +158,7 @@ class QuoteResource extends Resource
                                         TextInput::make('qty')
                                             ->required()
                                             ->numeric()
+                                            ->type('number')
                                             ->default(1)
                                             ->reactive()
                                             ->afterStateUpdated(function ($state, callable $set, $get) {
@@ -172,6 +170,7 @@ class QuoteResource extends Resource
 
                                         TextInput::make('amount')
                                             ->disabled()
+                                            ->type('number')
                                             ->numeric()
                                             ->prefix('R')
                                             ->columnSpan([
@@ -196,9 +195,16 @@ class QuoteResource extends Resource
                                 TextInput::make("invoice_subtotal")
                                     ->label("Sub Total")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->disabled()
+                                    ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
+
+
+
+
+
                                         $fields = $get('items');
                                         $sum = 0;
                                         foreach ($fields as $field) {
@@ -221,8 +227,10 @@ class QuoteResource extends Resource
                                 TextInput::make("invoice_discount")
                                     ->label("Discount")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->reactive()
+                                    ->default(0)
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         $set('invoice_total', number_format($get('invoice_total') - $state, 2));
                                     })
@@ -238,8 +246,10 @@ class QuoteResource extends Resource
                                 TextInput::make("invoice_tax")
                                     ->label("Tax")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->disabled()
+                                    ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
                                         $tax =  $get('invoice_subtotal') * 0.15 ?? 0;
                                         $set('invoice_tax', number_format($tax, 2));
@@ -252,8 +262,10 @@ class QuoteResource extends Resource
                                 TextInput::make("invoice_total")
                                     ->label("Total Amount")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->disabled()
+                                    ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
                                         $tax =  $get('invoice_tax');
                                         $discount =  $get('invoice_discount');
@@ -285,7 +297,7 @@ class QuoteResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_date')->label('Quote Invoice Date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_due_date')->label('Quote Due Date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_total')->label('Quote Total')->sortable()->searchable()->money('zar', true),
-                Tables\Columns\TextColumn::make('status.name')->label('Quote Status')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('invoice_status')->label('Quote Status')->sortable()->searchable(),
 
             ])
             ->filters([
@@ -484,7 +496,7 @@ class QuoteResource extends Resource
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'id'))
+                            ->options(Status::pluck('name', 'name'))
                             ->required(),
                     ])
                     ->action(function (Invoice $record, $data) {
@@ -512,7 +524,7 @@ class QuoteResource extends Resource
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'id'))
+                            ->options(Status::pluck('name', 'name'))
                             ->required(),
                     ])
                     ->action(fn (Invoice $record, $data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
@@ -523,7 +535,7 @@ class QuoteResource extends Resource
                 ForceDeleteAction::make(),
             ])
             ->bulkActions([
-    \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
                 BulkAction::make('Convert To Invoice')
                     ->form([
                         Select::make('invoice_status')

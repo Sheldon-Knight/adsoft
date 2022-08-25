@@ -24,8 +24,8 @@ class CreateInvoicesTable extends Migration
             $table->decimal('invoice_discount',8,2);
             $table->json('items');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');           
-            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');    
-            $table->foreignId('invoice_status')->nullable()->constrained('status')->onDelete('cascade'); 
+            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
+            $table->string('invoice_status')->nullable();
             $table->boolean("is_quote")->default(false);
             $table->timestamps();
             $table->softDeletes();
