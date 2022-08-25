@@ -24,6 +24,8 @@ use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class AccountResource extends Resource
 {
@@ -90,6 +92,12 @@ class AccountResource extends Resource
                 MultiSelectFilter::make('account_number')
                     ->options(Account::pluck('account_number', 'account_number')->toArray())
                     ->column('account_number'),
+
+                MultiSelectFilter::make('bank_name')
+                    ->options(Account::pluck('bank_name', 'bank_name')->toArray())
+                    ->column('bank_name'),
+
+                NumberFilter::make('balance'),
 
                 Tables\Filters\TrashedFilter::make(),
             ])
@@ -190,7 +198,7 @@ class AccountResource extends Resource
                     ->icon("heroicon-s-switch-vertical")
                     ->action(function ($data, Model $record) {
                         $data['from_account'] = $record->id;
-                        
+
                         Transfer::create($data);
 
                         $toAccount = Account::find($data['to_account']);
@@ -283,10 +291,15 @@ class AccountResource extends Resource
                     return auth()->user()->can('force delete accounts', $record);
                 }),
             ])
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+            ])
             ->bulkActions([
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
+
+ 
 
     public static function getRelations(): array
     {
@@ -314,4 +327,5 @@ class AccountResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+  
 }

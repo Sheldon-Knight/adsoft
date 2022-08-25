@@ -26,7 +26,5 @@ class Transaction extends Model
     public function statement()
     {
         return $this->hasMany(Statement::class,'transaction_id');
-    }
-
-   
+    } 
 }

@@ -16,7 +16,7 @@ class Transfer extends Model
         'transaction_id',
         'amount',
     ];
-
+  
     public function fromAccount()
     {
         return $this->belongsTo(Account::class, 'from_account');

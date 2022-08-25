@@ -3,11 +3,17 @@
 namespace App\Filament\Resources\AccountResource\RelationManagers;
 
 use App\Models\Statement;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Layout;
+use Illuminate\Database\Eloquent\Builder;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class StatementsRelationManager extends RelationManager
 {
@@ -16,21 +22,21 @@ class StatementsRelationManager extends RelationManager
     protected static ?string $recordTitleAttribute = 'description';
 
     protected $listeners = [
-        'refreshTable' => '$refresh',     
+        'refreshTable' => '$refresh',
     ];
-    
+
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([             
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([Tables\Columns\TextColumn::make('created_at')->date()->label('Date'),
+            ->columns([
+                Tables\Columns\TextColumn::make('created_at')->date()->label('Date'),
                 Tables\Columns\TextColumn::make('description')->label('Description'),
                 Tables\Columns\BadgeColumn::make('credit')
                     ->colors(['success'])
@@ -60,12 +66,47 @@ class StatementsRelationManager extends RelationManager
                     ->searchable(),
             ])
             ->filters([
-                //
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+            TextFilter::make('description'),
+            NumberFilter::make('credit'),
+            NumberFilter::make('debit'),
+            NumberFilter::make('opening_balance'),
+            NumberFilter::make('closing_balance')
             ])
-            ->headerActions([
-                
+            ->headerActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
             ])
             ->actions([])
-            ->bulkActions([]);
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ]);
+    }
+
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
+   
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
     }
 }
