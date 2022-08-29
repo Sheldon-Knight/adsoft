@@ -29,6 +29,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -37,6 +38,8 @@ use Illuminate\Support\Facades\Mail;
 use League\CommonMark\Input\MarkdownInput;
 use NunoMaduro\Collision\Adapters\Phpunit\State;
 use Spatie\Permission\Models\Permission;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
 class InvoiceResource extends Resource
 {
@@ -293,9 +296,15 @@ class InvoiceResource extends Resource
 
             ])
             ->filters([
+                DateFilter::make('invoice_date'),
+                DateFilter::make('invoice_due_date'),
+                NumberFilter::make('invoice_total'),
+                MultiSelectFilter::make('invoice_status')
+                    ->options(Invoice::where('is_quote',false)->get()->pluck("invoice_status", "invoice_status")->toArray())
+                    ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
-            ->actions([      
+            ->actions([
                 Action::make('Pdf Downlaod')
                     ->label("Pdf Download")
                     ->color('warning')
@@ -323,10 +332,6 @@ class InvoiceResource extends Resource
                                     unset($data['cc'][$key]);
                                 }
                             }
-
-
-
-
 
                             if ($data['attached_invoice'] == true) {
 
@@ -489,6 +494,9 @@ class InvoiceResource extends Resource
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
 
+            ])
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
             ])
             ->bulkActions([
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')

@@ -9,6 +9,7 @@ use App\Filament\Resources\UserResource\RelationManagers\InstructionsRelationMan
 use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as RelationManagersJobsRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\Department;
+use App\Models\Job;
 use App\Models\User;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
@@ -135,8 +136,8 @@ class UserResource extends Resource
             ])
             ->filters([
                 TextFilter::make('name'),
-                SelectFilter::make('department')->relationship('department','name'),
-                SelectFilter::make('roles')->relationship('roles','name'),
+                SelectFilter::make('department')->relationship('department', 'name'),
+                SelectFilter::make('roles')->relationship('roles', 'name'),
                 SelectFilter::make('gender')->options(["male" => "male", "female" => "female", "other" => "other"]),
                 TextFilter::make('phone'),
                 TrashedFilter::make(),
@@ -157,6 +158,7 @@ class UserResource extends Resource
                     ->color('danger')
                     ->action(function (User $record) {
 
+                        Job::where('user_id', $record->id)->where('department_id', $record->department_id)->update(['department_id' => null]);
 
                         $record->update(['department_id' => null]);
 
@@ -177,6 +179,7 @@ class UserResource extends Resource
                     })
                     ->label(function (User $record) {
 
+
                         if ($record->department_id == null) {
                             return "Assign to department";
                         }
@@ -184,6 +187,9 @@ class UserResource extends Resource
                         return "Reassign to another department";
                     })
                     ->action(function (User $record, $data) {
+
+                        Job::where('user_id', $record->id)->where('department_id', $record->department_id)->update(['department_id' => $data['department_id']]);
+
                         $record->update(['department_id' => $data['department_id']]);
 
                         Notification::make()
@@ -265,6 +271,4 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
-
-    
 }

@@ -12,9 +12,13 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class JobsRelationManager extends RelationManager
 {
@@ -50,7 +54,7 @@ class JobsRelationManager extends RelationManager
                     ->label('Job Invoice')
                     ->required()
                     ->searchable()
-                    ->options(Invoice::query()->pluck('invoice_number', 'id')),
+                    ->options(Invoice::query()->where('is_quote', false)->pluck('invoice_number', 'id')),
 
                 Select::make('status_id')
                     ->label('Job Status')
@@ -95,7 +99,15 @@ class JobsRelationManager extends RelationManager
                     })
             ])
             ->filters([
-                //
+                MultiSelectFilter::make('status')->relationship('status', 'name'),
+                MultiSelectFilter::make('user')->relationship('user', 'name'),
+                MultiSelectFilter::make('client')->relationship('client', 'client_name'),
+                MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
+                TextFilter::make('title'),
+                TextFilter::make('description'),
+                DateFilter::make('date_completed'),
+                DateFilter::make('created_at'),
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
@@ -150,10 +162,29 @@ class JobsRelationManager extends RelationManager
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
 
             ])
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+            ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
+    }
+
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
+
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
     }
 }

@@ -16,10 +16,13 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class JobResource extends Resource
 {
@@ -66,7 +69,7 @@ class JobResource extends Resource
                     ->label('Job Invoice')
                     ->required()
                     ->searchable()
-                    ->options(Invoice::query()->pluck('invoice_number', 'id')),
+                    ->options(Invoice::query()->where('is_quote', false)->pluck('invoice_number', 'id')),
 
                 Select::make('status_id')
                     ->label('Job Status')
@@ -100,6 +103,14 @@ class JobResource extends Resource
                     ->dateTime()->searchable(),
             ])
             ->filters([
+                MultiSelectFilter::make('status')->relationship('status', 'name'),
+                MultiSelectFilter::make('user')->relationship('user', 'name'),
+                MultiSelectFilter::make('client')->relationship('client', 'client_name'),
+                MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
+                TextFilter::make('title'),
+                TextFilter::make('description'),
+                DateFilter::make('date_completed'),
+                DateFilter::make('created_at'),
                 TrashedFilter::make(),
             ])
             ->actions([
@@ -159,7 +170,11 @@ class JobResource extends Resource
                 Tables\Actions\ForceDeleteAction::make(),
 
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')           
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+            ])
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 
@@ -170,7 +185,7 @@ class JobResource extends Resource
         ];
     }
 
-    
+
 
     public static function getPages(): array
     {

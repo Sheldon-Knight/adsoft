@@ -14,7 +14,19 @@ class ListQuotes extends ListRecords
 
     protected static ?string $title = 'Quotes';
 
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
 
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
+    }
     protected function getBreadcrumbs(): array
     {
         return [

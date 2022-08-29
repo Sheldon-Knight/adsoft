@@ -11,7 +11,19 @@ class ListInvoices extends ListRecords
 {
     protected static string $resource = InvoiceResource::class;
 
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
 
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
+    }
  
 
 

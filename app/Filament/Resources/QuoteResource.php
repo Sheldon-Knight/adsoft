@@ -31,10 +31,13 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
+use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
 class QuoteResource extends Resource
 {
@@ -329,22 +332,29 @@ class QuoteResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_status')->label('Quote Status')->sortable()->searchable(),
             ])
             ->filters([
+                DateFilter::make('invoice_date'),
+                DateFilter::make('invoice_due_date'),
+                NumberFilter::make('invoice_total'),
+                MultiSelectFilter::make('invoice_status')
+                    ->options(Invoice::where('is_quote', true)->get()->pluck("invoice_status", "invoice_status")->toArray())
+                    ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
-            ->actions([Action::make('Pdf Downlaod')
-                ->label("Pdf Download")
-                ->color('warning')
-                ->url(function (Invoice $record) {
-                    return route('pdf-download', $record);
-                })
-                ->visible(function (Invoice $record) {
+            ->actions([
+                Action::make('Pdf Downlaod')
+                    ->label("Pdf Download")
+                    ->color('warning')
+                    ->url(function (Invoice $record) {
+                        return route('pdf-download', $record);
+                    })
+                    ->visible(function (Invoice $record) {
 
-                    if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                            return true;
+                        }
                         return true;
-                    }
-                    return true;
-                }),
-                
+                    }),
+
                 Tables\Actions\Action::make('email')
                     ->color('success')
                     ->visible(function (Invoice $record) {
@@ -572,6 +582,9 @@ class QuoteResource extends Resource
                 Tables\Actions\DeleteAction::make(),
                 RestoreAction::make(),
                 ForceDeleteAction::make(),
+            ])
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
             ])
             ->bulkActions([
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
