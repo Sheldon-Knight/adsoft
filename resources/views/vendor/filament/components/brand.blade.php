@@ -4,8 +4,7 @@
         
         if (!$cache) {
             cache()->forever('oms_name', App\Models\OmsSetting::first()->oms_name);
-        }
-       
+        }      
         
         $brand = $cache ?? config('filament.brand');
     @endphp

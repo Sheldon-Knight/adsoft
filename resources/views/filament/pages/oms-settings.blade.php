@@ -1,4 +1,17 @@
 <x-filament::page>
+
+<x-filament::card>
+
+You Currently Have The Following Features
+
+ <ul>
+    <li>
+            Banking: {{ cache()->get("banking_feature") ? "Yes" : "No" }}
+    </li>
+ </ul>
+
+</x-filament::card>
+
     <form wire:submit.prevent="submit" class="space-y-6">
         {{ $this->form }}
 

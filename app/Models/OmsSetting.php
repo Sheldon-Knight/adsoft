@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use LucasDotVin\Soulbscription\Models\Concerns\HasSubscriptions;
 
 class OmsSetting extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSubscriptions;
 
     protected $table = 'oms_settings';
 

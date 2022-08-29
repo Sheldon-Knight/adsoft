@@ -16,6 +16,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use LucasDotVin\Soulbscription\Models\Plan;
 
 class OmsSettings extends Page
 {
@@ -41,9 +42,11 @@ class OmsSettings extends Page
     public function mount()
     {
 
+
         abort_unless(auth()->user()->can("change application settings"), 403);
 
         $this->omsSetting = OmsSetting::find(1);
+       
 
         $this->form->fill([
             'oms_name' =>  $this->omsSetting->oms_name,

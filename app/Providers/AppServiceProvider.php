@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-
+use App\Models\OmsSetting;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\UserMenuItem;
@@ -80,6 +80,13 @@ class AppServiceProvider extends ServiceProvider
                 'account' => UserMenuItem::make()->url(route('filament.pages.profile')),              
             ]);
         });
+
+        $cache = cache()->get('banking_feature');
+      
+
+        if (!$cache) {
+            cache()->forever('banking_feature', OmsSetting::first()->hasFeature('banking'));
+        }
 
     }
 }

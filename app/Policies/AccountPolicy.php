@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Account;
+use App\Models\OmsSetting;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Spatie\Permission\Models\Permission;
@@ -17,9 +18,14 @@ class AccountPolicy
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
-     */
+     */   
     public function viewAny(User $user)
-    {            
+    {
+     
+        if (cache()->get('banking_feature') == false) {
+           return false;
+        }
+
         return $user->can('view any accounts');
     }
 
@@ -34,8 +40,7 @@ class AccountPolicy
     {
 
 
-        if($account->deleted_at != null)
-        {
+        if ($account->deleted_at != null) {
             return false;
         }
 
@@ -112,11 +117,11 @@ class AccountPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function forceDelete(User $user, Account $account)
-    {    
+    {
         if ($account->deleted_at === null) {
             return false;
         }
-        
+
         return $user->can('force delete accounts');
-    }   
+    }
 }

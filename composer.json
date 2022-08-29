@@ -15,6 +15,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "laraveldaily/laravel-invoices": "^3.0",
+        "lucasdotvin/laravel-soulbscription": "^2.2",
         "saade/filament-fullcalendar": "^1.4",
         "spatie/laravel-permission": "^5.5",
         "webbingbrasil/filament-advancedfilter": "dev-main"

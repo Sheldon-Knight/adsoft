@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
                 // TransferSeeder::class,
                 // TransactionSeeder::class,
                 // StatementSeeder::class,
-                AttendanceSeeder::class,       
+                // AttendanceSeeder::class, 
+                FeatureSeeder::class,     
             ]
         );
     }

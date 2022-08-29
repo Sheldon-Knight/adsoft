@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d0390a6bd8a2905850980f2b84d14a4e",
+    "content-hash": "c860a9bcac1fd9f2751ba0d1fef4e6c7",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -3060,6 +3060,77 @@
                 }
             ],
             "time": "2022-08-08T13:52:53+00:00"
+        },
+        {
+            "name": "lucasdotvin/laravel-soulbscription",
+            "version": "2.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lucasdotvin/laravel-soulbscription.git",
+                "reference": "bce191f2a1f6f9208af50564061c16a42ab4a863"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lucasdotvin/laravel-soulbscription/zipball/bce191f2a1f6f9208af50564061c16a42ab4a863",
+                "reference": "bce191f2a1f6f9208af50564061c16a42ab4a863",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^8.0|^9.0",
+                "php": "^8.0|^8.1"
+            },
+            "require-dev": {
+                "lucasdotvin/laravel-database-queries-counter": "^0.5.0",
+                "nunomaduro/collision": "^5.10|^6.0",
+                "orchestra/testbench": "^6.22|^7.0",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LucasDotVin\\Soulbscription\\SoulbscriptionServiceProvider"
+                    ],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LucasDotVin\\Soulbscription\\": "src",
+                    "LucasDotVin\\Soulbscription\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lucas Vinicius",
+                    "email": "lucasvinicius211@yahoo.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This package provides a straightforward interface to handle subscriptions and features consumption.",
+            "homepage": "https://github.com/lucasdotvin/laravel-soulbscription",
+            "keywords": [
+                "laravel",
+                "laravel-soulbscription",
+                "lucasdotvin",
+                "subscriptions"
+            ],
+            "support": {
+                "issues": "https://github.com/lucasdotvin/laravel-soulbscription/issues",
+                "source": "https://github.com/lucasdotvin/laravel-soulbscription/tree/2.2.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/lucasdotvin",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-07-24T00:10:40+00:00"
         },
         {
             "name": "maatwebsite/excel",
