@@ -96,20 +96,23 @@ class InvoiceResource extends Resource
 
                                 Repeater::make('items')
                                     ->schema([
+
                                         TextInput::make('item')
                                             ->required()
                                             ->columnSpan([
-                                                'md' => 5,
+                                                'md' => 4,
                                             ]),
 
                                         TextInput::make('price')
                                             ->required()
-                                            ->numeric()
-                                            ->prefix('R')
                                             ->reactive()
-                                            ->afterStateUpdated(function ($state, callable $set, $get) {
-                                                $set('amount', number_format($state * $get('qty'), 2));
-                                            })
+                                            ->type('number')
+                                            ->prefix('R')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->extraAttributes([
+                                                "step" => "0.01"
+                                            ])
                                             ->columnSpan([
                                                 'md' => 2,
                                             ]),
@@ -117,30 +120,52 @@ class InvoiceResource extends Resource
                                         TextInput::make('qty')
                                             ->required()
                                             ->numeric()
+                                            ->type('number')
                                             ->default(1)
                                             ->reactive()
-                                            ->afterStateUpdated(function ($state, callable $set, $get) {
-                                                $set('amount', number_format($get('price') * $state, 2));
-                                            })
+                                            ->minValue(1)
                                             ->columnSpan([
                                                 'md' => 1,
                                             ]),
 
-                                        TextInput::make('amount')
-                                            ->disabled()
+                                        TextInput::make('subtotal')
                                             ->numeric()
+                                            ->type('number')
                                             ->prefix('R')
+                                            ->required()
+                                            ->disabled()
+                                            ->reactive()
+                                            ->extraAttributes([
+                                                "step" => "0.01"
+                                            ])
+                                            ->placeholder(function (Closure $get, $set) {
+                                                $price = 0;
+                                                $qty = 1;
+
+                                                if ($get('price') == null) {
+                                                    $price = 0.00;
+                                                }
+
+                                                if ($get('qty') == null) {
+                                                    $qty = 1;
+                                                }
+
+                                                $price = $get('price');
+                                                $qty = $get('qty');
+
+                                                $set('subtotal', number_format(floatval($price) * intval($qty), 2));
+                                            })
+                                            ->label("Sub Total")
                                             ->columnSpan([
-                                                'md' => 2,
-                                            ]),
-
-
+                                                'md' => 3,
+                                            ])
                                     ])
                                     ->defaultItems(1)
                                     ->columns([
                                         'md' => 10,
                                     ])
                                     ->columnSpan('full')
+                                    ->cloneable()
                                     ->createItemButtonLabel('Add Item'),
 
 
@@ -152,14 +177,21 @@ class InvoiceResource extends Resource
                                 TextInput::make("invoice_subtotal")
                                     ->label("Sub Total")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->disabled()
                                     ->placeholder(function (Closure $get, $set) {
+                                        if (isset($get('items')[key($get('items'))]['price'])) {
+                                            if ($get('items')[key($get('items'))]['price'] == null) {
+                                                return number_format(0, 2);
+                                            }
+                                        }
+
                                         $fields = $get('items');
                                         $sum = 0;
-                                        foreach ($fields as $field) {
-                                            $value = $field['price'] * $field['qty'];
 
+                                        foreach ($fields as $field) {
+                                            $value = floatval($field['price']) * intval($field['qty']);
 
                                             if ($field['price'] == "" or $field['price'] == null) {
                                                 $value = 0;
@@ -167,37 +199,50 @@ class InvoiceResource extends Resource
 
                                             $sum += $value;
                                         }
+
                                         $set('invoice_subtotal', number_format($sum, 2));
-                                        return number_format($sum, 2);
                                     })
                                     ->columnSpan([
                                         'md' => 3,
                                     ]),
 
-                                TextInput::make("invoice_discount")
+
+                                TextInput::make('invoice_discount')
                                     ->label("Discount")
-                                    ->numeric()
-                                    ->prefix('R')
+                                    ->required()
                                     ->reactive()
+                                    ->type('number')
+                                    ->prefix('R')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->default(0.00)
+                                    ->extraAttributes([
+                                        "step" => "0.01"
+                                    ])
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
+                                        if ($state == null) {
+                                            $state = 0;
+                                        }
                                         $set('invoice_total', number_format($get('invoice_total') - $state, 2));
                                     })
-                                    ->placeholder(function (Closure $get, $set) {
-                                        $discount =  $get('invoice_discount') ?? 0;
-                                        $set('invoice_discount', number_format($discount, 2));
-                                        return number_format($discount, 2);
-                                    })
+                                    ->placeholder(fn () => 0.00)
                                     ->columnSpan([
                                         'md' => 3,
                                     ]),
+
+
+
+
 
                                 TextInput::make("invoice_tax")
                                     ->label("Tax")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->disabled()
+                                    ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
-                                        $tax =  $get('invoice_subtotal') * 0.15 ?? 0;
+                                        $tax = $get('invoice_subtotal') * 0.15 ?? 0;
                                         $set('invoice_tax', number_format($tax, 2));
                                         return number_format($tax, 2);
                                     })
@@ -208,8 +253,10 @@ class InvoiceResource extends Resource
                                 TextInput::make("invoice_total")
                                     ->label("Total Amount")
                                     ->numeric()
+                                    ->type('number')
                                     ->prefix('R')
                                     ->disabled()
+                                    ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
                                         $tax =  $get('invoice_tax');
                                         $discount =  $get('invoice_discount');
@@ -240,9 +287,12 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_due_date')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('invoice_total')->sortable()->searchable()->money('zar', true),
-                Tables\Columns\TextColumn::make('status.name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('invoice_status')->sortable()->searchable(),
+
+
             ])
-            ->filters([Tables\Filters\TrashedFilter::make(),
+            ->filters([
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\Action::make('email')
@@ -348,13 +398,13 @@ class InvoiceResource extends Resource
 
                     )
                     ->label('Email Invoice')
-                ->visible(function (Invoice $record) {
+                    ->visible(function (Invoice $record) {
 
-                    if (auth()->user()->can("email invoices") and $record->deleted_at === null) {
-                        return true;
-                    }
-                    return false;
-                })
+                        if (auth()->user()->can("email invoices") and $record->deleted_at === null) {
+                            return true;
+                        }
+                        return false;
+                    })
                     ->form([
                         Card::make()
                             ->schema([
@@ -429,7 +479,8 @@ class InvoiceResource extends Resource
                 Tables\Actions\ForceDeleteAction::make(),
 
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 
