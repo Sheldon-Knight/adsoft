@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Filament\Resources\StatusResource\Pages;
 use App\Filament\Resources\StatusResource\RelationManagers;
 use App\Models\Invoice;
@@ -16,6 +17,7 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class StatusResource extends Resource
 {
@@ -55,6 +57,7 @@ class StatusResource extends Resource
             ])
 
             ->filters([
+                TextFilter::make('name'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
@@ -67,6 +70,8 @@ class StatusResource extends Resource
 
             ])
             ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ])
+             ->headerActions([FilamentExportHeaderAction::make('export'),
             ]);
     }
 
