@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use App\Models\Instruction;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -9,6 +10,7 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -125,7 +127,7 @@ class InstructionsRelationManager extends RelationManager
                         }
                         return true;
                     }),
-                Tables\Actions\ViewAction::make(),
+            ViewAction::make()->url(fn (Instruction $record): string => route('filament.resources.instructions.view', $record)),  
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
