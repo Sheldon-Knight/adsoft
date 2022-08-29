@@ -17,6 +17,11 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\BooleanFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class InstructionResource extends Resource
 {
@@ -84,8 +89,19 @@ class InstructionResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
             ])
-            ->filters([
-             TrashedFilter::make(),
+            ->filters([DateFilter::make("date_completed"),
+            DateFilter::make("created_at"),
+            DateFilter::make("due_date"),
+            TextFilter::make("instruction"),
+            TextFilter::make("title"),
+            SelectFilter::make('status')
+                ->options([
+                    0 => 'In-Completed',
+                    1 => 'Completed',
+                ]),
+            MultiSelectFilter::make('created_by')->relationship('createdBy', 'name'),
+            MultiSelectFilter::make('assigend_to')->relationship('assignedTo', 'name'),
+            TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
@@ -112,6 +128,9 @@ class InstructionResource extends Resource
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),             
+            ])
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
             ])
             ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
