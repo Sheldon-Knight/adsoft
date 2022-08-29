@@ -88,6 +88,16 @@ class User extends Authenticatable
             ->first();
     }
 
+
+    public function getYesterdaysAttendance()
+    {
+        $now = $this->freshTimestamp();
+
+        return $this->attendances()
+            ->where('day', $now->subDay()->format('Y-m-d'))
+            ->first();
+    }
+
     public function checkIn()
     {
         $now = $this->freshTimestamp();
