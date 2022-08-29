@@ -17,6 +17,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 
+
+
+
 class MyAttendances extends Page implements HasTable
 {
 
