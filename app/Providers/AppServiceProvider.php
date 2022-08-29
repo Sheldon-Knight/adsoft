@@ -5,6 +5,7 @@ namespace App\Providers;
 
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\UserMenuItem;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Columns\Column;
 
@@ -73,5 +74,12 @@ class AppServiceProvider extends ServiceProvider
                 ->toggleable()
                 ->sortable();
         });
+
+        Filament::serving(function () {
+            Filament::registerUserMenuItems([
+                'account' => UserMenuItem::make()->url(route('filament.pages.profile')),              
+            ]);
+        });
+
     }
 }
