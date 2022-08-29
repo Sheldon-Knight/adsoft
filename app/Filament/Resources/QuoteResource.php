@@ -331,7 +331,20 @@ class QuoteResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
-            ->actions([
+            ->actions([Action::make('Pdf Downlaod')
+                ->label("Pdf Download")
+                ->color('warning')
+                ->url(function (Invoice $record) {
+                    return route('pdf-download', $record);
+                })
+                ->visible(function (Invoice $record) {
+
+                    if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                        return true;
+                    }
+                    return true;
+                }),
+                
                 Tables\Actions\Action::make('email')
                     ->color('success')
                     ->visible(function (Invoice $record) {
@@ -494,6 +507,9 @@ class QuoteResource extends Resource
                             ->columns(2),
 
                     ]),
+
+
+
 
                 Action::make('View')
                     ->url(function (Invoice $record) {

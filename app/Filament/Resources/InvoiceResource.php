@@ -28,6 +28,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -294,7 +295,20 @@ class InvoiceResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
-            ->actions([
+            ->actions([      
+                Action::make('Pdf Downlaod')
+                    ->label("Pdf Download")
+                    ->color('warning')
+                    ->url(function (Invoice $record) {
+                        return route('pdf-download', $record);
+                    })
+                    ->visible(function (Invoice $record) {
+
+                        if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                            return true;
+                        }
+                        return true;
+                    }),
                 Tables\Actions\Action::make('email')
                     ->color('success')
                     ->action(
@@ -315,9 +329,6 @@ class InvoiceResource extends Resource
 
 
                             if ($data['attached_invoice'] == true) {
-
-
-
 
                                 $pdfInvoice = new pdfInvoice();
 

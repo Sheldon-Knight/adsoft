@@ -111,6 +111,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'force delete quotes']);
         Permission::create(['name' => 'convert quotes to invoices']);     
         Permission::create(['name' => 'email quotes']);
+        Permission::create(['name' => 'download pdf quotes']);
         
         
         
@@ -125,6 +126,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'restore invoices']);
         Permission::create(['name' => 'force delete invoices']);
         Permission::create(['name' => 'email invoices']);
+        Permission::create(['name' => 'download pdf invoices']);
         
         //Jobs Permissions
 
