@@ -9,6 +9,8 @@ use App\Models\Status;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -49,7 +51,7 @@ class MyJobs extends Page implements HasTable
     protected function getTableColumns(): array
     {
         return [
-            \Filament\Tables\Columns\TextColumn::make('client.client_name')->searchable(),        
+            \Filament\Tables\Columns\TextColumn::make('client.client_name')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('department.name')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('invoice.invoice_number')->searchable(),
             \Filament\Tables\Columns\BadgeColumn::make('status.name')->searchable(),
@@ -65,7 +67,7 @@ class MyJobs extends Page implements HasTable
     protected function getTableFilters(): array
     {
         return [
-            MultiSelectFilter::make('status')->relationship('status', 'name'),           
+            MultiSelectFilter::make('status')->relationship('status', 'name'),
             MultiSelectFilter::make('client')->relationship('client', 'client_name'),
             MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
             TextFilter::make('title'),
@@ -82,11 +84,11 @@ class MyJobs extends Page implements HasTable
             \Filament\Tables\Actions\EditAction::make('date_completed')
                 ->label('Mark Complete')
                 ->form([
-                \Filament\Forms\Components\DatePicker::make('date_completed')
+                    \Filament\Forms\Components\DatePicker::make('date_completed')
                         ->label('Completed At')
                         ->required(),
 
-                \Filament\Forms\Components\Select::make('status_id')
+                    \Filament\Forms\Components\Select::make('status_id')
                         ->label('Status')
                         ->options(Status::pluck('name', 'id'))
                         ->required(),
@@ -103,7 +105,7 @@ class MyJobs extends Page implements HasTable
             \Filament\Tables\Actions\EditAction::make('status_id')
                 ->label('Change Status')
                 ->form([
-                   \Filament\Forms\Components\Select::make('status_id')
+                    \Filament\Forms\Components\Select::make('status_id')
                         ->label('Status')
                         ->options(Status::pluck('name', 'id'))
                         ->required(),
@@ -114,7 +116,7 @@ class MyJobs extends Page implements HasTable
                     }
                     return true;
                 }),
-           \Filament\Tables\Actions\EditAction::make('user_id')
+            \Filament\Tables\Actions\EditAction::make('user_id')
                 ->label('Reasign To')
                 ->color('warning')
                 ->form([
@@ -129,10 +131,7 @@ class MyJobs extends Page implements HasTable
                     }
                     return true;
                 }),
-            \Filament\Tables\Actions\ViewAction::make(),
-            \Filament\Tables\Actions\DeleteAction::make(),
-            \Filament\Tables\Actions\RestoreAction::make(),
-            \Filament\Tables\Actions\ForceDeleteAction::make(),
+            ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),       
         ];
     }
 
@@ -146,6 +145,11 @@ class MyJobs extends Page implements HasTable
     protected function getTableHeaderActions(): array
     {
         return [
+            CreateAction::make()->url(
+                route(
+                    'filament.resources.jobs.create'
+                )
+            )->visible(auth()->user()->can('create jobs')),
             FilamentExportHeaderAction::make('export')
         ];
     }

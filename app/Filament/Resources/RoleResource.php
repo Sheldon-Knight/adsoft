@@ -48,9 +48,9 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Role Name'),
-                TagsColumn::make('permissions.name')->separator(','),
-                TextColumn::make('users_count')->counts('users'),
+                TextColumn::make('name')->label('Role Name')->searchable()->sortable(),
+                TagsColumn::make('permissions.name')->separator(',')->searchable()->sortable(),
+                TextColumn::make('users_count')->counts('users')->searchable()->sortable(),
             ])
             ->filters([
               TextFilter::make('name'),

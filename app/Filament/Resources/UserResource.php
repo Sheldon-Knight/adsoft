@@ -64,7 +64,7 @@ class UserResource extends Resource
                     static::getEmailFormField(),
                     static::getPhoneFormField(),
                     static::getAddressFormField(),
-                    static::getPasswordFormField(),
+                    static::getPasswordFormField(),                  
                 ])
             ]);
     }

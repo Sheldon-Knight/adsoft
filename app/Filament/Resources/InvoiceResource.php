@@ -316,7 +316,7 @@ class InvoiceResource extends Resource
                         if (auth()->user()->can("download pdf invoices") and $record->deleted_at === null) {
                             return true;
                         }
-                        return true;
+                        return false;
                     }),
                 Tables\Actions\Action::make('email')
                     ->color('success')

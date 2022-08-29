@@ -12,6 +12,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Hash;
 
 class CreateUser extends CreateRecord
 {
@@ -40,9 +41,16 @@ class CreateUser extends CreateRecord
             Step::make('Security Info')
                 ->description('registering your login credentials')
                 ->schema([
-                    UserResource::getPasswordFormField()
+                    UserResource::getPasswordFormField(),                
                 ]),
         ];
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['password'] = Hash::make($data['password']);
+
+       return $data;
     }
 
     

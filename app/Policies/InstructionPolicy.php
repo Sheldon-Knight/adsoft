@@ -32,8 +32,8 @@ class InstructionPolicy
     {
         if ($instruction->deleted_at != null) {
             return false;
-        }
-        
+        }      
+
         return $user->can('view instructions');
     }
 

@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Page;
+use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ForceDeleteAction;
@@ -112,10 +113,8 @@ class MyInstructions extends Page implements HasTable
                     }
                     return true;
                 }),
-            ViewAction::make()->url(fn (Instruction $record): string => route('filament.resources.instructions.view', $record)) ,           
-            DeleteAction::make(),
-            RestoreAction::make(),
-            ForceDeleteAction::make(),
+            ViewAction::make()->url(fn (Instruction $record): string => route('filament.resources.instructions.view', $record)) ,          
+        
         ];
     }
 
@@ -129,6 +128,11 @@ class MyInstructions extends Page implements HasTable
     protected function getTableHeaderActions(): array
     {
         return [
+            CreateAction::make()->url(
+                route(
+                    'filament.resources.instructions.create'
+                )
+            )->visible(auth()->user()->can('create instructions')),
             FilamentExportHeaderAction::make('export')
         ];
     }
