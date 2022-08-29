@@ -17,8 +17,10 @@ use Filament\Tables;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class ClientResource extends Resource
 {
@@ -95,6 +97,16 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('client_status')->searchable()->sortable(),
             ])
             ->filters([
+
+                TextFilter::make('client_name'),
+                TextFilter::make('client_surname'),
+                TextFilter::make('email'),
+                TextFilter::make('tel_num'),
+                TextFilter::make('contact_person'),
+                SelectFilter::make('client_status')->options([
+                    'Active' => "Active",
+                    'In-Active' => "In-Active",
+                ]),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
@@ -127,7 +139,11 @@ class ClientResource extends Resource
                     return auth()->user()->can('force delete clients', $record);
                 }),
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->headerActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+            ])
+            ->bulkActions([
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 
@@ -157,4 +173,6 @@ class ClientResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    
 }

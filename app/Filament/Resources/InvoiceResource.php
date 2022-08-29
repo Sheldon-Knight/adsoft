@@ -87,7 +87,7 @@ class InvoiceResource extends Resource
                                     ->label('Status')
                                     ->required()
                                     ->searchable()
-                                    ->options(Status::pluck('name', 'id')),
+                                    ->options(Status::pluck('name', 'name')),
 
                             ])->columns([
                                 'sm' => 2,
@@ -313,7 +313,7 @@ class InvoiceResource extends Resource
                     })
                     ->visible(function (Invoice $record) {
 
-                        if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can("download pdf invoices") and $record->deleted_at === null) {
                             return true;
                         }
                         return true;
@@ -487,7 +487,7 @@ class InvoiceResource extends Resource
                     ->form([
                         Forms\Components\Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'id'))
+                            ->options(Status::pluck('name', 'name'))
                             ->required(),
                     ]),
                 Tables\Actions\DeleteAction::make(),

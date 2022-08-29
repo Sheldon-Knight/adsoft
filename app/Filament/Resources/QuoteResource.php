@@ -115,7 +115,7 @@ class QuoteResource extends Resource
                                     ->label('Status')
                                     ->required()
                                     ->searchable()
-                                    ->options(Status::pluck('name', 'id')),
+                                    ->options(Status::pluck('name', 'name')),
 
                                 DatePicker::make('invoice_date')
                                     ->default(now())
@@ -592,7 +592,7 @@ class QuoteResource extends Resource
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'id'))
+                            ->options(Status::pluck('name', 'name'))
                             ->required(),
                     ])
                     ->visible(function () {
