@@ -85,19 +85,7 @@ class JobsRelationManager extends RelationManager
                     ->date()->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()->searchable(),
-            ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
-                        $data['created_by'] = auth()->id();
-
-                        $invoice = Invoice::find($data['invoice_id']);
-
-                        $data['client_id'] = $invoice->client_id;
-
-                        return $data;
-                    })
-            ])
+            ])           
             ->filters([
                 MultiSelectFilter::make('status')->relationship('status', 'name'),
                 MultiSelectFilter::make('user')->relationship('user', 'name'),
@@ -167,6 +155,16 @@ class JobsRelationManager extends RelationManager
 
             ])
             ->headerActions([
+                 Tables\Actions\CreateAction::make()
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['created_by'] = auth()->id();
+
+                        $invoice = Invoice::find($data['invoice_id']);
+
+                        $data['client_id'] = $invoice->client_id;
+
+                        return $data;
+                    }),
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
             ])
             ->bulkActions([

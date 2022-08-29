@@ -16,10 +16,11 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Spatie\Permission\Models\Permission;
-
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class RoleResource extends Resource
 {
@@ -52,7 +53,8 @@ class RoleResource extends Resource
                 TextColumn::make('users_count')->counts('users'),
             ])
             ->filters([
-                //
+              TextFilter::make('name'),
+            MultiSelectFilter::make('permissions')->relationship('permissions', 'name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

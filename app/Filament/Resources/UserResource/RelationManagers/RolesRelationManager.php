@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -9,6 +10,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class RolesRelationManager extends RelationManager
 {
@@ -33,9 +35,10 @@ class RolesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('name'),
             ])
             ->filters([
-                //
+               TextFilter::make('name'),
             ])
-            ->headerActions([          
+            ->headerActions([         
+               
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect(),
             ])
@@ -44,7 +47,25 @@ class RolesRelationManager extends RelationManager
                 Tables\Actions\DetachAction::make(),             
             ])
             ->bulkActions([
-                Tables\Actions\DetachBulkAction::make(),               
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),             
+                Tables\Actions\DetachBulkAction::make(),
             ]);
-    }    
+             
+    }
+
+
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
+
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
+    }
+    
 }

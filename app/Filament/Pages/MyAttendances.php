@@ -4,7 +4,9 @@ namespace App\Filament\Pages;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Models\Attendance;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TimePicker;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -45,14 +47,41 @@ class MyAttendances extends Page implements HasTable
 
     protected function getTableFilters(): array
     {
+
+        // $q = Attendance::where('time_in',">=" ,"07:00:00")->where('time_in', "<=", "08:00:00")->get();
+        // dd($q);
         return [
             SelectFilter::make('present')
                 ->options([
                     0 => 'Absent',
                     1 => 'Present',
                 ]),
-
             DateFilter::make('day'),
+
+            Filter::make('time_in')
+            ->form([
+                TimePicker::make('time_in')->withoutSeconds(),                      
+            ])
+            ->query(function (Builder $query, array $data): Builder {               
+                return $query
+                    ->when(
+                        $data['time_in'],
+                        fn (Builder $query, $date): Builder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
+                    );
+                     
+            }),
+
+            Filter::make('time_out')
+                ->form([
+                    TimePicker::make('time_out')->withoutSeconds(),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['time_out'],
+                            fn (Builder $query, $date): Builder => $query->where('time_out', '=', Carbon::parse($date)->format('H:i:s')),
+                        );
+                }) 
         ];
     }
 

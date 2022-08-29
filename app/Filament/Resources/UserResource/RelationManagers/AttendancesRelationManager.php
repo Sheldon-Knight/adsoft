@@ -2,20 +2,25 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\TimePicker;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasRelationshipTable;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 
 class AttendancesRelationManager extends RelationManager
 {
@@ -94,18 +99,47 @@ class AttendancesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('time_in'),
                 Tables\Columns\TextColumn::make('time_out'),
             ])
-            ->filters([
-                //
+            ->filters([SelectFilter::make('present')
+                ->options([
+                    0 => 'Absent',
+                    1 => 'Present',
+                ]),
+            DateFilter::make('day'),
+
+            Filter::make('time_in')
+                ->form([
+                    TimePicker::make('time_in')->withoutSeconds(),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['time_in'],
+                            fn (Builder $query, $date): Builder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
+                        );
+                }),
+
+            Filter::make('time_out')
+                ->form([
+                    TimePicker::make('time_out')->withoutSeconds(),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['time_out'],
+                            fn (Builder $query, $date): Builder => $query->where('time_out', '=', Carbon::parse($date)->format('H:i:s')),
+                        );
+                }) 
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
+                FilamentExportHeaderAction::make("export"),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
     }
 }

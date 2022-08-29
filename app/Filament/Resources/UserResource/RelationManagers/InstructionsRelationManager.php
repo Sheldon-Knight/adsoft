@@ -9,9 +9,14 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class InstructionsRelationManager extends RelationManager
 {
@@ -24,35 +29,35 @@ class InstructionsRelationManager extends RelationManager
         return $form
             ->schema([
                 Select::make('assigned_to')
-                ->label('Assign To User')
-                ->required()
+                    ->label('Assign To User')
+                    ->required()
                     ->searchable()
                     ->options(User::query()->pluck('name', 'id'))
-                ->visibleOn('view'),
+                    ->visibleOn('view'),
 
                 Select::make('created_by')
-                ->label('Created By')
-                ->required()
+                    ->label('Created By')
+                    ->required()
                     ->searchable()
                     ->options(User::query()->pluck('name', 'id'))
                     ->visibleOn('view'),
 
                 Forms\Components\TextInput::make('title')
-                ->required()
+                    ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('instruction')
-                ->required(),
+                    ->required(),
 
                 Forms\Components\DatePicker::make('due_date')
-                ->required(),
+                    ->required(),
 
 
                 Forms\Components\DatePicker::make('date_completed')
-                ->required()
+                    ->required()
                     ->visibleOn('view'),
 
                 Forms\Components\DatePicker::make('created_at')
-                ->required()
+                    ->required()
                     ->visibleOn('view'),
             ]);
     }
@@ -66,35 +71,47 @@ class InstructionsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('title'),
                 Tables\Columns\TextColumn::make('instruction'),
                 Tables\Columns\TextColumn::make('due_date')
-                ->date(),
+                    ->date(),
                 Tables\Columns\TextColumn::make('date_completed')
-                ->date(),
+                    ->date(),
                 Tables\Columns\BooleanColumn::make('status')
-                ->label("Completed")
-                ->trueIcon('heroicon-o-badge-check')
-                ->falseIcon('heroicon-o-x-circle'),
+                    ->label("Completed")
+                    ->trueIcon('heroicon-o-badge-check')
+                    ->falseIcon('heroicon-o-x-circle'),
                 Tables\Columns\TextColumn::make('created_at')
-                ->dateTime(),
+                    ->dateTime(),
             ])
             ->filters([
-                //
+                DateFilter::make("date_completed"),
+                DateFilter::make("created_at"),
+                DateFilter::make("due_date"),
+                TextFilter::make("instruction"),
+                TextFilter::make("title"),
+                SelectFilter::make('status')
+                    ->options([
+                        0 => 'In-Completed',
+                        1 => 'Completed',
+                    ]),
+                MultiSelectFilter::make('created_by')->relationship('createdBy', 'name'),
+                MultiSelectFilter::make('assigend_to')->relationship('assignedTo', 'name'),
+                TrashedFilter::make(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
-                        $data['created_by'] = auth()->id();                                   
+                        $data['created_by'] = auth()->id();
 
                         return $data;
-                    })
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
-                ->label('Mark Complete')
-                ->form([
-                    Forms\Components\DatePicker::make('date_completed')
-                    ->label('Completed At')
-                    ->required(),
-                ])
+                    ->label('Mark Complete')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_completed')
+                            ->label('Completed At')
+                            ->required(),
+                    ])
                     ->color("success")
                     ->icon("heroicon-o-check")
                     ->mutateFormDataUsing(function (array $data): array {
@@ -110,9 +127,25 @@ class InstructionsRelationManager extends RelationManager
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
-            ])
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
+            ])           
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
             ]);
-    }   
+    }
+
+    protected function getTableFiltersFormColumns(): int
+    {
+        return 3;
+    }
+    protected function getTableFiltersFormWidth(): string
+    {
+        return '4xl';
+    }
+
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
+    }
 }
