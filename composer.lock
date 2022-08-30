@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c860a9bcac1fd9f2751ba0d1fef4e6c7",
+    "content-hash": "3926b609c81162f15fd9fbe8f6f52f18",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -7798,6 +7798,110 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "yoco/yoco-php",
+            "version": "v0.1.0-beta",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YocoOpen/yoco-php.git",
+                "reference": "0c9e0c6a9c5a27a15e878121eb194aac40bda6d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YocoOpen/yoco-php/zipball/0c9e0c6a9c5a27a15e878121eb194aac40bda6d3",
+                "reference": "0c9e0c6a9c5a27a15e878121eb194aac40bda6d3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yoco\\": "src/Yoco"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "mit"
+            ],
+            "authors": [
+                {
+                    "name": "Yoco and contributors",
+                    "homepage": "http://developer.yoco.com",
+                    "role": "Creator & Maintainer"
+                }
+            ],
+            "description": "Yoco PHP Library",
+            "homepage": "https://developer.yoco.com",
+            "keywords": [
+                "api",
+                "payment processing",
+                "yoco"
+            ],
+            "support": {
+                "issues": "https://github.com/YocoOpen/yoco-php/issues",
+                "source": "https://github.com/YocoOpen/yoco-php/tree/v0.1.0-beta"
+            },
+            "time": "2021-08-05T20:49:34+00:00"
+        },
+        {
+            "name": "yoco/yoco-php-laravel",
+            "version": "v0.1.0-beta",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YocoOpen/yoco-php-laravel.git",
+                "reference": "a6a47469a415b639c4ead3b485302073edc8208e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YocoOpen/yoco-php-laravel/zipball/a6a47469a415b639c4ead3b485302073edc8208e",
+                "reference": "a6a47469a415b639c4ead3b485302073edc8208e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0",
+                "yoco/yoco-php": "0.1.0-beta"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Yoco\\Laravel\\YocoServiceProvider"
+                    ],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Yoco\\Laravel\\": "src/Yoco/Laravel"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "mit"
+            ],
+            "authors": [
+                {
+                    "name": "Yoco and contributors",
+                    "homepage": "http://developer.yoco.com",
+                    "role": "Creator & Maintainer"
+                }
+            ],
+            "description": "Yoco PHP Library for Laravel",
+            "homepage": "https://developer.yoco.com",
+            "keywords": [
+                "api",
+                "laravel",
+                "payment processing",
+                "yoco"
+            ],
+            "support": {
+                "issues": "https://github.com/YocoOpen/yoco-php-laravel/issues",
+                "source": "https://github.com/YocoOpen/yoco-php-laravel/tree/v0.1.0-beta"
+            },
+            "time": "2021-08-06T08:33:10+00:00"
         }
     ],
     "packages-dev": [
@@ -10299,7 +10403,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "webbingbrasil/filament-advancedfilter": 20
+        "webbingbrasil/filament-advancedfilter": 20,
+        "yoco/yoco-php-laravel": 10
     },
     "prefer-stable": true,
     "prefer-lowest": false,
