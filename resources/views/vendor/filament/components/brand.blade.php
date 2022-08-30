@@ -16,7 +16,7 @@
            <x-filament::hr />                
     </div>
     <small>
-       Current Plan : Basic - Expire In 12 Days
+       Current Plan : {{ cache()->get('current_plan') }} - Expires In {{ now()->diffInDays(cache()->get('subscription')->expired_at) }} Days
    </small>
 
 @endif

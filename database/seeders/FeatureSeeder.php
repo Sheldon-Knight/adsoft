@@ -18,12 +18,7 @@ class FeatureSeeder extends Seeder
      */
     public function run()
     {
-
-        // Create Feature
-        $banking = Feature::create([
-            'consumable' => false,
-            'name'       => 'banking',
-        ]);
+       
 
         // Create Basic Plan
 
@@ -42,15 +37,13 @@ class FeatureSeeder extends Seeder
             'periodicity'      => 1,
             'grace_days'       => 1,
         ]);
-
-        // Attach Banking To Premium Plan
-        $premium->features()->attach($banking);
+      
 
         //Subsribe To A Plan
 
         $omsSetting = OmsSetting::find(1);
 
-        $plan = Plan::find(2);
+        $plan = Plan::find(1);
 
         $omsSetting->subscribeTo($plan, startDate: now());
 

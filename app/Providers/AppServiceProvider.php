@@ -8,7 +8,7 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\UserMenuItem;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Columns\Column;
-
+use LucasDotVin\Soulbscription\Models\Plan;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -61,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
                     ->icon('heroicon-s-switch-horizontal')
                     ->collapsed(),
 
-                    
+
                 NavigationGroup::make()
                     ->label('My Workflow')
                     ->icon('heroicon-s-briefcase')
@@ -77,16 +77,21 @@ class AppServiceProvider extends ServiceProvider
 
         Filament::serving(function () {
             Filament::registerUserMenuItems([
-                'account' => UserMenuItem::make()->url(route('filament.pages.profile')),              
+                'account' => UserMenuItem::make()->url(route('filament.pages.profile')),
             ]);
         });
 
-        $cache = cache()->get('banking_feature');
-      
+        $subscription = cache()->get('subscription');
+        $plan = cache()->get('current_plan');
+    
+        // dd(OmsSetting::first()->subscription->plan->name);
 
-        if (!$cache) {
-            cache()->forever('banking_feature', OmsSetting::first()->hasFeature('banking'));
+        if (!$subscription) {
+            cache()->forever('subscription', OmsSetting::first()->subscription);
         }
-
+        
+        if (!$plan) {
+            cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
+        }
     }
 }

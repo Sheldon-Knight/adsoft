@@ -1,4 +1,8 @@
 <x-filament::page>
+    @php
+        $subscription = cache()->get('subscription');
+        $plan = cache()->get('current_plan');
+    @endphp
     <div class="container mx-auto px-4">
         <div class="flex flex-row gap-3 items-center justify-between">
 
@@ -77,19 +81,23 @@
                 <x-filament::hr />
 
                 <div class="text-center">
-                    <x-filament::button type="submit">
-                        Choose Plan
+                    <x-filament::button type="submit" color="{{ $plan === 'basic' ? 'danger' : 'primary' }}">
+
+                        {{ $plan === 'basic' ? 'Renew Plan' : 'Choose Plan' }}
                     </x-filament::button>
+                    @if ($plan === 'basic')
+                        <p>Expires In {{ now()->diffInDays(cache()->get('subscription')->expired_at) }} Days</p>
+                    @endif
                 </div>
 
             </x-filament::card>
 
             <x-filament::card class="w-full">
                 <h2 class="text-xl text-center font-semibold tracking-tight filament-card-heading">
-                   Premium
+                    Premium
                 </h2>
                 <P class="text-sm text-center">
-                     Everything You Need For A Full Office Management System
+                    Everything You Need For A Full Office Management System
                 </P>
 
                 <x-filament::hr />
@@ -137,7 +145,7 @@
 
 
                     <li class="flex space-x-6 ">
-                          <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -146,7 +154,7 @@
                     </li>
 
                     <li class="flex space-x-6 ">
-                         <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -159,9 +167,13 @@
                 <x-filament::hr />
 
                 <div class="text-center">
-                    <x-filament::button type="submit" color="danger">
-                        Current Plan
+                    <x-filament::button type="submit" color="{{ $plan === 'premium' ? 'danger' : 'primary' }}">
+
+                        {{ $plan === 'premium' ? 'Renew Plan' : 'Choose Plan' }}
                     </x-filament::button>
+                    @if ($plan === 'premium')
+                        <p>Expires In {{ now()->diffInDays(cache()->get('subscription')->expired_at) }} Days</p>
+                    @endif
                 </div>
 
             </x-filament::card>
