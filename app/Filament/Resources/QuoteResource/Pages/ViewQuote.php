@@ -28,7 +28,9 @@ class ViewQuote extends ViewRecord
 
     public static function canView(Model $record): bool
     {
-
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return true;
         // return auth()->user()->can('view quotes', $record);
     }

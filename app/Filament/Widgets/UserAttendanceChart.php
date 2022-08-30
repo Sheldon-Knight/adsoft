@@ -20,6 +20,18 @@ class UserAttendanceChart extends BarChartWidget
     public string $absentLabel;
 
 
+
+    public static function canView(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        return true;
+    }
+
+    
     protected function getFilters(): ?array
     {
         return [

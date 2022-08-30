@@ -18,6 +18,9 @@ class JobPolicy
      */
     public function viewAny(User $user)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('view any jobs');
     }
 
@@ -30,6 +33,9 @@ class JobPolicy
      */
     public function view(User $user, Job $job)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($job->deleted_at != null) {
             return false;
         }
@@ -44,6 +50,9 @@ class JobPolicy
      */
     public function create(User $user)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('create jobs');
     }
 
@@ -56,6 +65,9 @@ class JobPolicy
      */
     public function update(User $user, Job $job)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($job->deleted_at != null) {
             return false;
         }
@@ -71,6 +83,9 @@ class JobPolicy
      */
     public function delete(User $user, Job $job)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($job->deleted_at != null) {
             return false;
         }
@@ -86,6 +101,9 @@ class JobPolicy
      */
     public function restore(User $user, Job $job)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($job->deleted_at === null) {
             return false;
         }
@@ -101,6 +119,9 @@ class JobPolicy
      */
     public function forceDelete(User $user, Job $job)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($job->deleted_at === null) {
             return false;
         }

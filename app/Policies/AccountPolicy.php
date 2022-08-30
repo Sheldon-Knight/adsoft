@@ -18,12 +18,17 @@ class AccountPolicy
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
-     */   
+     */
     public function viewAny(User $user)
     {
-     
-        if (cache()->get('banking_feature') == false) {
-           return false;
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
         }
 
         return $user->can('view any accounts');
@@ -39,6 +44,13 @@ class AccountPolicy
     public function view(User $user, Account $account)
     {
 
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
 
         if ($account->deleted_at != null) {
             return false;
@@ -55,6 +67,14 @@ class AccountPolicy
      */
     public function create(User $user)
     {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
         return $user->can('create accounts');
     }
 
@@ -67,6 +87,14 @@ class AccountPolicy
      */
     public function update(User $user, Account $account)
     {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
 
         if ($account->deleted_at != null) {
             return false;
@@ -85,6 +113,15 @@ class AccountPolicy
     public function delete(User $user, Account $account)
     {
 
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
+
         if ($account->deleted_at != null) {
             return false;
         }
@@ -102,6 +139,13 @@ class AccountPolicy
     public function restore(User $user, Account $account)
     {
 
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
         if ($account->deleted_at === null) {
             return false;
         }
@@ -118,6 +162,15 @@ class AccountPolicy
      */
     public function forceDelete(User $user, Account $account)
     {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+        
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
+
         if ($account->deleted_at === null) {
             return false;
         }

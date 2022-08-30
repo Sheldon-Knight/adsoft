@@ -26,5 +26,10 @@ class OmsSetting extends Model
         'quote_series',
         'invoice_notes',
         'quote_notes',
-    ];  
+    ];
+
+    public function hasExpired()
+    {
+        return empty($this->subscription);
+    }  
 }

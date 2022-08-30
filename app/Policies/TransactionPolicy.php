@@ -18,6 +18,13 @@ class TransactionPolicy
      */
     public function viewAny(User $user)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
+
         return $user->can('view any transactions');
     }    
 
@@ -30,6 +37,13 @@ class TransactionPolicy
     
     public function create(User $user)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
+        
         return $user->can('create transactions');
     }
 

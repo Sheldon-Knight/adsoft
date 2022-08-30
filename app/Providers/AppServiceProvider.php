@@ -81,17 +81,28 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        $subscription = cache()->get('subscription');
-        $plan = cache()->get('current_plan');
-    
-        // dd(OmsSetting::first()->subscription->plan->name);
+        $hasExpired = true;
 
-        if (!$subscription) {
-            cache()->forever('subscription', OmsSetting::first()->subscription);
+        $getExpiredCache = cache()->get('hasExpired');
+
+        if ($getExpiredCache === null) {
+            cache()->forever('hasExpired', OmsSetting::first()->hasExpired());
+            $hasExpired = cache()->get('hasExpired');
         }
-        
-        if (!$plan) {
-            cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
+
+        if ($hasExpired === false) {
+
+            $subscription = cache()->get('subscription');
+
+            $plan = cache()->get('current_plan');
+
+            if (!$subscription) {
+                cache()->forever('subscription', OmsSetting::first()->subscription);
+            }
+
+            if (!$plan) {
+                cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
+            }
         }
     }
 }

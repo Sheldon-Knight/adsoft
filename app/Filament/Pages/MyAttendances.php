@@ -38,6 +38,16 @@ class MyAttendances extends Page implements HasTable
         return Attendance::query()->where('user_id', auth()->id());
     }
 
+    protected static function shouldRegisterNavigation(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        return true;
+    }
+
     protected function getTableColumns(): array
     {
         return [

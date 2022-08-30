@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\OmsHasExpired;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Http\Middleware\MirrorConfigToSubpackages;
@@ -275,7 +276,7 @@ return [
 
     'middleware' => [
         'auth' => [
-            Authenticate::class,
+            Authenticate::class,           
         ],
         'base' => [
             EncryptCookies::class,
@@ -286,8 +287,8 @@ return [
             VerifyCsrfToken::class,
             SubstituteBindings::class,
             DispatchServingFilamentEvent::class,
-            MirrorConfigToSubpackages::class,
-        ],
+            MirrorConfigToSubpackages::class,          
+        ],      
     ],
 
 ];

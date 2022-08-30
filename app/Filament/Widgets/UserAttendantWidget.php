@@ -26,6 +26,17 @@ class UserAttendantWidget extends Widget implements HasForms
 
     public $now;
 
+    public static function canView(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        return true;
+    }
+    
+
     public function now()
     {
         $this->now = now()->format("H:i");

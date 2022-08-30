@@ -18,6 +18,10 @@ class InvoicePolicy
      */
     public function viewAny(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return $user->can('view any invoices');
     }
 
@@ -30,11 +34,14 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice)
     {
-        if($invoice->deleted_at != null)
-        {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        if ($invoice->deleted_at != null) {
             return false;
         }
-         return $user->can('view invoices');
+        return $user->can('view invoices');
     }
 
     /**
@@ -45,6 +52,10 @@ class InvoicePolicy
      */
     public function create(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return $user->can('create invoices');
     }
 
@@ -57,6 +68,10 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         if ($invoice->deleted_at != null) {
             return false;
         }
@@ -72,6 +87,10 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return $user->can('delete invoices');
     }
 
@@ -84,10 +103,14 @@ class InvoicePolicy
      */
     public function restore(User $user, Invoice $invoice)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         if ($invoice->deleted_at === null) {
             return false;
         }
-       return $user->can('restore invoices');
+        return $user->can('restore invoices');
     }
 
     /**
@@ -99,9 +122,13 @@ class InvoicePolicy
      */
     public function forceDelete(User $user, Invoice $invoice)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         if ($invoice->deleted_at === null) {
             return false;
         }
-         return $user->can('force delete invoices');
+        return $user->can('force delete invoices');
     }
 }

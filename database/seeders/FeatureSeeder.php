@@ -23,7 +23,7 @@ class FeatureSeeder extends Seeder
         // Create Basic Plan
 
         $basic = Plan::create([
-            'name'             => 'basic',
+            'name'             => 'Basic',
             'periodicity_type' => PeriodicityType::Month,
             'periodicity'      => 1,
             'grace_days'       => 1,
@@ -32,7 +32,7 @@ class FeatureSeeder extends Seeder
         // Create Premium Plan
 
         $premium = Plan::create([
-            'name'             => 'premium',
+            'name'             => 'Premium',
             'periodicity_type' => PeriodicityType::Month,
             'periodicity'      => 1,
             'grace_days'       => 1,

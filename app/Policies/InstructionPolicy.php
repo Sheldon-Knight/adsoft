@@ -18,6 +18,9 @@ class InstructionPolicy
      */
     public function viewAny(User $user)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('view any instructions');
     }
 
@@ -30,6 +33,9 @@ class InstructionPolicy
      */
     public function view(User $user, Instruction $instruction)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($instruction->deleted_at != null) {
             return false;
         }      
@@ -45,6 +51,9 @@ class InstructionPolicy
      */
     public function create(User $user)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('create instructions');
     }
 
@@ -57,6 +66,9 @@ class InstructionPolicy
      */
     public function update(User $user, Instruction $instruction)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($instruction->deleted_at != null) {
             return false;
         }
@@ -72,6 +84,9 @@ class InstructionPolicy
      */
     public function delete(User $user, Instruction $instruction)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
 
         if ($instruction->deleted_at != null) {
             return false;
@@ -89,6 +104,9 @@ class InstructionPolicy
      */
     public function restore(User $user, Instruction $instruction)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($instruction->deleted_at === null) {
             return false;
         }
@@ -105,6 +123,9 @@ class InstructionPolicy
      */
     public function forceDelete(User $user, Instruction $instruction)
     {
+          if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($instruction->deleted_at === null) {
             return false;
         }

@@ -25,17 +25,30 @@ class Comments extends Widget implements HasForms
     protected int | string | array $columnSpan = 'full';
 
     public Model $record;
-    
+
     public $currentRouteName;
-    
+
     public $comment;
 
     public $reply;
- 
+
     protected $commmentRules = [
         'comment' => 'required',
     ];
-    
+
+    public static function canView(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+        
+        if (cache()->get('current_plan') == "Basic") {
+            return false;
+        }
+
+        return true;
+    }
 
     public function mount()
     {
@@ -47,7 +60,7 @@ class Comments extends Widget implements HasForms
         $this->validate($this->commmentRules);
 
         $this->record->comment($this->comment, user: auth()->user());
-   
+
         Notification::make()
             ->title('Comment Added')
             ->success()
@@ -56,5 +69,5 @@ class Comments extends Widget implements HasForms
         $this->comment = '';
 
         return redirect()->to($this->currentRouteName);
-    }    
+    }
 }

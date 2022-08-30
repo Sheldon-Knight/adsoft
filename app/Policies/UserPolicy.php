@@ -18,7 +18,10 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('view any users');
     }
 
@@ -31,10 +34,13 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($model->deleted_at != null) {
             return false;
         }
-         return auth()->user()->can('view users');
+        return auth()->user()->can('view users');
     }
 
     /**
@@ -45,6 +51,9 @@ class UserPolicy
      */
     public function create(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return auth()->user()->can('create users');
     }
 
@@ -57,6 +66,9 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($model->deleted_at != null) {
             return false;
         }
@@ -72,6 +84,9 @@ class UserPolicy
      */
     public function delete(User $user, User $model)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
 
         if ($model->deleted_at != null) {
             return false;
@@ -89,11 +104,14 @@ class UserPolicy
      */
     public function restore(User $user, User $model)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($model->deleted_at === null) {
             return false;
         }
 
-       return auth()->user()->can('restore users');
+        return auth()->user()->can('restore users');
     }
 
     /**
@@ -105,9 +123,12 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($model->deleted_at === null) {
             return false;
         }
-         return auth()->user()->can('force delete users');
-    }   
+        return auth()->user()->can('force delete users');
+    }
 }

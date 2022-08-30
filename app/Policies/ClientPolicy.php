@@ -18,6 +18,9 @@ class ClientPolicy
      */
     public function viewAny(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('view any clients');
     }
 
@@ -30,6 +33,9 @@ class ClientPolicy
      */
     public function view(User $user, Client $client)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
 
         if ($client->deleted_at != null) {
             return false;
@@ -46,6 +52,9 @@ class ClientPolicy
      */
     public function create(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('create clients');
     }
 
@@ -58,6 +67,9 @@ class ClientPolicy
      */
     public function update(User $user, Client $client)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
 
         if ($client->deleted_at != null) {
             return false;
@@ -75,6 +87,9 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
 
         if ($client->deleted_at != null) {
             return false;
@@ -92,6 +107,9 @@ class ClientPolicy
      */
     public function restore(User $user, Client $client)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($client->deleted_at === null) {
             return false;
         }
@@ -108,6 +126,9 @@ class ClientPolicy
      */
     public function forceDelete(User $user, Client $client)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($client->deleted_at === null) {
             return false;
         }

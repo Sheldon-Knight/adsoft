@@ -57,30 +57,54 @@ class QuoteResource extends Resource
 
     public static function canViewAny(): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('view any quotes');
     }
 
     public static function canDelete(Model $record): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('delete quotes');
     }
 
     public static function canView(Model $record): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('view quotes');
     }
 
     public static function canRestore(Model $record): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('restore quotes');
     }
     public static function canForceDelete(Model $record): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('force delete quotes');
     }
 
     public static function canCreate(): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
         return auth()->user()->can('create quotes');
     }
 

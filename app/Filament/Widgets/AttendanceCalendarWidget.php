@@ -11,12 +11,21 @@ use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
 class AttendanceCalendarWidget extends FullCalendarWidget
 {
-
-
-
     use CantManageEvents;
 
     protected static ?int $sort = 4;
+
+
+    public static function canView(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        return true;
+    }
+
 
     public function getViewData(): array
     {

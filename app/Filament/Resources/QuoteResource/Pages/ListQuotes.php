@@ -36,6 +36,9 @@ class ListQuotes extends ListRecords
 
     public static function canEdit(Model $record): bool
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return auth()->user()->can('update quotes',$record);
     }
  

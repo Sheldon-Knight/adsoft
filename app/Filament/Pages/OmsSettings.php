@@ -16,7 +16,9 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\DB;
 use LucasDotVin\Soulbscription\Models\Plan;
+use LucasDotVin\Soulbscription\Models\Subscription;
 
 class OmsSettings extends Page
 {
@@ -46,7 +48,7 @@ class OmsSettings extends Page
         abort_unless(auth()->user()->can("change application settings"), 403);
 
         $this->omsSetting = OmsSetting::find(1);
-       
+
 
         $this->form->fill([
             'oms_name' =>  $this->omsSetting->oms_name,
@@ -179,10 +181,58 @@ class OmsSettings extends Page
         ];
     }
 
-    protected function getBasicFormSchema(): array
+
+    public function subscribeTo($planId)
     {
-        return [
-            // ...
-        ];
+        $plan = Plan::find($planId);       
+
+        $subscription = OmsSetting::first();
+
+        if ($subscription->hasExpired()) {
+            DB::table('subscriptions')->where('subscriber_id', $subscription->id)->delete();         
+        }
+
+        $subscription->subscribeTo($plan);  
+
+        cache()->forget('subscription');
+
+        cache()->forget('current_plan');
+
+        cache()->forget('hasExpired');
+
+        cache()->forever('subscription', OmsSetting::first()->subscription);
+
+        cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
+
+        Notification::make()
+            ->title('Your Subscription Has Been Added')
+            ->success()
+            ->send();
+
+        return redirect()->to('/admin/oms-settings');
+    }
+
+    public function renew()
+    {       
+        $subscription = OmsSetting::first();
+
+        $subscription->subscription->renew();
+     
+        cache()->forget('subscription');
+
+        cache()->forget('current_plan');
+
+        cache()->forget('hasExpired');
+
+        cache()->forever('subscription', OmsSetting::first()->subscription);
+
+        cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
+
+        Notification::make()
+            ->title('Your Subscription Has Been Renewed')
+            ->success()
+            ->send();
+
+        return redirect()->to('/admin/oms-settings');
     }
 }

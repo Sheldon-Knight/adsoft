@@ -10,6 +10,7 @@ class UserOverview extends BaseWidget
 {
 
     protected static ?int $sort = 1;
+
     protected function getCards(): array
     {
         return [
@@ -18,5 +19,15 @@ class UserOverview extends BaseWidget
             Card::make('My Instructions', auth()->user()->incompleteInstructions->count()),              
           
         ];
+    }
+
+    public static function canView(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };     
+
+        return true;
     }
 }

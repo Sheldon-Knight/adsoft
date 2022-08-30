@@ -13,11 +13,17 @@ class RolePolicy
 
     public function viewAny(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('view any roles');
     }
 
     public function view(User $user, Role $role)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($role->deleted_at != null) {
             return false;
         }
@@ -26,11 +32,17 @@ class RolePolicy
 
     public function create(User $user)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('create roles');
     }
 
     public function update(User $user, Role $role)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         if ($role->deleted_at != null) {
             return false;
         }
@@ -40,6 +52,9 @@ class RolePolicy
 
     public function delete(User $user, Role $role)
     {
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
         return $user->can('delete roles');
-    } 
+    }
 }

@@ -135,6 +135,16 @@ class MyJobs extends Page implements HasTable
         ];
     }
 
+    protected static function shouldRegisterNavigation(): bool
+    {
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        };
+
+        return true;
+    }
+
     protected function getTableBulkActions(): array
     {
         return [

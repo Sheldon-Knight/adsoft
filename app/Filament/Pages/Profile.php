@@ -39,7 +39,7 @@ class Profile extends Page implements HasForms
             'name' => auth()->user()->name,
             'email' => auth()->user()->email,
         ]);
-    }
+    }  
 
     public function submit()
     {
