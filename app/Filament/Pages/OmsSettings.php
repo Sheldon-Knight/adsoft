@@ -178,4 +178,11 @@ class OmsSettings extends Page
                 ]),
         ];
     }
+
+    protected function getBasicFormSchema(): array
+    {
+        return [
+            // ...
+        ];
+    }
 }
