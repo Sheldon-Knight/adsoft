@@ -1,23 +1,21 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
-use Yoco\YocoClient;
 use Yoco\Exceptions\ApiKeyException;
 use Yoco\Exceptions\DeclinedException;
 use Yoco\Exceptions\InternalException;
+use Yoco\YocoClient;
 
 class ChargeController extends Controller
 {
-
     public function charge()
-    {    
+    {
         $this->validate(request(), [
             'token' => 'required',
             'amountInCents' => 'required|int',
-            'currency' => 'required'
+            'currency' => 'required',
         ]);
 
         $token = request()->input('token');
@@ -34,21 +32,20 @@ class ChargeController extends Controller
 
         Log::error("Using $env keys for payment");
 
-        try {         
+        try {
             return response()->json($client->charge($token, $amountInCents, $currency, $metadata));
         } catch (ApiKeyException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
 
             return response()->json(['charge_error' => $e], 400);
         } catch (DeclinedException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
 
             return response()->json(['charge_error' => $e], 400);
         } catch (InternalException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
 
             return response()->json(['charge_error' => $e], 400);
         }
     }
-
 }

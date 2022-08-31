@@ -17,9 +17,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
@@ -73,8 +71,6 @@ class JobsRelationManager extends RelationManager
 
     public static function table(Table $table): Table
     {
-
-
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('client.client_name')->searchable(),
@@ -90,14 +86,14 @@ class JobsRelationManager extends RelationManager
                     ->dateTime()->searchable(),
             ])
             ->filters([MultiSelectFilter::make('status')->relationship('status', 'name'),
-            MultiSelectFilter::make('user')->relationship('user', 'name'),
-            MultiSelectFilter::make('client')->relationship('client', 'client_name'),
-            MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
-            TextFilter::make('title'),
-            TextFilter::make('description'),
-            DateFilter::make('date_completed'),
-            DateFilter::make('created_at'),
-            TrashedFilter::make(),
+                MultiSelectFilter::make('user')->relationship('user', 'name'),
+                MultiSelectFilter::make('client')->relationship('client', 'client_name'),
+                MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
+                TextFilter::make('title'),
+                TextFilter::make('description'),
+                DateFilter::make('date_completed'),
+                DateFilter::make('created_at'),
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
@@ -112,12 +108,13 @@ class JobsRelationManager extends RelationManager
                             ->options(Status::pluck('name', 'id'))
                             ->required(),
                     ])
-                    ->color("success")
-                    ->icon("heroicon-o-check")
+                    ->color('success')
+                    ->icon('heroicon-o-check')
                     ->visible(function (Model $record) {
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
 
@@ -133,21 +130,21 @@ class JobsRelationManager extends RelationManager
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
                 Tables\Actions\EditAction::make('user_id')
                     ->label('Reasign To')
                     ->color('warning')
                     ->action(function (Job $record, $data) {
-                        $user = User::find($data["user_id"]);
+                        $user = User::find($data['user_id']);
 
-                    $record->update([
-                            'user_id' => $data["user_id"],
+                        $record->update([
+                            'user_id' => $data['user_id'],
                             'department_id' => $user->department_id ?? null,
                             'department_id' => $user->department_id ?? null,
                         ]);
-                        
-                   
+
                         Notification::make()
                             ->title('Updated successfully')
                             ->success()
@@ -163,9 +160,10 @@ class JobsRelationManager extends RelationManager
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
-            ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),  
+                ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
@@ -178,10 +176,10 @@ class JobsRelationManager extends RelationManager
 
                         return $data;
                     }),
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -189,6 +187,7 @@ class JobsRelationManager extends RelationManager
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

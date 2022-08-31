@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Spatie\Permission\Models\Permission;
 
 class UserPolicy
 {
@@ -20,7 +19,7 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('view any users');
     }
@@ -36,10 +35,11 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($model->deleted_at != null) {
             return false;
         }
+
         return auth()->user()->can('view users');
     }
 
@@ -53,7 +53,8 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return auth()->user()->can('create users');
     }
 
@@ -68,10 +69,11 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($model->deleted_at != null) {
             return false;
         }
+
         return auth()->user()->can('update users');
     }
 
@@ -86,7 +88,7 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($model->deleted_at != null) {
             return false;
@@ -106,7 +108,7 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($model->deleted_at === null) {
             return false;
         }
@@ -125,10 +127,11 @@ class UserPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($model->deleted_at === null) {
             return false;
         }
+
         return auth()->user()->can('force delete users');
     }
 }

@@ -56,14 +56,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Job::class);
     }
+
     public function instructions()
     {
         return $this->hasMany(Instruction::class, 'assigned_to');
-    }  
-     public function incompleteInstructions()
-    {
-        return $this->hasMany(Instruction::class, 'assigned_to')->where("status",0);
     }
+
+     public function incompleteInstructions()
+     {
+         return $this->hasMany(Instruction::class, 'assigned_to')->where('status', 0);
+     }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);
@@ -78,16 +81,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class);
     }
-    
+
     public function getTodaysAttendance()
     {
         $now = $this->freshTimestamp();
 
-       return $this->attendances()
-            ->where('day', $now->format('Y-m-d'))            
-            ->first();
+        return $this->attendances()
+             ->where('day', $now->format('Y-m-d'))
+             ->first();
     }
-
 
     public function getYesterdaysAttendance()
     {
@@ -105,7 +107,7 @@ class User extends Authenticatable
         return $this->attendances()->create([
             'day' => $now->format('Y-m-d'),
             'time_in' => $now->format('H:i'),
-            'present' => true
+            'present' => true,
         ]);
     }
 

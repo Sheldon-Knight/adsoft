@@ -10,10 +10,8 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Contracts\HasRelationshipTable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Permission;
 
@@ -50,7 +48,7 @@ class PermissionsRelationManager extends RelationManager
                         $livewire->ownerRecord->givePermissionTo($permission->name);
 
                         Artisan::call('cache:clear');
-                        return;
+
                     }),
             ])
             ->actions([
@@ -58,27 +56,26 @@ class PermissionsRelationManager extends RelationManager
                     ->using(function (Model $record, array $data): Model {
                         $record->removeRole($record->role_id);
                         Artisan::call('cache:clear');
+
                         return $record;
-                    })
+                    }),
 
             ])
             ->bulkActions([
-            BulkAction::make('bulk detach')
-            ->action(function(Collection $records) {
+                BulkAction::make('bulk detach')
+                ->action(function (Collection $records) {
+                    foreach ($records as $record) {
+                        $record->removeRole($record->role_id);
+                    }
 
-                foreach($records as $record)
-                {
-                    $record->removeRole($record->role_id);
-                }
+                    Artisan::call('cache:clear');
 
-                Artisan::call('cache:clear');
-                
-                return Notification::make()
-                    ->title('Removed successfully')
-                    ->success()
-                    ->send();                              
-            })
-            ->deselectRecordsAfterCompletion()
+                    return Notification::make()
+                        ->title('Removed successfully')
+                        ->success()
+                        ->send();
+                })
+                ->deselectRecordsAfterCompletion(),
             ]);
     }
 }

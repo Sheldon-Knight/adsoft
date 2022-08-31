@@ -19,13 +19,14 @@ class StatementFactory extends Factory
     public function definition()
     {
         $transaction = Transaction::inRandomOrder()->first()->id;
+
         return [
             'account_id' => Account::inRandomOrder()->first()->id,
             'transaction_id' => $transaction->id,
             'description' => $$transaction->description,
             'debit' => $this->faker->numberBetween(0, 100),
-            'credit' => $this->faker->numberBetween(0, 100),           
-    
+            'credit' => $this->faker->numberBetween(0, 100),
+
         ];
     }
 }

@@ -18,10 +18,10 @@ return new class extends Migration
             $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onCascadeDelete();
             $table->foreignId('account_id')->nullable()->constrained('accounts')->onDelete('cascade');
             $table->string('description');
-            $table->decimal('debit',8,2);
-            $table->decimal('credit',8,2);
-            $table->decimal('opening_balance',8,2)->default(0);
-            $table->decimal('closing_balance',8,2)->default(0);
+            $table->decimal('debit', 8, 2);
+            $table->decimal('credit', 8, 2);
+            $table->decimal('opening_balance', 8, 2)->default(0);
+            $table->decimal('closing_balance', 8, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

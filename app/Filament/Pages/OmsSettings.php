@@ -2,23 +2,16 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\InvoiceBasicInfo;
-use App\Models\InvoiceStatus;
 use App\Models\OmsSetting;
-use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\DB;
 use LucasDotVin\Soulbscription\Models\Plan;
-use LucasDotVin\Soulbscription\Models\Subscription;
 
 class OmsSettings extends Page
 {
@@ -38,32 +31,29 @@ class OmsSettings extends Page
 
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->can("change application settings");
+        return auth()->user()->can('change application settings');
     }
 
     public function mount()
     {
-
-
-        abort_unless(auth()->user()->can("change application settings"), 403);
+        abort_unless(auth()->user()->can('change application settings'), 403);
 
         $this->omsSetting = OmsSetting::find(1);
 
-
         $this->form->fill([
-            'oms_name' =>  $this->omsSetting->oms_name,
-            'oms_company_name' =>  $this->omsSetting->oms_company_name,
-            'oms_email' =>  $this->omsSetting->oms_email,
-            'oms_company_tel' =>  $this->omsSetting->oms_company_tel,
-            'oms_company_address' =>  $this->omsSetting->oms_company_address,
-            'oms_company_vat' =>  $this->omsSetting->oms_company_vat,
-            'oms_company_registration' =>  $this->omsSetting->oms_company_registration,
-            'oms_logo' =>  $this->omsSetting->oms_logo,
-            'date_format' =>  $this->omsSetting->date_format,
-            'invoice_series' =>  $this->omsSetting->invoice_series,
-            'quote_series' =>  $this->omsSetting->quote_series,
-            'invoice_notes' =>  $this->omsSetting->invoice_notes,
-            'quote_notes' =>  $this->omsSetting->quote_notes,
+            'oms_name' => $this->omsSetting->oms_name,
+            'oms_company_name' => $this->omsSetting->oms_company_name,
+            'oms_email' => $this->omsSetting->oms_email,
+            'oms_company_tel' => $this->omsSetting->oms_company_tel,
+            'oms_company_address' => $this->omsSetting->oms_company_address,
+            'oms_company_vat' => $this->omsSetting->oms_company_vat,
+            'oms_company_registration' => $this->omsSetting->oms_company_registration,
+            'oms_logo' => $this->omsSetting->oms_logo,
+            'date_format' => $this->omsSetting->date_format,
+            'invoice_series' => $this->omsSetting->invoice_series,
+            'quote_series' => $this->omsSetting->quote_series,
+            'invoice_notes' => $this->omsSetting->invoice_notes,
+            'quote_notes' => $this->omsSetting->quote_notes,
         ]);
     }
 
@@ -86,11 +76,11 @@ class OmsSettings extends Page
 
     public function submit()
     {
-        cache()->forget("oms_name");
+        cache()->forget('oms_name');
 
         $this->omsSetting->update($this->form->getState());
 
-        cache()->forever("oms_name", OmsSetting::first()->oms_name);
+        cache()->forever('oms_name', OmsSetting::first()->oms_name);
 
         Notification::make()
             ->title('Saved successfully')
@@ -102,7 +92,6 @@ class OmsSettings extends Page
 
     protected function getFormSchema(): array
     {
-
         $dateFormats = [
             'Y/m/d' => today()->format('Y/m/d'),
             'Y-m-d' => today()->format('Y-m-d'),
@@ -114,7 +103,6 @@ class OmsSettings extends Page
             'm-d-y' => today()->format('m-d-y'),
         ];
 
-
         return [
             Section::make('Set Up')
                 ->columns(2)
@@ -122,7 +110,6 @@ class OmsSettings extends Page
                     TextInput::make('oms_name')
                         ->label('Office Management System Name')
                         ->required(),
-
 
                     TextInput::make('oms_company_name')
                         ->label('Company Name')
@@ -181,18 +168,17 @@ class OmsSettings extends Page
         ];
     }
 
-
     public function subscribeTo($planId)
     {
-        $plan = Plan::find($planId);       
+        $plan = Plan::find($planId);
 
         $subscription = OmsSetting::first();
 
         if ($subscription->hasExpired()) {
-            DB::table('subscriptions')->where('subscriber_id', $subscription->id)->delete();         
+            DB::table('subscriptions')->where('subscriber_id', $subscription->id)->delete();
         }
 
-        $subscription->subscribeTo($plan);  
+        $subscription->subscribeTo($plan);
 
         cache()->forget('subscription');
 
@@ -213,11 +199,11 @@ class OmsSettings extends Page
     }
 
     public function renew()
-    {       
+    {
         $subscription = OmsSetting::first();
 
         $subscription->subscription->renew();
-     
+
         cache()->forget('subscription');
 
         cache()->forget('current_plan');

@@ -11,12 +11,11 @@ class CreateStatusTable extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('status', function (Blueprint $table) {
             $table->id();
-            $table->string("name")->nullable()->unique();  
+            $table->string('name')->nullable()->unique();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,7 +26,6 @@ class CreateStatusTable extends Migration
      *
      * @return void
      */
-
     public function down()
     {
         Schema::dropIfExists('status');

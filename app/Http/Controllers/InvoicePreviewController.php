@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InvoiceBasicInfo;
 use App\Models\OmsSetting;
 use Illuminate\Http\Request;
-use LaravelDaily\Invoices\Invoice;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
 use LaravelDaily\Invoices\Classes\Party;
+use LaravelDaily\Invoices\Invoice;
 
 class InvoicePreviewController extends Controller
 {
@@ -17,8 +16,8 @@ class InvoicePreviewController extends Controller
         $omsSettings = OmsSetting::first();
 
         $seller = new Party([
-            'name'          => $omsSettings->oms_company_name,
-            'phone'         => $omsSettings->oms_company_tel,
+            'name' => $omsSettings->oms_company_name,
+            'phone' => $omsSettings->oms_company_tel,
             'address' => $omsSettings->oms_company_address,
             'custom_fields' => [
                 'email' => $omsSettings->oms_company_email,
@@ -27,16 +26,14 @@ class InvoicePreviewController extends Controller
             ],
         ]);
 
-
-
         $buyer = new Buyer([
-            'name'          => "John Doe",
-            'phone'         => '012-345-6789',
-            'address' => "Random Street, Random City, Random Country",
+            'name' => 'John Doe',
+            'phone' => '012-345-6789',
+            'address' => 'Random Street, Random City, Random Country',
             'custom_fields' => [
                 'email' => 'test@example.com',
                 'vat' => '123456789',
-                'registration' => '987654321'
+                'registration' => '987654321',
             ],
         ]);
 
@@ -48,10 +45,9 @@ class InvoicePreviewController extends Controller
             (new InvoiceItem())->title('Item 5')->pricePerUnit(56.21)->quantity(1),
         ];
 
-
-        $preview = Invoice::make('Inv # ' . 1)
+        $preview = Invoice::make('Inv # '. 1)
             ->series($omsSettings->invoice_series)
-            ->status("Unpaid")
+            ->status('Unpaid')
             ->seller($seller)
             ->buyer($buyer)
             ->date(today())
@@ -65,8 +61,7 @@ class InvoicePreviewController extends Controller
             ->addItems($items)
             ->notes($omsSettings->invoice_notes)
             ->setCustomData(['invoice_due_date' => now()->addDays(10)->format($omsSettings->date_format)])
-            ->logo(public_path('/storage/' . $omsSettings->oms_logo));
-
+            ->logo(public_path('/storage/'.$omsSettings->oms_logo));
 
         return $preview->stream();
     }

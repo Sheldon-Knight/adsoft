@@ -10,19 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 class Comment extends Model implements IsComment
 {
     use HasFactory;
-    
     use SoftDeletes;
 
     protected $guarded = [];
 
     public function commentable(): MorphTo
     {
-        return $this->morphTo()->where("parent_id");
-    } 
+        return $this->morphTo()->where('parent_id');
+    }
 
     public function replies(): HasMany
     {
@@ -33,5 +31,4 @@ class Comment extends Model implements IsComment
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 }

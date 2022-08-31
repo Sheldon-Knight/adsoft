@@ -20,11 +20,11 @@ class Transaction extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class,'account_id');
+        return $this->belongsTo(Account::class, 'account_id');
     }
 
     public function statement()
     {
-        return $this->hasMany(Statement::class,'transaction_id');
-    } 
+        return $this->hasMany(Statement::class, 'transaction_id');
+    }
 }

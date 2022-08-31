@@ -6,9 +6,8 @@ use App\Models\OmsSetting;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\UserMenuItem;
-use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Columns\Column;
-use LucasDotVin\Soulbscription\Models\Plan;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,7 +28,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         Filament::serving(function () {
             Filament::registerNavigationGroups([
                 NavigationGroup::make()
@@ -61,7 +59,6 @@ class AppServiceProvider extends ServiceProvider
                     ->icon('heroicon-s-switch-horizontal')
                     ->collapsed(),
 
-
                 NavigationGroup::make()
                     ->label('My Workflow')
                     ->icon('heroicon-s-briefcase')
@@ -91,16 +88,15 @@ class AppServiceProvider extends ServiceProvider
         }
 
         if ($hasExpired === false) {
-
             $subscription = cache()->get('subscription');
 
             $plan = cache()->get('current_plan');
 
-            if (!$subscription) {
+            if (! $subscription) {
                 cache()->forever('subscription', OmsSetting::first()->subscription);
             }
 
-            if (!$plan) {
+            if (! $plan) {
                 cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
             }
         }

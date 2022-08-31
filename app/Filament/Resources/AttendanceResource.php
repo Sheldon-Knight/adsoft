@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AttendanceResource\Pages;
-use App\Filament\Resources\AttendanceResource\RelationManagers;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
@@ -16,8 +15,6 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\Rules\Unique;
-use phpDocumentor\Reflection\Types\Callable_;
 
 class AttendanceResource extends Resource
 {
@@ -29,7 +26,6 @@ class AttendanceResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
-  
     public static function form(Form $form): Form
     {
         return $form
@@ -46,7 +42,7 @@ class AttendanceResource extends Resource
                                 $value = Carbon::parse($value)->format('Y-m-d');
                                 $attendance = Attendance::where('user_id', $userId)->where('day', $value)->first();
                                 if ($attendance) {
-                                    $fail("Record Already Exist");
+                                    $fail('Record Already Exist');
                                 }
                             };
                         },
@@ -64,25 +60,29 @@ class AttendanceResource extends Resource
                     ->columnspan('full'),
 
                 Forms\Components\TimePicker::make('time_in')->default('07:00')->withoutSeconds()->before('time_out')->reactive()->required(function (Closure $get) {
-                    if ($get('present') == 0 or $get('present') == "false") {
+                    if ($get('present') == 0 or $get('present') == 'false') {
                         return false;
                     }
+
                     return true;
                 })->visible(function (Closure $get) {
-                    if ($get('present') == 0 or $get('present') == "false") {
+                    if ($get('present') == 0 or $get('present') == 'false') {
                         return false;
                     }
+
                     return true;
                 }),
                 Forms\Components\TimePicker::make('time_out')->default('16:00')->withoutSeconds()->after('time_in')->reactive()->required(function (Closure $get) {
-                    if ($get('present') == 0 or $get('present') == "false") {
+                    if ($get('present') == 0 or $get('present') == 'false') {
                         return false;
                     }
+
                     return true;
                 })->visible(function (Closure $get) {
-                    if ($get('present') == 0 or $get('present') == "false") {
+                    if ($get('present') == 0 or $get('present') == 'false') {
                         return false;
                     }
+
                     return true;
                 }),
             ]);
@@ -107,7 +107,6 @@ class AttendanceResource extends Resource
                 Tables\Actions\ViewAction::make(),
 
                 Tables\Actions\DeleteAction::make()->visible(function (Attendance $record) {
-
                     if ($record->deleted_at != null) {
                         return false;
                     }
@@ -116,7 +115,6 @@ class AttendanceResource extends Resource
                 }),
 
                 Tables\Actions\RestoreAction::make()->visible(function (Attendance $record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -125,7 +123,6 @@ class AttendanceResource extends Resource
                 }),
 
                 Tables\Actions\ForceDeleteAction::make()->visible(function (Attendance $record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -134,7 +131,7 @@ class AttendanceResource extends Resource
                 }),
 
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -150,7 +147,7 @@ class AttendanceResource extends Resource
         return [
             'index' => Pages\ListAttendances::route('/'),
             'create' => Pages\CreateAttendance::route('/create'),
-            'edit' => Pages\EditAttendance::route('/{record}/edit'),          
+            'edit' => Pages\EditAttendance::route('/{record}/edit'),
         ];
     }
 

@@ -16,10 +16,12 @@ class ListClients extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
     protected function getTableFiltersFormColumns(): int
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';
@@ -29,5 +31,4 @@ class ListClients extends ListRecords
     {
         return true;
     }
-    
 }

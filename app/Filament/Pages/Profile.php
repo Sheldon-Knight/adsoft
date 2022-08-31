@@ -15,7 +15,6 @@ class Profile extends Page implements HasForms
     use InteractsWithForms;
 
     protected static bool $shouldRegisterNavigation = false;
-    
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
@@ -39,7 +38,7 @@ class Profile extends Page implements HasForms
             'name' => auth()->user()->name,
             'email' => auth()->user()->email,
         ]);
-    }  
+    }
 
     public function submit()
     {
@@ -66,7 +65,7 @@ class Profile extends Page implements HasForms
     private function updateSessionPassword($user)
     {
         request()->session()->put([
-            'password_hash_' . auth()->getDefaultDriver() => $user->getAuthPassword(),
+            'password_hash_'.auth()->getDefaultDriver() => $user->getAuthPassword(),
         ]);
     }
 

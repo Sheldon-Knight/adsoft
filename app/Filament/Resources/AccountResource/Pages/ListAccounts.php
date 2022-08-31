@@ -21,6 +21,7 @@ class ListAccounts extends ListRecords
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';
@@ -30,5 +31,4 @@ class ListAccounts extends ListRecords
     {
         return true;
     }
-    
 }

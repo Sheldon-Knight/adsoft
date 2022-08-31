@@ -31,7 +31,7 @@ class Account extends Model
 
     public function getFullNameAttribute()
     {
-        return $this->account_number .  ':' . 'R' . number_format($this->balance,2);
+        return $this->account_number.':'.'R'.number_format($this->balance, 2);
     }
 
     public function transactions()
@@ -43,6 +43,4 @@ class Account extends Model
     {
         return $this->hasMany(Statement::class);
     }
-
-
 }

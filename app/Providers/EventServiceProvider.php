@@ -35,10 +35,10 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-      Transfer::observe(TransferObserver::class);
-      Account::observe(AccountObserver::class);
-      Transaction::observe(TransactionObserver::class);
-      Role::observe(RoleObserver::class);
+        Transfer::observe(TransferObserver::class);
+        Account::observe(AccountObserver::class);
+        Transaction::observe(TransactionObserver::class);
+        Role::observe(RoleObserver::class);
     }
 
     /**

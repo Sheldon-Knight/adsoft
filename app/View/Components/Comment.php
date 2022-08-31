@@ -11,8 +11,7 @@ class Comment extends Component
      *
      * @return void
      */
-
-     public $record;
+    public $record;
 
     public function __construct($record)
     {

@@ -10,9 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Job extends Model
 {
     use HasFactory, HasComments,SoftDeletes;
-    
 
-    protected $fillable =   [
+    protected $fillable = [
         'title',
         'description',
         'date_completed',

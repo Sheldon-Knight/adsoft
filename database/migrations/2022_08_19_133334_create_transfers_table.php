@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('from_account')->nullable()->constrained('accounts')->onDelete('cascade');
             $table->foreignId('to_account')->nullable()->constrained('accounts')->onDelete('cascade');
             $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onDelete('cascade');
-            $table->decimal('amount',8,2);
+            $table->decimal('amount', 8, 2);
             $table->timestamps();
             $table->softDeletes();
         });

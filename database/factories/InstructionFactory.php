@@ -2,12 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Client;
-use App\Models\Comment;
 use App\Models\Instruction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
 
 class InstructionFactory extends Factory
 {
@@ -30,9 +27,9 @@ class InstructionFactory extends Factory
             'instruction' => $this->faker->paragraph,
             'due_date' => $this->faker->dateTimeBetween('-1 years', '+1 years'),
             'date_completed' => $this->faker->dateTimeBetween('-1 years', '+1 years'),
-            'status' => $this->faker->randomElement([1,0]),
+            'status' => $this->faker->randomElement([1, 0]),
             'created_by' => User::factory(),
             'assigned_to' => User::factory(),
-        ];        
+        ];
     }
 }

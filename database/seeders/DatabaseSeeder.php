@@ -12,22 +12,22 @@ class DatabaseSeeder extends Seeder
      * @return void
      */
     public function run()
-    {    
+    {
         $this->call(
             [
                 // AdminSeeder::class,
                 // OmsSettingsSeeder::class,
                 // StatusesSeeder::class,
                 // DepartmentSeeder::class,
-                // RoleSeeder::class,  
+                // RoleSeeder::class,
                 // UserSeeder::class,
                 // InstructionSeeder::class,
                 // AccountSeeder::class,
                 // TransferSeeder::class,
                 // TransactionSeeder::class,
                 // StatementSeeder::class,
-                // AttendanceSeeder::class, 
-                FeatureSeeder::class,     
+                // AttendanceSeeder::class,
+                FeatureSeeder::class,
             ]
         );
     }

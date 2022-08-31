@@ -44,7 +44,7 @@ class TransactionsRelationManager extends RelationManager
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label("Transaction Date")
+                    ->label('Transaction Date')
                     ->dateTime(),
             ])
             ->filters([
@@ -56,15 +56,15 @@ class TransactionsRelationManager extends RelationManager
                 SelectFilter::make('type')->options([
                     'debit' => 'debit',
                     'credit' => 'credit',
-                ])
+                ]),
 
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->actions([])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -72,6 +72,7 @@ class TransactionsRelationManager extends RelationManager
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

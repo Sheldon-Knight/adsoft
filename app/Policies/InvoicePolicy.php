@@ -20,7 +20,7 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return $user->can('view any invoices');
     }
@@ -36,11 +36,12 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($invoice->deleted_at != null) {
             return false;
         }
+
         return $user->can('view invoices');
     }
 
@@ -54,7 +55,7 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return $user->can('create invoices');
     }
@@ -70,11 +71,12 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($invoice->deleted_at != null) {
             return false;
         }
+
         return $user->can('update invoices');
     }
 
@@ -89,7 +91,7 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return $user->can('delete invoices');
     }
@@ -105,11 +107,12 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($invoice->deleted_at === null) {
             return false;
         }
+
         return $user->can('restore invoices');
     }
 
@@ -124,11 +127,12 @@ class InvoicePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($invoice->deleted_at === null) {
             return false;
         }
+
         return $user->can('force delete invoices');
     }
 }

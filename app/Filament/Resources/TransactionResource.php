@@ -16,7 +16,6 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
@@ -32,7 +31,6 @@ class TransactionResource extends Resource
         return parent::getEloquentQuery()->latest();
     }
 
-
     public static function form(Form $form): Form
     {
         return $form
@@ -47,7 +45,7 @@ class TransactionResource extends Resource
 
                 Select::make('type')
                     ->label('Type')
-                    ->options(["credit" => "Credit", "debit" => "Debit"])
+                    ->options(['credit' => 'Credit', 'debit' => 'Debit'])
                     ->reactive()
                     ->required()
                     ->searchable(),
@@ -73,20 +71,19 @@ class TransactionResource extends Resource
                         fn (Mask $mask) => $mask
                             ->numeric()
                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                            ->minValue(1) // Set the minimum value that the number can be.                     
+                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                            ->minValue(1) // Set the minimum value that the number can be.
                     )
                     ->required()
                     ->hiddenOn('view'),
 
                 TextInput::make('amount_1')
-                    ->label("Amount")
+                    ->label('Amount')
                     ->integer()
                     ->reactive()
                     ->minValue(1)
                     ->prefix('R')
                     ->placeholder(function (Model $record) {
-
                         return number_format($record->amount, 2);
                     })
                     ->required()
@@ -114,7 +111,7 @@ class TransactionResource extends Resource
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label("Transaction Date")
+                    ->label('Transaction Date')
                     ->dateTime(),
             ])
             ->filters([
@@ -124,7 +121,7 @@ class TransactionResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -134,8 +131,6 @@ class TransactionResource extends Resource
             //
         ];
     }
-
-
 
     public static function getPages(): array
     {

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\StatusResource\Pages;
 
 use App\Filament\Resources\StatusResource;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditStatus extends EditRecord
@@ -13,7 +12,7 @@ class EditStatus extends EditRecord
     protected function getActions(): array
     {
         return [
-        
+
         ];
     }
 }

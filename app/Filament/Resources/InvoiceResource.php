@@ -3,10 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\InvoiceResource\Pages;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\InvoiceStatus;
 use App\Models\Status;
 use App\Services\PdfInvoice;
 use Closure;
@@ -15,7 +13,6 @@ use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
@@ -30,14 +27,9 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\MultiSelectFilter;
-use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use League\CommonMark\Input\MarkdownInput;
-use NunoMaduro\Collision\Adapters\Phpunit\State;
-use Spatie\Permission\Models\Permission;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
@@ -46,9 +38,10 @@ class InvoiceResource extends Resource
     protected static ?string $model = Invoice::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cash';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationGroup = 'Finance';
 
+    protected static ?int $navigationSort = 3;
+
+    protected static ?string $navigationGroup = 'Finance';
 
     public static function getEloquentQuery(): Builder
     {
@@ -66,7 +59,7 @@ class InvoiceResource extends Resource
                         Card::make()
                             ->schema([
                                 TextInput::make('invoice_number')
-                                    ->default('ABC-' . random_int(10000, 999999))
+                                    ->default('ABC-'.random_int(10000, 999999))
                                     ->required(),
 
                                 Select::make('client_id')
@@ -115,7 +108,7 @@ class InvoiceResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->extraAttributes([
-                                                "step" => "0.01"
+                                                'step' => '0.01',
                                             ])
                                             ->columnSpan([
                                                 'md' => 2,
@@ -140,7 +133,7 @@ class InvoiceResource extends Resource
                                             ->disabled()
                                             ->reactive()
                                             ->extraAttributes([
-                                                "step" => "0.01"
+                                                'step' => '0.01',
                                             ])
                                             ->placeholder(function (Closure $get, $set) {
                                                 $price = 0;
@@ -159,10 +152,10 @@ class InvoiceResource extends Resource
 
                                                 $set('subtotal', number_format(floatval($price) * intval($qty), 2));
                                             })
-                                            ->label("Sub Total")
+                                            ->label('Sub Total')
                                             ->columnSpan([
                                                 'md' => 3,
-                                            ])
+                                            ]),
                                     ])
                                     ->defaultItems(1)
                                     ->columns([
@@ -172,14 +165,12 @@ class InvoiceResource extends Resource
                                     ->cloneable()
                                     ->createItemButtonLabel('Add Item'),
 
-
                             ]),
-
 
                         Card::make()
                             ->schema([
-                                TextInput::make("invoice_subtotal")
-                                    ->label("Sub Total")
+                                TextInput::make('invoice_subtotal')
+                                    ->label('Sub Total')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
@@ -197,7 +188,7 @@ class InvoiceResource extends Resource
                                         foreach ($fields as $field) {
                                             $value = floatval($field['price']) * intval($field['qty']);
 
-                                            if ($field['price'] == "" or $field['price'] == null) {
+                                            if ($field['price'] == '' or $field['price'] == null) {
                                                 $value = 0;
                                             }
 
@@ -210,9 +201,8 @@ class InvoiceResource extends Resource
                                         'md' => 3,
                                     ]),
 
-
                                 TextInput::make('invoice_discount')
-                                    ->label("Discount")
+                                    ->label('Discount')
                                     ->required()
                                     ->reactive()
                                     ->type('number')
@@ -221,7 +211,7 @@ class InvoiceResource extends Resource
                                     ->minValue(0)
                                     ->default(0.00)
                                     ->extraAttributes([
-                                        "step" => "0.01"
+                                        'step' => '0.01',
                                     ])
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         if ($state == null) {
@@ -234,12 +224,8 @@ class InvoiceResource extends Resource
                                         'md' => 3,
                                     ]),
 
-
-
-
-
-                                TextInput::make("invoice_tax")
-                                    ->label("Tax")
+                                TextInput::make('invoice_tax')
+                                    ->label('Tax')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
@@ -248,25 +234,27 @@ class InvoiceResource extends Resource
                                     ->placeholder(function (Closure $get, $set) {
                                         $tax = $get('invoice_subtotal') * 0.15 ?? 0;
                                         $set('invoice_tax', number_format($tax, 2));
+
                                         return number_format($tax, 2);
                                     })
                                     ->columnSpan([
                                         'md' => 3,
                                     ]),
 
-                                TextInput::make("invoice_total")
-                                    ->label("Total Amount")
+                                TextInput::make('invoice_total')
+                                    ->label('Total Amount')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
                                     ->disabled()
                                     ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
-                                        $tax =  $get('invoice_tax');
-                                        $discount =  $get('invoice_discount');
-                                        $subtotal =  $get('invoice_subtotal');
+                                        $tax = $get('invoice_tax');
+                                        $discount = $get('invoice_discount');
+                                        $subtotal = $get('invoice_subtotal');
                                         $total = $subtotal + $tax - $discount;
                                         $set('invoice_total', number_format($total, 2));
+
                                         return number_format($total, 2);
                                     })
                                     ->columnSpan([
@@ -277,8 +265,7 @@ class InvoiceResource extends Resource
                                 'md' => 12,
                             ]),
 
-
-                    ])->columnSpan('full')
+                    ])->columnSpan('full'),
 
             ]);
     }
@@ -293,58 +280,52 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_total')->sortable()->searchable()->money('zar', true),
                 Tables\Columns\TextColumn::make('invoice_status')->sortable()->searchable(),
 
-
             ])
             ->filters([
                 DateFilter::make('invoice_date'),
                 DateFilter::make('invoice_due_date'),
                 NumberFilter::make('invoice_total'),
                 MultiSelectFilter::make('invoice_status')
-                    ->options(Invoice::where('is_quote',false)->get()->pluck("invoice_status", "invoice_status")->toArray())
+                    ->options(Invoice::where('is_quote', false)->get()->pluck('invoice_status', 'invoice_status')->toArray())
                     ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Action::make('Pdf Downlaod')
-                    ->label("Pdf Download")
+                    ->label('Pdf Download')
                     ->color('warning')
                     ->url(function (Invoice $record) {
                         return route('pdf-download', $record);
                     })
                     ->visible(function (Invoice $record) {
-
-                        if (auth()->user()->can("download pdf invoices") and $record->deleted_at === null) {
+                        if (auth()->user()->can('download pdf invoices') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     }),
                 Tables\Actions\Action::make('email')
                     ->color('success')
                     ->action(
                         function (Invoice $record, $data) {
-
                             $removedItems = [];
 
                             foreach ($data['cc'] as $key => $email) {
-
-                                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                                     $removedItems[] = $email;
                                     unset($data['cc'][$key]);
                                 }
                             }
 
                             if ($data['attached_invoice'] == true) {
-
                                 $pdfInvoice = new pdfInvoice();
 
-                                $attachement =  $pdfInvoice->GetAttachedInvoice($record);
+                                $attachement = $pdfInvoice->GetAttachedInvoice($record);
 
                                 Mail::send(
                                     'mails.invoice',
                                     ['body' => $data['body']],
                                     function ($message) use ($data, $attachement) {
-
-
                                         $message->from('john@johndoe.com', 'John Doe');
                                         $message->to($data['to']);
                                         $message->cc(array_values($data['cc']));
@@ -352,12 +333,10 @@ class InvoiceResource extends Resource
                                         $message->attach($attachement);
 
                                         if ($data['attachments']) {
-
-                                            foreach ($data["attachments"] as $key => $at) {
-
-                                                $at = $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                            foreach ($data['attachments'] as $key => $at) {
+                                                $at = $message->attach(public_path("storage/{$data['attachments'][$key]}"));
                                             }
-                                        };
+                                        }
                                     }
                                 );
 
@@ -369,40 +348,33 @@ class InvoiceResource extends Resource
                                     $message->cc(array_values($data['cc']));
                                     $message->subject($data['subject']);
                                     if ($data['attachments']) {
-
-                                        foreach ($data["attachments"] as $key => $at) {
-
-                                            $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                        foreach ($data['attachments'] as $key => $at) {
+                                            $message->attach(public_path("storage/{$data['attachments'][$key]}"));
                                         }
-                                    };
+                                    }
                                 });
                             }
 
                             if ($data['attachments']) {
-
                                 try {
-                                    foreach ($data["attachments"] as $key => $at) {
-                                        unlink(public_path("storage/{$data["attachments"][$key]}"));
+                                    foreach ($data['attachments'] as $key => $at) {
+                                        unlink(public_path("storage/{$data['attachments'][$key]}"));
                                     }
                                 } catch (\Exception $e) {
                                     Log::error($e->getMessage());
                                 }
                             }
 
-
-
-
                             Notification::make()
-                                ->title("Emails Send Succesfully")
+                                ->title('Emails Send Succesfully')
                                 ->body('send')
                                 ->success()
                                 ->send();
 
-
                             if (count($removedItems) > 0) {
                                 Notification::make()
-                                    ->title("Some Emails Were Removed From The CC")
-                                    ->body('the folowing emails were not valid so it had been removed from the cc:' . implode(PHP_EOL, $removedItems))
+                                    ->title('Some Emails Were Removed From The CC')
+                                    ->body('the folowing emails were not valid so it had been removed from the cc:'.implode(PHP_EOL, $removedItems))
                                     ->danger()
                                     ->persistent()
                                     ->send();
@@ -411,14 +383,13 @@ class InvoiceResource extends Resource
                             }
                         }
 
-
                     )
                     ->label('Email Invoice')
                     ->visible(function (Invoice $record) {
-
-                        if (auth()->user()->can("email invoices") and $record->deleted_at === null) {
+                        if (auth()->user()->can('email invoices') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     })
                     ->form([
@@ -435,8 +406,6 @@ class InvoiceResource extends Resource
                                 TagsInput::make('cc')
                                     ->label('CC')
                                     ->placeholder(fn () => auth()->user()->email),
-
-
 
                                 TextInput::make('subject')
                                     ->label('Subject')
@@ -474,7 +443,6 @@ class InvoiceResource extends Resource
                                     ->required()
                                     ->columnSpan('full'),
 
-
                             ])
 
                             ->columns(2),
@@ -496,10 +464,10 @@ class InvoiceResource extends Resource
 
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 

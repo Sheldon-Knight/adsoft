@@ -4,18 +4,13 @@ namespace App\Filament\Resources;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Filament\Resources\StatusResource\Pages;
-use App\Filament\Resources\StatusResource\RelationManagers;
-use App\Models\Invoice;
 use App\Models\Status;
 use Filament\Forms;
-use Filament\Tables\Actions\Action;
-use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
@@ -29,7 +24,6 @@ class StatusResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->withoutGlobalScopes([
@@ -39,7 +33,6 @@ class StatusResource extends Resource
 
     public static function form(Form $form): Form
     {
-
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -67,12 +60,11 @@ class StatusResource extends Resource
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
 
-
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ])
              ->headerActions([FilamentExportHeaderAction::make('export'),
-            ]);
+             ]);
     }
 
     public static function getRelations(): array

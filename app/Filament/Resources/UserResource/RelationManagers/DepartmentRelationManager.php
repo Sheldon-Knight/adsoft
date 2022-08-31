@@ -7,11 +7,7 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Filament\Tables\Actions\AssociateAction;
-use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class DepartmentRelationManager extends RelationManager
@@ -39,22 +35,22 @@ class DepartmentRelationManager extends RelationManager
             ])
             ->filters([
                 TextFilter::make('name'),
-              
+
             ])
             ->headerActions([])
             ->actions([
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
-
 
     protected function getTableFiltersFormColumns(): int
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

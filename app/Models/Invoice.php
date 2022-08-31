@@ -31,7 +31,7 @@ class Invoice extends Model
     }
 
     protected $casts = [
-        'items' => 'json'
+        'items' => 'json',
     ];
 
     public function client()
@@ -52,5 +52,5 @@ class Invoice extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
-    }   
+    }
 }

@@ -3,11 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\Pages;
-use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\InvoicesRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\QuotesRelationManager;
-use App\Filament\Resources\ClientResource\Widgets\ClientInvoices;
 use App\Models\Client;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -15,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -36,7 +33,6 @@ class ClientResource extends Resource
     {
         return static::getModel()::count();
     }
-
 
     public static function form(Form $form): Form
     {
@@ -104,8 +100,8 @@ class ClientResource extends Resource
                 TextFilter::make('tel_num'),
                 TextFilter::make('contact_person'),
                 SelectFilter::make('client_status')->options([
-                    'Active' => "Active",
-                    'In-Active' => "In-Active",
+                    'Active' => 'Active',
+                    'In-Active' => 'In-Active',
                 ]),
                 Tables\Filters\TrashedFilter::make(),
             ])
@@ -113,16 +109,14 @@ class ClientResource extends Resource
                 EditAction::make(),
                 ViewAction::make(),
                 Tables\Actions\DeleteAction::make()->visible(function (Client $record) {
-
                     if ($record->deleted_at != null) {
                         return false;
                     }
 
                     return auth()->user()->can('delete clients', $record);
-                }),      
+                }),
 
                 Tables\Actions\RestoreAction::make()->visible(function (Client $record) {
-                   
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -131,7 +125,6 @@ class ClientResource extends Resource
                 }),
 
                 Tables\Actions\ForceDeleteAction::make()->visible(function (Client $record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -140,10 +133,10 @@ class ClientResource extends Resource
                 }),
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -173,6 +166,4 @@ class ClientResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
-
-    
 }

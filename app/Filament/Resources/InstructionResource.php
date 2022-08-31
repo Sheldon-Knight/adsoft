@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\InstructionResource\Pages;
-use App\Filament\Resources\InstructionResource\RelationManagers;
 use App\Filament\Resources\InstructionResource\Widgets\Comments;
 use App\Models\Instruction;
 use App\Models\User;
@@ -13,13 +12,12 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Filters\MultiSelectFilter;
-use Filament\Tables\Filters\SelectFilter;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\BooleanFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
@@ -59,7 +57,6 @@ class InstructionResource extends Resource
                 Forms\Components\DatePicker::make('due_date')
                     ->required(),
 
-
                 Forms\Components\DatePicker::make('date_completed')
                     ->required()
                     ->visibleOn('view'),
@@ -71,7 +68,7 @@ class InstructionResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {        
+    {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('createdBy.name'),
@@ -83,25 +80,25 @@ class InstructionResource extends Resource
                 Tables\Columns\TextColumn::make('date_completed')
                     ->date(),
                 Tables\Columns\BooleanColumn::make('status')
-                    ->label("Completed")
+                    ->label('Completed')
                     ->trueIcon('heroicon-o-badge-check')
                     ->falseIcon('heroicon-o-x-circle'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
             ])
-            ->filters([DateFilter::make("date_completed"),
-            DateFilter::make("created_at"),
-            DateFilter::make("due_date"),
-            TextFilter::make("instruction"),
-            TextFilter::make("title"),
-            SelectFilter::make('status')
-                ->options([
-                    0 => 'In-Completed',
-                    1 => 'Completed',
-                ]),
-            MultiSelectFilter::make('created_by')->relationship('createdBy', 'name'),
-            MultiSelectFilter::make('assigend_to')->relationship('assignedTo', 'name'),
-            TrashedFilter::make(),
+            ->filters([DateFilter::make('date_completed'),
+                DateFilter::make('created_at'),
+                DateFilter::make('due_date'),
+                TextFilter::make('instruction'),
+                TextFilter::make('title'),
+                SelectFilter::make('status')
+                    ->options([
+                        0 => 'In-Completed',
+                        1 => 'Completed',
+                    ]),
+                MultiSelectFilter::make('created_by')->relationship('createdBy', 'name'),
+                MultiSelectFilter::make('assigend_to')->relationship('assignedTo', 'name'),
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make('date_completed')
@@ -111,10 +108,11 @@ class InstructionResource extends Resource
                             ->label('Completed At')
                             ->required(),
                     ])
-                    ->color("success")
-                    ->icon("heroicon-o-check")
+                    ->color('success')
+                    ->icon('heroicon-o-check')
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['status'] = true;
+
                         return $data;
                     })
 
@@ -122,20 +120,20 @@ class InstructionResource extends Resource
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),             
+                Tables\Actions\ForceDeleteAction::make(),
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
-
 
     public static function getEloquentQuery(): Builder
     {
@@ -144,7 +142,6 @@ class InstructionResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
-
 
     public static function getRelations(): array
     {
@@ -159,7 +156,6 @@ class InstructionResource extends Resource
             Comments::class,
         ];
     }
-   
 
     public static function getPages(): array
     {

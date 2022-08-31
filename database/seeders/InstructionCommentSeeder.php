@@ -2,10 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Comment;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class CommentSeeder extends Seeder
 {
@@ -16,6 +13,5 @@ class CommentSeeder extends Seeder
      */
     public function run()
     {
-        
     }
 }

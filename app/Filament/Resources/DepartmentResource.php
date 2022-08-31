@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DepartmentResource\Pages;
-use App\Filament\Resources\DepartmentResource\RelationManagers;
 use App\Filament\Resources\DepartmentResource\RelationManagers\UsersRelationManager;
-use App\Filament\Resources\UserResource\RelationManagers\DepartmentRelationManager;
 use App\Models\Department;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -15,7 +13,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class DepartmentResource extends Resource
@@ -28,17 +25,12 @@ class DepartmentResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->withoutGlobalScopes([
             SoftDeletingScope::class,
         ]);
     }
-
-
-
 
     public static function form(Form $form): Form
     {
@@ -60,7 +52,7 @@ class DepartmentResource extends Resource
                 TextColumn::make('users_count')->counts('users'),
             ])
             ->filters([
-            TextFilter::make('name'),
+                TextFilter::make('name'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
@@ -71,10 +63,10 @@ class DepartmentResource extends Resource
                 Tables\Actions\ForceDeleteAction::make(),
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 

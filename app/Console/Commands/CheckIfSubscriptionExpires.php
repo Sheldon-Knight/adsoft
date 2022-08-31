@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\OmsSetting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use LucasDotVin\Soulbscription\Models\Subscription;
 
 class CheckIfSubscriptionExpires extends Command
 {

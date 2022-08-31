@@ -10,12 +10,10 @@ class ViewInstruction extends ViewRecord
 {
     protected static string $resource = InstructionResource::class;
 
-  
     protected function getFooterWidgets(): array
     {
         return [
             Comments::class,
         ];
     }
-   
 }

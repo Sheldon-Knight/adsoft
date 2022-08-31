@@ -30,15 +30,15 @@ class TransferObserver
         $transfer->toAccount->balance += $transfer->amount;
 
         $uuid = str()->uuid();
-        
+
         DB::table('transactions')->insert([
             'transaction_id' => $uuid,
-            'account_id' =>  $transfer->fromAccount->id,
-            'description' =>  "Transfer made from account:" . $transfer->fromAccount->account_number . " to account:" . $transfer->toAccount->account_number . " for R" . number_format($transfer->amount, 2),
-            'type' =>  'debit',
-            'amount' =>  $transfer->amount,
-            'created_at' =>  now(),
-            'updated_at' =>  now(),
+            'account_id' => $transfer->fromAccount->id,
+            'description' => 'Transfer made from account:'.$transfer->fromAccount->account_number.' to account:'.$transfer->toAccount->account_number.' for R'.number_format($transfer->amount, 2),
+            'type' => 'debit',
+            'amount' => $transfer->amount,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         $transaction = Transaction::where('transaction_id', $uuid)->first();
@@ -52,7 +52,6 @@ class TransferObserver
             'opening_balance' => $openingBalanceFromAccount,
             'closing_balance' => $closingBalanceFromAccount,
         ]);
-
 
         Statement::create([
             'account_id' => $transfer->toAccount->id,

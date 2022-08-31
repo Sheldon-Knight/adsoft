@@ -12,7 +12,7 @@ class OmsSetting extends Model
 
     protected $table = 'oms_settings';
 
-    protected $fillable =  [
+    protected $fillable = [
         'oms_name',
         'oms_company_name',
         'oms_email',
@@ -31,5 +31,5 @@ class OmsSetting extends Model
     public function hasExpired()
     {
         return empty($this->subscription);
-    }  
+    }
 }

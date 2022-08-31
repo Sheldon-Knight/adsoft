@@ -10,15 +10,13 @@ class Status extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['name',];
+    protected $fillable = ['name'];
 
-  
     protected $table = 'status';
-
 
     public function invoices()
     {
-        return $this->hasMany(Invoice::class,'invoice_status');
+        return $this->hasMany(Invoice::class, 'invoice_status');
     }
 
     public function onlyInvoices()

@@ -7,17 +7,12 @@ use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Models\Job;
 use App\Models\Status;
 use App\Models\User;
-use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\MultiSelectFilter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +21,6 @@ use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class MyJobs extends Page implements HasTable
 {
-
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-check';
@@ -36,7 +30,6 @@ class MyJobs extends Page implements HasTable
     protected static ?int $navigationSort = 3;
 
     protected static ?string $navigationGroup = 'My Workflow';
-
 
     protected function getTableQuery(): Builder
     {
@@ -93,12 +86,13 @@ class MyJobs extends Page implements HasTable
                         ->options(Status::pluck('name', 'id'))
                         ->required(),
                 ])
-                ->color("success")
-                ->icon("heroicon-o-check")
+                ->color('success')
+                ->icon('heroicon-o-check')
                 ->visible(function (Model $record) {
                     if ($record->date_completed != null) {
                         return false;
                     }
+
                     return true;
                 }),
 
@@ -114,6 +108,7 @@ class MyJobs extends Page implements HasTable
                     if ($record->date_completed != null) {
                         return false;
                     }
+
                     return true;
                 }),
             \Filament\Tables\Actions\EditAction::make('user_id')
@@ -129,18 +124,18 @@ class MyJobs extends Page implements HasTable
                     if ($record->date_completed != null) {
                         return false;
                     }
+
                     return true;
                 }),
-            ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),       
+            ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),
         ];
     }
 
     protected static function shouldRegisterNavigation(): bool
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return true;
     }
@@ -148,7 +143,7 @@ class MyJobs extends Page implements HasTable
     protected function getTableBulkActions(): array
     {
         return [
-            FilamentExportBulkAction::make('export')
+            FilamentExportBulkAction::make('export'),
         ];
     }
 
@@ -160,15 +155,15 @@ class MyJobs extends Page implements HasTable
                     'filament.resources.jobs.create'
                 )
             )->visible(auth()->user()->can('create jobs')),
-            FilamentExportHeaderAction::make('export')
+            FilamentExportHeaderAction::make('export'),
         ];
     }
-
 
     protected function getTableFiltersFormColumns(): int
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

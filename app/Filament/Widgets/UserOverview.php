@@ -8,25 +8,23 @@ use Filament\Widgets\StatsOverviewWidget\Card;
 
 class UserOverview extends BaseWidget
 {
-
     protected static ?int $sort = 1;
 
     protected function getCards(): array
     {
         return [
-            Card::make('Clients', Client::count()),         
-               
-            Card::make('My Instructions', auth()->user()->incompleteInstructions->count()),              
-          
+            Card::make('Clients', Client::count()),
+
+            Card::make('My Instructions', auth()->user()->incompleteInstructions->count()),
+
         ];
     }
 
     public static function canView(): bool
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };     
+        }
 
         return true;
     }

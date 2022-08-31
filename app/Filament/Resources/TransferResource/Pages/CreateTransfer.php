@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\TransferResource\Pages;
 
 use App\Filament\Resources\TransferResource;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateTransfer extends CreateRecord
@@ -13,5 +12,5 @@ class CreateTransfer extends CreateRecord
     protected function getCreatedNotificationMessage(): ?string
     {
         return 'Transfer Succefull';
-    }    
+    }
 }

@@ -11,10 +11,10 @@ class ListRoles extends ListRecords
     protected static string $resource = RoleResource::class;
 
     public function mount(): void
-    {    
+    {
         abort_unless(auth()->user()->can('view any roles'), 403);
     }
-    
+
     protected function getActions(): array
     {
         return [
@@ -22,11 +22,11 @@ class ListRoles extends ListRecords
         ];
     }
 
-
     protected function getTableFiltersFormColumns(): int
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';
@@ -36,5 +36,4 @@ class ListRoles extends ListRecords
     {
         return true;
     }
-    
 }

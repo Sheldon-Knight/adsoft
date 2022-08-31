@@ -18,15 +18,14 @@ class TransferFactory extends Factory
      */
     public function definition()
     {
+        $fromAccount = Account::inRandomOrder()->first()->id;
 
-       $fromAccount = Account::inRandomOrder()->first()->id;
-       
-       $toAccount = Account::inRandomOrder()->first()->id;
+        $toAccount = Account::inRandomOrder()->first()->id;
 
-       if($fromAccount == $toAccount){
-           $toAccount = Account::inRandomOrder()->first()->id;
-       }
-        
+        if ($fromAccount == $toAccount) {
+            $toAccount = Account::inRandomOrder()->first()->id;
+        }
+
         return [
             'from_account' => $fromAccount,
             'to_account' => $toAccount,

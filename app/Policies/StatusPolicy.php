@@ -18,9 +18,10 @@ class StatusPolicy
      */
     public function viewAny(User $user)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('view any statuses');
     }
 
@@ -33,14 +34,14 @@ class StatusPolicy
      */
     public function view(User $user, Status $status)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($status->deleted_at != null) {
             return false;
         }
 
-         return $user->can('view statuses');
+        return $user->can('view statuses');
     }
 
     /**
@@ -51,9 +52,10 @@ class StatusPolicy
      */
     public function create(User $user)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('create statuses');
     }
 
@@ -66,9 +68,9 @@ class StatusPolicy
      */
     public function update(User $user, Status $status)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($status->deleted_at != null) {
             return false;
         }
@@ -85,12 +87,13 @@ class StatusPolicy
      */
     public function delete(User $user, Status $status)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($status->deleted_at != null) {
             return false;
         }
+
         return $user->can('delete statuses');
     }
 
@@ -103,13 +106,14 @@ class StatusPolicy
      */
     public function restore(User $user, Status $status)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($status->deleted_at === null) {
             return false;
         }
-       return $user->can('restore statuses');
+
+        return $user->can('restore statuses');
     }
 
     /**
@@ -121,12 +125,13 @@ class StatusPolicy
      */
     public function forceDelete(User $user, Status $status)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($status->deleted_at === null) {
             return false;
         }
-         return $user->can('force delete statuses');
+
+        return $user->can('force delete statuses');
     }
 }

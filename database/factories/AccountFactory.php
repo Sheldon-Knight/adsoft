@@ -23,6 +23,6 @@ class AccountFactory extends Factory
             'branch' => $this->faker->name,
             'branch_code' => $this->faker->numberBetween(1000, 9999),
             'balance' => $this->faker->numberBetween(0, 10000),
-        ];        
+        ];
     }
 }

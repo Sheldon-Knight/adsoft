@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string("account_name");
-            $table->integer("account_number");
-            $table->string("bank_name");
-            $table->string("branch");
-            $table->string("branch_code");
-            $table->decimal("balance",8,2);
+            $table->string('account_name');
+            $table->integer('account_number');
+            $table->string('bank_name');
+            $table->string('branch');
+            $table->string('branch_code');
+            $table->decimal('balance', 8, 2);
             $table->timestamps();
             $table->softDeletes();
         });

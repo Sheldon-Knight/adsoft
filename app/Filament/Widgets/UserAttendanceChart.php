@@ -9,7 +9,6 @@ use Flowframe\Trend\TrendValue;
 
 class UserAttendanceChart extends BarChartWidget
 {
-
     protected int | string | array $columnSpan = 'full';
 
     protected static ?int $sort = 3;
@@ -17,21 +16,18 @@ class UserAttendanceChart extends BarChartWidget
     public ?string $filter = 'month';
 
     public string $presentLabel;
+
     public string $absentLabel;
-
-
 
     public static function canView(): bool
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return true;
     }
 
-    
     protected function getFilters(): ?array
     {
         return [
@@ -44,7 +40,7 @@ class UserAttendanceChart extends BarChartWidget
 
     protected function getHeading(): string
     {
-        return 'My ' . $this->presentLabel . ' / ' . $this->absentLabel . ' Chart';
+        return 'My '.$this->presentLabel.' / '.$this->absentLabel.' Chart';
     }
 
     protected function getFilteredQuery($present = false)
@@ -99,14 +95,14 @@ class UserAttendanceChart extends BarChartWidget
         $countAbscents = $absentAttendances->sum('aggregate');
 
         if ($this->filter == 'month' or $this->filter == 'year') {
-            $countPresents = $presentAttendances->sum('aggregate');       
+            $countPresents = $presentAttendances->sum('aggregate');
 
             $countAbscents = $absentAttendances->sum('aggregate');
-        }       
+        }
 
         return [
             'countPresents' => $countPresents,
-            'countAbsents' => $countAbscents
+            'countAbsents' => $countAbscents,
         ];
     }
 
@@ -119,7 +115,6 @@ class UserAttendanceChart extends BarChartWidget
         $this->presentLabel = "Present Per Month ({$counts['countPresents']})";
 
         $this->absentLabel = "Abscents Per Month ({$counts['countAbsents']})";
-
 
         if ($activeFilter == 'last_month') {
             $this->presentLabel = "Present Last Month ({$counts['countPresents']})";
@@ -142,34 +137,32 @@ class UserAttendanceChart extends BarChartWidget
 
     protected function getData(): array
     {
-
         $presentAttendances = $this->getFilteredQuery(true);
 
         $absentAttendances = $this->getFilteredQuery();
 
         $this->getLabels($presentAttendances, $absentAttendances);
-   
+
         $chart =
             [
                 'datasets' => [
                     [
                         'label' => $this->presentLabel,
                         'data' => $presentAttendances->map(fn (TrendValue $value) => $value->aggregate),
-                        'backgroundColor' =>  [
-                            'rgba(0,255,0, 0.7)'
+                        'backgroundColor' => [
+                            'rgba(0,255,0, 0.7)',
                         ],
                     ],
                     [
                         'label' => $this->absentLabel,
                         'data' => $absentAttendances->map(fn (TrendValue $value) => $value->aggregate),
-                        'backgroundColor' =>  [
-                            'rgba(255,0,0, 0.7)'
+                        'backgroundColor' => [
+                            'rgba(255,0,0, 0.7)',
                         ],
                     ],
                 ],
                 'labels' => $presentAttendances->map(fn (TrendValue $value) => $value->date),
             ];
-
 
         return $chart;
     }

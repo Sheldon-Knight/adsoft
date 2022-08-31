@@ -32,10 +32,9 @@ class Client extends Model
         'client_status',
     ];
 
-
     public function invoices()
     {
-        return $this->hasMany(Invoice::class, 'client_id')->where('is_quote',false);
+        return $this->hasMany(Invoice::class, 'client_id')->where('is_quote', false);
     }
 
     public function quotes()

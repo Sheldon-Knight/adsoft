@@ -3,12 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoleResource\Pages;
-use App\Filament\Resources\RoleResource\RelationManagers;
 use App\Filament\Resources\RoleResource\RelationManagers\PermissionsRelationManager;
 use App\Models\Role;
-use Filament\Forms;
 use Filament\Forms\Components\MultiSelect;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -17,9 +14,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\MultiSelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Spatie\Permission\Models\Permission;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class RoleResource extends Resource
@@ -37,12 +31,10 @@ class RoleResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->label('Name')->required()->unique(),
-            MultiSelect::make('permission')
-            ->relationship('permissions', 'name')->columnSpan('full')->hiddenOn(['create','edit'])
+                MultiSelect::make('permission')
+                ->relationship('permissions', 'name')->columnSpan('full')->hiddenOn(['create', 'edit']),
             ]);
     }
-
-
 
     public static function table(Table $table): Table
     {
@@ -53,15 +45,15 @@ class RoleResource extends Resource
                 TextColumn::make('users_count')->counts('users')->searchable()->sortable(),
             ])
             ->filters([
-              TextFilter::make('name'),
-            MultiSelectFilter::make('permissions')->relationship('permissions', 'name')
+                TextFilter::make('name'),
+                MultiSelectFilter::make('permissions')->relationship('permissions', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),           
+                Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+            ->bulkActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 

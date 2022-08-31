@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Models\Attendance;
 use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\BooleanColumn;
@@ -17,12 +16,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 
-
-
-
 class MyAttendances extends Page implements HasTable
 {
-
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-finger-print';
@@ -40,10 +35,9 @@ class MyAttendances extends Page implements HasTable
 
     protected static function shouldRegisterNavigation(): bool
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return true;
     }
@@ -51,16 +45,15 @@ class MyAttendances extends Page implements HasTable
     protected function getTableColumns(): array
     {
         return [
-            TextColumn::make('day')->label("Date")->date()->searchable()->sortable(),
+            TextColumn::make('day')->label('Date')->date()->searchable()->sortable(),
             BooleanColumn::make('present')->searchable()->sortable(),
-            TextColumn::make('time_in')->dateTime("H:i:a")->searchable()->sortable(),
-            TextColumn::make('time_out')->dateTime("H:i:a")->searchable()->sortable(),
+            TextColumn::make('time_in')->dateTime('H:i:a')->searchable()->sortable(),
+            TextColumn::make('time_out')->dateTime('H:i:a')->searchable()->sortable(),
         ];
     }
 
     protected function getTableFilters(): array
     {
-
         // $q = Attendance::where('time_in',">=" ,"07:00:00")->where('time_in', "<=", "08:00:00")->get();
         // dd($q);
         return [
@@ -73,15 +66,14 @@ class MyAttendances extends Page implements HasTable
 
             Filter::make('time_in')
             ->form([
-                TimePicker::make('time_in')->withoutSeconds(),                      
+                TimePicker::make('time_in')->withoutSeconds(),
             ])
-            ->query(function (Builder $query, array $data): Builder {               
+            ->query(function (Builder $query, array $data): Builder {
                 return $query
                     ->when(
                         $data['time_in'],
                         fn (Builder $query, $date): Builder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
                     );
-                     
             }),
 
             Filter::make('time_out')
@@ -94,7 +86,7 @@ class MyAttendances extends Page implements HasTable
                             $data['time_out'],
                             fn (Builder $query, $date): Builder => $query->where('time_out', '=', Carbon::parse($date)->format('H:i:s')),
                         );
-                }) 
+                }),
         ];
     }
 
@@ -106,7 +98,7 @@ class MyAttendances extends Page implements HasTable
     protected function getTableBulkActions(): array
     {
         return [
-            FilamentExportBulkAction::make('export')
+            FilamentExportBulkAction::make('export'),
         ];
     }
 }

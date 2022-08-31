@@ -8,12 +8,6 @@ use App\Models\Invoice;
 use App\Models\Status;
 use App\Services\PdfInvoice;
 use Closure;
-use Exception;
-use Filament\Resources\Form;
-use Filament\Resources\Resource;
-use Filament\Resources\Table;
-use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -24,14 +18,18 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TextInput\Mask;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Filters\MultiSelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -47,19 +45,17 @@ class QuoteResource extends Resource
 
     protected static ?string $navigationLabel = 'Quotes';
 
-
     protected static ?string $title = 'Quotes';
 
     protected static ?string $slug = 'quotes';
 
     protected static ?string $navigationGroup = 'Finance';
 
-
     public static function canViewAny(): bool
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('view any quotes');
     }
@@ -68,7 +64,7 @@ class QuoteResource extends Resource
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('delete quotes');
     }
@@ -77,7 +73,7 @@ class QuoteResource extends Resource
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('view quotes');
     }
@@ -86,15 +82,16 @@ class QuoteResource extends Resource
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('restore quotes');
     }
+
     public static function canForceDelete(Model $record): bool
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('force delete quotes');
     }
@@ -103,7 +100,7 @@ class QuoteResource extends Resource
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         return auth()->user()->can('create quotes');
     }
@@ -125,7 +122,7 @@ class QuoteResource extends Resource
                         Card::make()
                             ->schema([
                                 TextInput::make('invoice_number')
-                                    ->default('ABC-' . random_int(10000, 999999))
+                                    ->default('ABC-'.random_int(10000, 999999))
                                     ->required()
                                     ->label('Quote Number'),
 
@@ -177,7 +174,7 @@ class QuoteResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->extraAttributes([
-                                                "step" => "0.01"
+                                                'step' => '0.01',
                                             ])
                                             ->columnSpan([
                                                 'md' => 2,
@@ -202,7 +199,7 @@ class QuoteResource extends Resource
                                             ->disabled()
                                             ->reactive()
                                             ->extraAttributes([
-                                                "step" => "0.01"
+                                                'step' => '0.01',
                                             ])
                                             ->placeholder(function (Closure $get, $set) {
                                                 $price = 0;
@@ -222,10 +219,10 @@ class QuoteResource extends Resource
                                                 $set('subtotal', number_format(floatval($price) * intval($qty), 2));
                                                 // return number_format(intval($price) * intval($qty));
                                             })
-                                            ->label("Sub Total")
+                                            ->label('Sub Total')
                                             ->columnSpan([
                                                 'md' => 3,
-                                            ])
+                                            ]),
                                     ])
                                     ->defaultItems(1)
                                     ->columns([
@@ -235,15 +232,13 @@ class QuoteResource extends Resource
                                     ->cloneable()
                                     ->createItemButtonLabel('Add Item'),
 
-
                             ]),
-
 
                         Card::make()
                             ->schema([
 
-                                TextInput::make("invoice_subtotal")
-                                    ->label("Sub Total")
+                                TextInput::make('invoice_subtotal')
+                                    ->label('Sub Total')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
@@ -261,7 +256,7 @@ class QuoteResource extends Resource
                                         foreach ($fields as $field) {
                                             $value = floatval($field['price']) * intval($field['qty']);
 
-                                            if ($field['price'] == "" or $field['price'] == null) {
+                                            if ($field['price'] == '' or $field['price'] == null) {
                                                 $value = 0;
                                             }
 
@@ -274,9 +269,8 @@ class QuoteResource extends Resource
                                         'md' => 3,
                                     ]),
 
-
                                 TextInput::make('invoice_discount')
-                                    ->label("Discount")
+                                    ->label('Discount')
                                     ->required()
                                     ->reactive()
                                     ->type('number')
@@ -285,7 +279,7 @@ class QuoteResource extends Resource
                                     ->minValue(0)
                                     ->default(0.00)
                                     ->extraAttributes([
-                                        "step" => "0.01"
+                                        'step' => '0.01',
                                     ])
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         if ($state == null) {
@@ -298,12 +292,8 @@ class QuoteResource extends Resource
                                         'md' => 3,
                                     ]),
 
-
-
-
-
-                                TextInput::make("invoice_tax")
-                                    ->label("Tax")
+                                TextInput::make('invoice_tax')
+                                    ->label('Tax')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
@@ -312,25 +302,27 @@ class QuoteResource extends Resource
                                     ->placeholder(function (Closure $get, $set) {
                                         $tax = $get('invoice_subtotal') * 0.15 ?? 0;
                                         $set('invoice_tax', number_format($tax, 2));
+
                                         return number_format($tax, 2);
                                     })
                                     ->columnSpan([
                                         'md' => 3,
                                     ]),
 
-                                TextInput::make("invoice_total")
-                                    ->label("Total Amount")
+                                TextInput::make('invoice_total')
+                                    ->label('Total Amount')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
                                     ->disabled()
                                     ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
-                                        $tax =  $get('invoice_tax');
-                                        $discount =  $get('invoice_discount');
-                                        $subtotal =  $get('invoice_subtotal');
+                                        $tax = $get('invoice_tax');
+                                        $discount = $get('invoice_discount');
+                                        $subtotal = $get('invoice_subtotal');
                                         $total = $subtotal + $tax - $discount;
                                         $set('invoice_total', number_format($total, 2));
+
                                         return number_format($total, 2);
                                     })
                                     ->columnSpan([
@@ -341,7 +333,7 @@ class QuoteResource extends Resource
                                 'md' => 12,
                             ]),
                     ])
-                    ->columnSpan('full')
+                    ->columnSpan('full'),
             ]);
     }
 
@@ -360,58 +352,54 @@ class QuoteResource extends Resource
                 DateFilter::make('invoice_due_date'),
                 NumberFilter::make('invoice_total'),
                 MultiSelectFilter::make('invoice_status')
-                    ->options(Invoice::where('is_quote', true)->get()->pluck("invoice_status", "invoice_status")->toArray())
+                    ->options(Invoice::where('is_quote', true)->get()->pluck('invoice_status', 'invoice_status')->toArray())
                     ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Action::make('Pdf Downlaod')
-                    ->label("Pdf Download")
+                    ->label('Pdf Download')
                     ->color('warning')
                     ->url(function (Invoice $record) {
                         return route('pdf-download', $record);
                     })
                     ->visible(function (Invoice $record) {
-
-                        if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can('download pdf quotes') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     }),
 
                 Tables\Actions\Action::make('email')
                     ->color('success')
                     ->visible(function (Invoice $record) {
-                        if (auth()->user()->can("email quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can('email quotes') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     })
                     ->action(
                         function (Invoice $record, $data) {
-
                             $removedItems = [];
 
                             foreach ($data['cc'] as $key => $email) {
-
-                                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                                     $removedItems[] = $email;
                                     unset($data['cc'][$key]);
                                 }
                             }
 
                             if ($data['attached_invoice'] == true) {
-
                                 $pdfInvoice = new PdfInvoice();
 
-                                $attachement =  $pdfInvoice->GetAttachedInvoice($record, $isInvoice = false);
+                                $attachement = $pdfInvoice->GetAttachedInvoice($record, $isInvoice = false);
 
                                 Mail::send(
                                     'mails.invoice',
                                     ['body' => $data['body']],
                                     function ($message) use ($data, $attachement) {
-
-
                                         $message->from('john@johndoe.com', 'John Doe');
                                         $message->to($data['to']);
                                         $message->cc(array_values($data['cc']));
@@ -419,12 +407,10 @@ class QuoteResource extends Resource
                                         $message->attach($attachement);
 
                                         if ($data['attachments']) {
-
-                                            foreach ($data["attachments"] as $key => $at) {
-
-                                                $at = $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                            foreach ($data['attachments'] as $key => $at) {
+                                                $at = $message->attach(public_path("storage/{$data['attachments'][$key]}"));
                                             }
-                                        };
+                                        }
                                     }
                                 );
 
@@ -436,40 +422,33 @@ class QuoteResource extends Resource
                                     $message->cc(array_values($data['cc']));
                                     $message->subject($data['subject']);
                                     if ($data['attachments']) {
-
-                                        foreach ($data["attachments"] as $key => $at) {
-
-                                            $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                        foreach ($data['attachments'] as $key => $at) {
+                                            $message->attach(public_path("storage/{$data['attachments'][$key]}"));
                                         }
-                                    };
+                                    }
                                 });
                             }
 
                             if ($data['attachments']) {
-
                                 try {
-                                    foreach ($data["attachments"] as $key => $at) {
-                                        unlink(public_path("storage/{$data["attachments"][$key]}"));
+                                    foreach ($data['attachments'] as $key => $at) {
+                                        unlink(public_path("storage/{$data['attachments'][$key]}"));
                                     }
                                 } catch (\Exception $e) {
                                     Log::error($e->getMessage());
                                 }
                             }
 
-
-
-
                             Notification::make()
-                                ->title("Emails Send Succesfully")
+                                ->title('Emails Send Succesfully')
                                 ->body('send')
                                 ->success()
                                 ->send();
 
-
                             if (count($removedItems) > 0) {
                                 Notification::make()
-                                    ->title("Some Emails Were Removed From The CC")
-                                    ->body('the folowing emails were not valid so it had been removed from the cc:' . implode(PHP_EOL, $removedItems))
+                                    ->title('Some Emails Were Removed From The CC')
+                                    ->body('the folowing emails were not valid so it had been removed from the cc:'.implode(PHP_EOL, $removedItems))
                                     ->danger()
                                     ->persistent()
                                     ->send();
@@ -477,7 +456,6 @@ class QuoteResource extends Resource
                                 return;
                             }
                         }
-
 
                     )
                     ->label('Email Quote')
@@ -496,8 +474,6 @@ class QuoteResource extends Resource
                                 TagsInput::make('cc')
                                     ->label('CC')
                                     ->placeholder(fn () => auth()->user()->email),
-
-
 
                                 TextInput::make('subject')
                                     ->label('Subject')
@@ -535,35 +511,31 @@ class QuoteResource extends Resource
                                     ->required()
                                     ->columnSpan('full'),
 
-
                             ])
 
                             ->columns(2),
 
                     ]),
 
-
-
-
                 Action::make('View')
                     ->url(function (Invoice $record) {
                         return route('filament.resources.quotes.view', $record);
                     })
                     ->visible(function (Invoice $record) {
-
-                        if (auth()->user()->can("view quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can('view quotes') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     }),
-
 
                 Action::make('Change Status')
                     ->icon('heroicon-o-arrows-expand')
                     ->visible(function (Invoice $record) {
-                        if (auth()->user()->can("update quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can('update quotes') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     })
                     ->form([
@@ -574,24 +546,23 @@ class QuoteResource extends Resource
                     ])
                     ->action(function (Invoice $record, $data) {
                         $record->update(['invoice_status' => $data['invoice_status']]);
+
                         return Notification::make()
                             ->title('Status Updated')
                             ->success()
                             ->send();
                     })
 
-
-
                     ->requiresConfirmation()
                     ->color('secondary'),
-
 
                 Action::make('Convert To Invoice')
                     ->icon('heroicon-o-arrow-circle-down')
                     ->visible(function (Invoice $record) {
-                        if (auth()->user()->can("convert quotes to invoices") and $record->deleted_at === null) {
+                        if (auth()->user()->can('convert quotes to invoices') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     })
                     ->form([
@@ -608,7 +579,7 @@ class QuoteResource extends Resource
                 ForceDeleteAction::make(),
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
@@ -620,11 +591,11 @@ class QuoteResource extends Resource
                             ->required(),
                     ])
                     ->visible(function () {
-                        return auth()->user()->can("convert quotes to invoices");
+                        return auth()->user()->can('convert quotes to invoices');
                     })
                     ->action(fn (Collection $records, $data) => $records->each->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
                     ->deselectRecordsAfterCompletion()
-                    ->requiresConfirmation()
+                    ->requiresConfirmation(),
             ]);
     }
 
@@ -634,7 +605,6 @@ class QuoteResource extends Resource
             //
         ];
     }
-
 
     public static function getPages(): array
     {

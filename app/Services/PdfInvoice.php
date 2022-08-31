@@ -5,22 +5,20 @@ namespace App\Services;
 use App\Models\Invoice as record;
 use App\Models\OmsSetting;
 use Carbon\Carbon;
-use LaravelDaily\Invoices\Invoice;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
 use LaravelDaily\Invoices\Classes\Party;
+use LaravelDaily\Invoices\Invoice;
 
 class PdfInvoice
 {
-
     public function GetAttachedInvoice(record $invoice, $isInvoice = true)
     {
-
         $omsSettings = OmsSetting::first();
 
         $seller = new Party([
-            'name'          => $omsSettings->oms_company_name,
-            'phone'         => $omsSettings->oms_company_tel,
+            'name' => $omsSettings->oms_company_name,
+            'phone' => $omsSettings->oms_company_tel,
             'address' => $omsSettings->oms_company_address,
             'custom_fields' => [
                 'email' => $omsSettings->oms_company_email,
@@ -29,12 +27,10 @@ class PdfInvoice
             ],
         ]);
 
-
-
         $buyer = new Buyer([
-            'name'          => $invoice->client->client_name,
-            'phone'         =>  $invoice->client->tel_num,
-            'address' =>       $invoice->client->address,
+            'name' => $invoice->client->client_name,
+            'phone' => $invoice->client->tel_num,
+            'address' => $invoice->client->address,
             'custom_fields' => [
                 'email' => $invoice->client->email,
                 'vat' => $invoice->client->vat_number,
@@ -42,10 +38,8 @@ class PdfInvoice
             ],
         ]);
 
-
         foreach ($invoice->items as $invoiceItem) {
-
-            $items[] =    (new InvoiceItem())
+            $items[] = (new InvoiceItem())
                 ->title($invoiceItem['item'])
                 ->pricePerUnit($invoiceItem['price'])
                 ->quantity($invoiceItem['qty'])
@@ -54,7 +48,7 @@ class PdfInvoice
 
         $series = $isInvoice ? $omsSettings->invoice_series : $omsSettings->quote_series;
         $notes = $isInvoice ? $omsSettings->invoice_notes : $omsSettings->quote_notes;
-        $name = $isInvoice ? "invoice" : "quote";
+        $name = $isInvoice ? 'invoice' : 'quote';
 
         Invoice::make("{$series} # {$invoice->invoice_number}")
             ->series($series)
@@ -72,7 +66,7 @@ class PdfInvoice
             ->notes($notes)
             ->filename("client/{$invoice->client_id}/file/$invoice->id/$name")
             ->setCustomData(['invoice_due_date' => $invoice->invoice_due_date, 'invoice_number' => $invoice->invoice_number])
-            ->logo(public_path('/storage/' . $omsSettings->oms_logo))
+            ->logo(public_path('/storage/'.$omsSettings->oms_logo))
             ->save('public');
 
         $file = public_path("storage/client/{$invoice->client_id}/file/$invoice->id/$name.pdf");
@@ -81,12 +75,12 @@ class PdfInvoice
     }
 
     public function downloadPDf(record $invoice, $isInvoice = true)
-    {  
+    {
         $omsSettings = OmsSetting::first();
 
         $seller = new Party([
-            'name'          => $omsSettings->oms_company_name,
-            'phone'         => $omsSettings->oms_company_tel,
+            'name' => $omsSettings->oms_company_name,
+            'phone' => $omsSettings->oms_company_tel,
             'address' => $omsSettings->oms_company_address,
             'custom_fields' => [
                 'email' => $omsSettings->oms_company_email,
@@ -95,12 +89,10 @@ class PdfInvoice
             ],
         ]);
 
-
-
         $buyer = new Buyer([
-            'name'          => $invoice->client->client_name,
-            'phone'         =>  $invoice->client->tel_num,
-            'address' =>       $invoice->client->address,
+            'name' => $invoice->client->client_name,
+            'phone' => $invoice->client->tel_num,
+            'address' => $invoice->client->address,
             'custom_fields' => [
                 'email' => $invoice->client->email,
                 'vat' => $invoice->client->vat_number,
@@ -108,10 +100,8 @@ class PdfInvoice
             ],
         ]);
 
-
         foreach ($invoice->items as $invoiceItem) {
-
-            $items[] =    (new InvoiceItem())
+            $items[] = (new InvoiceItem())
                 ->title($invoiceItem['item'])
                 ->pricePerUnit($invoiceItem['price'])
                 ->quantity($invoiceItem['qty'])
@@ -120,7 +110,7 @@ class PdfInvoice
 
         $series = $isInvoice ? $omsSettings->invoice_series : $omsSettings->quote_series;
         $notes = $isInvoice ? $omsSettings->invoice_notes : $omsSettings->quote_notes;
-        $name = $isInvoice ? "invoice" : "quote";
+        $name = $isInvoice ? 'invoice' : 'quote';
 
         $pdfInvoice = Invoice::make("{$series} # {$invoice->invoice_number}")
             ->series($series)
@@ -138,9 +128,9 @@ class PdfInvoice
             ->notes($notes)
             ->filename("client/{$invoice->client_id}/file/$invoice->id/$name")
             ->setCustomData(['invoice_due_date' => $invoice->invoice_due_date, 'invoice_number' => $invoice->invoice_number])
-            ->logo(public_path('/storage/' . $omsSettings->oms_logo))
+            ->logo(public_path('/storage/'.$omsSettings->oms_logo))
             ->save('public');
-          
+
         $file = public_path("storage/client/{$invoice->client_id}/file/$invoice->id/$name.pdf");
 
         return $pdfInvoice->download();

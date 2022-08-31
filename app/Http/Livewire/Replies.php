@@ -3,7 +3,6 @@
 namespace App\Http\Livewire;
 
 use Filament\Notifications\Notification;
-use Illuminate\Routing\Route;
 use Livewire\Component;
 
 class Replies extends Component
@@ -19,7 +18,6 @@ class Replies extends Component
         $this->currentRouteName = url()->current();
     }
 
-
     public function render()
     {
         return view('livewire.replies');
@@ -31,10 +29,9 @@ class Replies extends Component
 
     public function addReply()
     {
-
         $this->validate($this->replyRules);
 
-        $modelName = '\\' . $this->comment->commentable_type;
+        $modelName = '\\'.$this->comment->commentable_type;
 
         $model = $modelName::find($this->comment->commentable_id);
 
@@ -51,7 +48,7 @@ class Replies extends Component
     }
 
     public function delete()
-    {      
+    {
         $this->comment->delete();
 
         Notification::make()

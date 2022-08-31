@@ -4,7 +4,6 @@ namespace App\Filament\Resources\AccountResource\Pages;
 
 use App\Filament\Resources\AccountResource;
 use App\Models\Account;
-use App\Models\Statement;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use Closure;
@@ -16,7 +15,6 @@ use Filament\Forms\Components\TextInput\Mask;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
-
 use Illuminate\Database\Eloquent\Model;
 
 class ViewAccount extends ViewRecord
@@ -34,7 +32,6 @@ class ViewAccount extends ViewRecord
         'refreshTable' => 'refreshPage',
     ];
 
-
     public function refreshPage()
     {
         return redirect()->to($this->currentRouteName);
@@ -50,24 +47,23 @@ class ViewAccount extends ViewRecord
     protected function getActions(): array
     {
         return [
-            Action::make("add_funds")
-                ->label("Add Funds")
+            Action::make('add_funds')
+                ->label('Add Funds')
                 ->color('success')
                 ->visible(fn (): bool => auth()->user()->can('add funds to accounts', $this->record))
                 ->action(function ($data) {
-                    $record = $this->record;                                
+                    $record = $this->record;
 
                     $transaction = Transaction::create([
                         'transaction_id' => str()->uuid(),
                         'account_id' => $record->id,
-                        'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
+                        'description' => 'R'.number_format($data['amount'], 2).' Has Been Added To Your Account',
                         'type' => 'credit',
                         'amount' => $data['amount'],
                     ]);
-                            
 
                     Notification::make()
-                        ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
+                        ->title('R'.number_format($data['amount'], 2).' Has Been Added To Account: '.$record->account_number)
                         ->success()
                         ->duration(5000)
                         ->persistent()
@@ -87,8 +83,8 @@ class ViewAccount extends ViewRecord
                                     fn (Mask $mask) => $mask
                                         ->numeric()
                                         ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                        ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                        ->minValue(0) // Set the minimum value that the number can be.                     
+                                        ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                        ->minValue(0) // Set the minimum value that the number can be.
                                 )
                                 ->disabled()
                                 ->dehydrated(false)
@@ -108,11 +104,10 @@ class ViewAccount extends ViewRecord
                                     fn (Mask $mask) => $mask
                                         ->numeric()
                                         ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                        ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                        ->minValue(1) // Set the minimum value that the number can be.                     
+                                        ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                        ->minValue(1) // Set the minimum value that the number can be.
                                 )
                                 ->required(),
-
 
                             TextInput::make('new_balance')
                                 ->integer()
@@ -124,8 +119,8 @@ class ViewAccount extends ViewRecord
                                     fn (Mask $mask) => $mask
                                         ->numeric()
                                         ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                        ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                        ->minValue(0) // Set the minimum value that the number can be.                     
+                                        ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                        ->minValue(0) // Set the minimum value that the number can be.
                                 )
                                 ->disabled()
                                 ->dehydrated(false)
@@ -133,22 +128,22 @@ class ViewAccount extends ViewRecord
 
                         ]),
                 ]),
-            Action::make("transfer")
-                ->label("Make Transfer")
+            Action::make('transfer')
+                ->label('Make Transfer')
                 ->color('primary')
                 ->visible(fn (): bool => auth()->user()->can('create transfers', $this->record))
                 ->action(function ($data) {
                     $record = $this->record;
 
-                    $data['from_account'] = $record->id;                  
+                    $data['from_account'] = $record->id;
 
                     Transfer::create($data);
 
                     $toAccount = Account::find($data['to_account']);
 
                     Notification::make()
-                        ->title("Transfer Succesfull")
-                        ->body("Transfer of R" . number_format($data['amount'], 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
+                        ->title('Transfer Succesfull')
+                        ->body('Transfer of R'.number_format($data['amount'], 2).' has been made from acccount: '.$record->account_number.' to account: '.$toAccount->account_number)
                         ->duration(8000)
                         ->persistent()
                         ->success()
@@ -175,6 +170,7 @@ class ViewAccount extends ViewRecord
                         ->rule(function () {
                             $account = Account::where('id', '!=', $this->record->id)->get();
                             $balance = $this->record->balance;
+
                             return $account ? "max:{$balance}" : null;
                         })
                         ->prefix('R')
@@ -182,8 +178,8 @@ class ViewAccount extends ViewRecord
                             fn (Mask $mask) => $mask
                                 ->numeric()
                                 ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                ->minValue(1) // Set the minimum value that the number can be.                     
+                                ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                ->minValue(1) // Set the minimum value that the number can be.
                         )
                         ->required()
                         ->hiddenOn('edit'),
@@ -191,18 +187,17 @@ class ViewAccount extends ViewRecord
 
             Action::make('Transact')
                 ->color('secondary')
-                ->label("Transact")
+                ->label('Transact')
                 ->visible(fn (): bool => auth()->user()->can('create transactions', $this->record))
-                ->icon("heroicon-s-switch-vertical")
-                ->action(function ($data) {                   
-
+                ->icon('heroicon-s-switch-vertical')
+                ->action(function ($data) {
                     Transaction::create([
-                        'transaction_id' => $data["transaction_id"],
+                        'transaction_id' => $data['transaction_id'],
                         'account_id' => $this->record->id,
                         'description' => $data['description'],
                         'type' => $data['type'],
                         'amount' => $data['amount'],
-                    ]);                  
+                    ]);
 
                     $this->emit('refreshTable');
                 })
@@ -210,7 +205,7 @@ class ViewAccount extends ViewRecord
 
                     Select::make('type')
                         ->label('Type')
-                        ->options(["credit" => "Credit", "debit" => "Debit"])
+                        ->options(['credit' => 'Credit', 'debit' => 'Debit'])
                         ->reactive()
                         ->required()
                         ->searchable(),
@@ -229,7 +224,7 @@ class ViewAccount extends ViewRecord
 
                     TextInput::make('amount')
                         ->label(function () {
-                            return 'Transaction Amount ' . '(current-balance: ' . 'R' . number_format($this->record->balance, 2) . ')';
+                            return 'Transaction Amount '.'(current-balance: '.'R'.number_format($this->record->balance, 2).')';
                         })
                         ->integer()
                         ->reactive()
@@ -237,20 +232,16 @@ class ViewAccount extends ViewRecord
                         ->rules([
 
                             function (Closure $get) {
-                                    $type = $get('type');                             
+                                $type = $get('type');
 
-                                    if($type == 'debit'){
+                                if ($type == 'debit') {
+                                    $balance = $this->record->balance;
 
-                                        $balance = $this->record->balance;
-
-                                        return "max:{$balance}";
-                                        
-                                    }
-                                    else{
-                                        return null;
-                                    }                             
-                            }
-
+                                    return "max:{$balance}";
+                                } else {
+                                    return null;
+                                }
+                            },
 
                         ])
                         ->prefix('R')
@@ -258,19 +249,12 @@ class ViewAccount extends ViewRecord
                             fn (Mask $mask) => $mask
                                 ->numeric()
                                 ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                ->minValue(1) // Set the minimum value that the number can be.                     
+                                ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                ->minValue(1) // Set the minimum value that the number can be.
                         )
                         ->required(),
 
-
-
-
-
                 ]),
-
-
-
 
         ];
     }

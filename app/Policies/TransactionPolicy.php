@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -18,15 +17,15 @@ class TransactionPolicy
      */
     public function viewAny(User $user)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
-        if (cache()->get('current_plan') == "Basic") {
+        }
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 
         return $user->can('view any transactions');
-    }    
+    }
 
     /**
      * Determine whether the user can create models.
@@ -34,17 +33,15 @@ class TransactionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    
     public function create(User $user)
     {
-          if (cache()->get('hasExpired') == true) {
-            return false;
-        };
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('hasExpired') == true) {
             return false;
         }
-        
+        if (cache()->get('current_plan') == 'Basic') {
+            return false;
+        }
+
         return $user->can('create transactions');
     }
-
 }

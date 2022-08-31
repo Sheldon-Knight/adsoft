@@ -22,7 +22,6 @@ class TransfersRelationManager extends RelationManager
 
     protected static ?string $title = 'Transfers';
 
-
     public static function form(Form $form): Form
     {
         return $form
@@ -67,20 +66,20 @@ class TransfersRelationManager extends RelationManager
                             );
                     }),
                 NumberFilter::make('amount'),
-                DateFilter::make('created_at')
+                DateFilter::make('created_at'),
             ])
             ->headerActions([])
             ->actions([])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
-
 
     protected function getTableFiltersFormColumns(): int
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

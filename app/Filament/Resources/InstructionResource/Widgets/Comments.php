@@ -2,14 +2,6 @@
 
 namespace App\Filament\Resources\InstructionResource\Widgets;
 
-use App\Models\Comment;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -38,12 +30,11 @@ class Comments extends Widget implements HasForms
 
     public static function canView(): bool
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
-        
-        if (cache()->get('current_plan') == "Basic") {
+        }
+
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 

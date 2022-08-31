@@ -9,9 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\Layout;
 use Illuminate\Database\Eloquent\Builder;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
@@ -24,7 +22,6 @@ class StatementsRelationManager extends RelationManager
     protected $listeners = [
         'refreshTable' => '$refresh',
     ];
-
 
     public static function form(Form $form): Form
     {
@@ -82,17 +79,17 @@ class StatementsRelationManager extends RelationManager
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-            TextFilter::make('description'),
-            NumberFilter::make('credit'),
-            NumberFilter::make('debit'),
-            NumberFilter::make('opening_balance'),
-            NumberFilter::make('closing_balance')
+                TextFilter::make('description'),
+                NumberFilter::make('credit'),
+                NumberFilter::make('debit'),
+                NumberFilter::make('opening_balance'),
+                NumberFilter::make('closing_balance'),
             ])
-            ->headerActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+            ->headerActions([\AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->actions([])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -100,11 +97,12 @@ class StatementsRelationManager extends RelationManager
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';
     }
-   
+
     protected function shouldPersistTableFiltersInSession(): bool
     {
         return true;

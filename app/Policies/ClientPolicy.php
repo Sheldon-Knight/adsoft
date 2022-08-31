@@ -20,7 +20,8 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('view any clients');
     }
 
@@ -35,7 +36,7 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($client->deleted_at != null) {
             return false;
@@ -54,7 +55,8 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('create clients');
     }
 
@@ -69,7 +71,7 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($client->deleted_at != null) {
             return false;
@@ -89,7 +91,7 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($client->deleted_at != null) {
             return false;
@@ -109,7 +111,7 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($client->deleted_at === null) {
             return false;
         }
@@ -128,10 +130,11 @@ class ClientPolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($client->deleted_at === null) {
             return false;
         }
+
         return $user->can('force delete clients');
     }
 }

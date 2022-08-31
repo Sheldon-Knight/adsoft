@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -32,7 +31,6 @@ class UpdateDailyAtendance extends Command
         $users = User::all();
 
         foreach ($users as $user) {
-
             $yesterDaysAttendance = $user->getYesterdaysAttendance();
 
             if ($yesterDaysAttendance == null) {
@@ -42,10 +40,9 @@ class UpdateDailyAtendance extends Command
                     'day' => $now->subDay()->format('Y-m-d'),
                     'time_in' => null,
                     'time_out' => null,
-                    'present' => false
+                    'present' => false,
                 ]);
             }
-
-        }       
+        }
     }
 }

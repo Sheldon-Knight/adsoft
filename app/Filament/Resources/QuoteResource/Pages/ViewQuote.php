@@ -17,7 +17,6 @@ class ViewQuote extends ViewRecord
             url()->current() => 'Quotes',
         ];
     }
-    
 
     protected function getActions(): array
     {
@@ -30,7 +29,8 @@ class ViewQuote extends ViewRecord
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return true;
         // return auth()->user()->can('view quotes', $record);
     }

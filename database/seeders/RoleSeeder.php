@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -27,7 +26,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'restore accounts']);
         Permission::create(['name' => 'force delete accounts']);
         Permission::create(['name' => 'add funds to accounts']);
-  
+
         // Transfers Permissions
 
         Permission::create(['name' => 'view any transfers']);
@@ -36,7 +35,7 @@ class RoleSeeder extends Seeder
         // Transactions Permissions
 
         Permission::create(['name' => 'view any transactions']);
-        Permission::create(['name' => 'create transactions']);      
+        Permission::create(['name' => 'create transactions']);
 
         // Clients Permissions
         Permission::create(['name' => 'view any clients']);
@@ -56,7 +55,6 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'delete attendances']);
         Permission::create(['name' => 'restore attendances']);
         Permission::create(['name' => 'force delete attendances']);
-
 
         //Users Permissions
 
@@ -88,7 +86,6 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'restore statuses']);
         Permission::create(['name' => 'force delete statuses']);
 
-
         //Status Permissions
 
         Permission::create(['name' => 'view any departments']);
@@ -99,7 +96,6 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'restore departments']);
         Permission::create(['name' => 'force delete departments']);
 
-
         //Quotes Permissions
 
         Permission::create(['name' => 'view any quotes']);
@@ -109,15 +105,12 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'restore quotes']);
         Permission::create(['name' => 'update quotes']);
         Permission::create(['name' => 'force delete quotes']);
-        Permission::create(['name' => 'convert quotes to invoices']);     
+        Permission::create(['name' => 'convert quotes to invoices']);
         Permission::create(['name' => 'email quotes']);
         Permission::create(['name' => 'download pdf quotes']);
-        
-        
-        
-        
+
         //Invoices Permissions
-        
+
         Permission::create(['name' => 'view any invoices']);
         Permission::create(['name' => 'create invoices']);
         Permission::create(['name' => 'update invoices']);
@@ -127,7 +120,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'force delete invoices']);
         Permission::create(['name' => 'email invoices']);
         Permission::create(['name' => 'download pdf invoices']);
-        
+
         //Jobs Permissions
 
         Permission::create(['name' => 'view any jobs']);
@@ -148,36 +141,27 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'restore instructions']);
         Permission::create(['name' => 'force delete instructions']);
 
-
-
         //Oms Settings Permissions
 
-        Permission::create(['name' => 'change application settings']);   
-        
-        
-
+        Permission::create(['name' => 'change application settings']);
 
         // Admin Role with All Permissions
 
         $role = Role::create([
-            'name' => "Super Admin",
+            'name' => 'Super Admin',
         ]);
 
-
         // give first user all permissions
-        $user =  User::find(1);  
+        $user = User::find(1);
 
         $user->assignRole('Super Admin');
 
         $permissions = [];
-        
-        foreach(Permission::all() as $permission)
-        {
 
-            $permissions[] = $permission->name; 
+        foreach (Permission::all() as $permission) {
+            $permissions[] = $permission->name;
         }
-       
-        $role->givePermissionTo([$permissions]);
 
+        $role->givePermissionTo([$permissions]);
     }
 }

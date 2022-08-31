@@ -18,9 +18,10 @@ class DepartmentPolicy
      */
     public function viewAny(User $user)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('view any departments');
     }
 
@@ -33,15 +34,15 @@ class DepartmentPolicy
      */
     public function view(User $user, Department $department)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($department->deleted_at != null) {
             return false;
         }
 
-         return $user->can('view departments');
+        return $user->can('view departments');
     }
 
     /**
@@ -52,9 +53,10 @@ class DepartmentPolicy
      */
     public function create(User $user)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('create departments');
     }
 
@@ -67,9 +69,9 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($department->deleted_at != null) {
             return false;
@@ -87,9 +89,9 @@ class DepartmentPolicy
      */
     public function delete(User $user, Department $department)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($department->deleted_at != null) {
             return false;
         }
@@ -106,13 +108,14 @@ class DepartmentPolicy
      */
     public function restore(User $user, Department $department)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($department->deleted_at === null) {
             return false;
         }
-       return $user->can('restore departments');
+
+        return $user->can('restore departments');
     }
 
     /**
@@ -124,13 +127,13 @@ class DepartmentPolicy
      */
     public function forceDelete(User $user, Department $department)
     {
-          if (cache()->get('hasExpired') == true) {
+        if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($department->deleted_at === null) {
             return false;
         }
-        
-         return $user->can('force delete departments');
+
+        return $user->can('force delete departments');
     }
 }

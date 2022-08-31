@@ -26,7 +26,6 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -64,8 +63,8 @@ class UserResource extends Resource
                     static::getEmailFormField(),
                     static::getPhoneFormField(),
                     static::getAddressFormField(),
-                    static::getPasswordFormField(),                  
-                ])
+                    static::getPasswordFormField(),
+                ]),
             ]);
     }
 
@@ -138,7 +137,7 @@ class UserResource extends Resource
                 TextFilter::make('name'),
                 SelectFilter::make('department')->relationship('department', 'name'),
                 SelectFilter::make('roles')->relationship('roles', 'name'),
-                SelectFilter::make('gender')->options(["male" => "male", "female" => "female", "other" => "other"]),
+                SelectFilter::make('gender')->options(['male' => 'male', 'female' => 'female', 'other' => 'other']),
                 TextFilter::make('phone'),
                 TrashedFilter::make(),
             ])
@@ -148,7 +147,6 @@ class UserResource extends Resource
                 ViewAction::make(),
                 Action::make('Remove from Department')
                     ->visible(function (User $record) {
-
                         if ($record->department_id != null and auth()->user()->can('remove users from departments', $record)) {
                             return true;
                         }
@@ -157,20 +155,18 @@ class UserResource extends Resource
                     })
                     ->color('danger')
                     ->action(function (User $record) {
-
                         Job::where('user_id', $record->id)->where('department_id', $record->department_id)->update(['department_id' => null]);
 
                         $record->update(['department_id' => null]);
 
                         Notification::make()
-                            ->title("User Removed From Department")
+                            ->title('User Removed From Department')
                             ->body('send')
                             ->danger()
                             ->send();
                     }),
                 Action::make('Assign To Department')
                     ->visible(function (User $record) {
-
                         if ($record->deleted_at === null and auth()->user()->can('assign users to departments', $record)) {
                             return true;
                         }
@@ -178,22 +174,19 @@ class UserResource extends Resource
                         return false;
                     })
                     ->label(function (User $record) {
-
-
                         if ($record->department_id == null) {
-                            return "Assign to department";
+                            return 'Assign to department';
                         }
 
-                        return "Reassign to another department";
+                        return 'Reassign to another department';
                     })
                     ->action(function (User $record, $data) {
-
                         Job::where('user_id', $record->id)->where('department_id', $record->department_id)->update(['department_id' => $data['department_id']]);
 
                         $record->update(['department_id' => $data['department_id']]);
 
                         Notification::make()
-                            ->title("User Assigned To Department")
+                            ->title('User Assigned To Department')
                             ->body('send')
                             ->success()
                             ->send();
@@ -201,18 +194,15 @@ class UserResource extends Resource
                         Select::make('department_id')
                             ->required()
                             ->options(function (User $record) {
-
                                 if ($record->department_id != null) {
                                     return Department::where('id', '!=', $record->department_id)->get()->pluck('name', 'id')->toArray();
                                 } else {
-
                                     return Department::get()->pluck('name', 'id')->toArray();
                                 }
                             }),
                     ]),
 
                 DeleteAction::make()->visible(function (User $user) {
-
                     if ($user->deleted_at != null) {
                         return false;
                     }
@@ -220,10 +210,7 @@ class UserResource extends Resource
                     return auth()->user()->can('delete users', $user);
                 }),
 
-
-
                 RestoreAction::make()->visible(function ($record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -231,10 +218,7 @@ class UserResource extends Resource
                     return auth()->user()->can('restore users', $record);
                 }),
 
-
-
                 ForceDeleteAction::make()->visible(function ($record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -242,13 +226,12 @@ class UserResource extends Resource
                     return auth()->user()->can('force delete users', $record);
                 }),
 
-
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 

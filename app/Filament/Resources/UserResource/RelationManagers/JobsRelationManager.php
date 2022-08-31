@@ -16,9 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
@@ -72,8 +70,6 @@ class JobsRelationManager extends RelationManager
 
     public static function table(Table $table): Table
     {
-
-
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('client.client_name')->searchable(),
@@ -87,7 +83,7 @@ class JobsRelationManager extends RelationManager
                     ->date()->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()->searchable(),
-            ])           
+            ])
             ->filters([
                 MultiSelectFilter::make('status')->relationship('status', 'name'),
                 MultiSelectFilter::make('user')->relationship('user', 'name'),
@@ -112,12 +108,13 @@ class JobsRelationManager extends RelationManager
                             ->options(Status::pluck('name', 'id'))
                             ->required(),
                     ])
-                    ->color("success")
-                    ->icon("heroicon-o-check")
+                    ->color('success')
+                    ->icon('heroicon-o-check')
                     ->visible(function (Model $record) {
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
 
@@ -133,6 +130,7 @@ class JobsRelationManager extends RelationManager
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
                 Tables\Actions\EditAction::make('user_id')
@@ -148,29 +146,30 @@ class JobsRelationManager extends RelationManager
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
-            ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),  
+                ViewAction::make()->url(fn (Job $record): string => route('filament.resources.jobs.view', $record)),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
 
             ])
             ->headerActions([
-                 Tables\Actions\CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
-                        $data['created_by'] = auth()->id();
+                Tables\Actions\CreateAction::make()
+                   ->mutateFormDataUsing(function (array $data): array {
+                       $data['created_by'] = auth()->id();
 
-                        $invoice = Invoice::find($data['invoice_id']);
+                       $invoice = Invoice::find($data['invoice_id']);
 
-                        $data['client_id'] = $invoice->client_id;
+                       $data['client_id'] = $invoice->client_id;
 
-                        return $data;
-                    }),
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                       return $data;
+                   }),
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -178,6 +177,7 @@ class JobsRelationManager extends RelationManager
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

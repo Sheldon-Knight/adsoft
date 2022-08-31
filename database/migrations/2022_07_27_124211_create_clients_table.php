@@ -35,7 +35,7 @@ class CreateClientsTable extends Migration
             $table->string('bank_name')->nullable();
             $table->string('client_status')->default('Active');
             $table->timestamps();
-            $table->softDeletes();      
+            $table->softDeletes();
         });
     }
 

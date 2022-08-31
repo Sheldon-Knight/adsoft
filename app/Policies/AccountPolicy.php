@@ -3,11 +3,8 @@
 namespace App\Policies;
 
 use App\Models\Account;
-use App\Models\OmsSetting;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class AccountPolicy
 {
@@ -21,13 +18,11 @@ class AccountPolicy
      */
     public function viewAny(User $user)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
-
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 
@@ -43,12 +38,11 @@ class AccountPolicy
      */
     public function view(User $user, Account $account)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 
@@ -67,14 +61,14 @@ class AccountPolicy
      */
     public function create(User $user)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
+
         return $user->can('create accounts');
     }
 
@@ -87,12 +81,11 @@ class AccountPolicy
      */
     public function update(User $user, Account $account)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 
@@ -112,13 +105,11 @@ class AccountPolicy
      */
     public function delete(User $user, Account $account)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
-
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 
@@ -138,12 +129,11 @@ class AccountPolicy
      */
     public function restore(User $user, Account $account)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
-        if (cache()->get('current_plan') == "Basic") {
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
         if ($account->deleted_at === null) {
@@ -162,12 +152,11 @@ class AccountPolicy
      */
     public function forceDelete(User $user, Account $account)
     {
-
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
-        
-        if (cache()->get('current_plan') == "Basic") {
+        }
+
+        if (cache()->get('current_plan') == 'Basic') {
             return false;
         }
 

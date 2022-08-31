@@ -20,7 +20,8 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('view any attendances');
     }
 
@@ -35,12 +36,12 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($attendance->deleted_at != null) {
             return false;
         }
 
-         return $user->can('view attendances');
+        return $user->can('view attendances');
     }
 
     /**
@@ -53,7 +54,8 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
+
         return $user->can('create attendances');
     }
 
@@ -68,7 +70,7 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
         if ($attendance->deleted_at != null) {
             return false;
         }
@@ -87,7 +89,7 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($attendance->deleted_at != null) {
             return false;
@@ -107,12 +109,13 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($attendance->deleted_at === null) {
             return false;
         }
-       return $user->can('restore attendances');
+
+        return $user->can('restore attendances');
     }
 
     /**
@@ -126,11 +129,12 @@ class AttendancePolicy
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
+        }
 
         if ($attendance->deleted_at === null) {
             return false;
         }
-         return $user->can('force delete attendances');
+
+        return $user->can('force delete attendances');
     }
 }

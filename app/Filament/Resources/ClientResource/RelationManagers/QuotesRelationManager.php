@@ -6,10 +6,6 @@ use App\Models\Invoice;
 use App\Models\Status;
 use App\Services\PdfInvoice;
 use Closure;
-use Filament\Resources\Form;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
-use Filament\Tables;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -22,12 +18,16 @@ use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use Filament\Resources\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
@@ -46,7 +46,7 @@ class QuotesRelationManager extends RelationManager
                         Card::make()
                             ->schema([
                                 TextInput::make('invoice_number')
-                                    ->default('ABC-' . random_int(10000, 999999))
+                                    ->default('ABC-'.random_int(10000, 999999))
                                     ->required()
                                     ->label('Quote Number'),
 
@@ -92,7 +92,7 @@ class QuotesRelationManager extends RelationManager
                                             ->numeric()
                                             ->minValue(0)
                                             ->extraAttributes([
-                                                "step" => "0.01"
+                                                'step' => '0.01',
                                             ])
                                             ->columnSpan([
                                                 'md' => 2,
@@ -117,7 +117,7 @@ class QuotesRelationManager extends RelationManager
                                             ->disabled()
                                             ->reactive()
                                             ->extraAttributes([
-                                                "step" => "0.01"
+                                                'step' => '0.01',
                                             ])
                                             ->placeholder(function (Closure $get, $set) {
                                                 $price = 0;
@@ -137,10 +137,10 @@ class QuotesRelationManager extends RelationManager
                                                 $set('subtotal', number_format(floatval($price) * intval($qty), 2));
                                                 // return number_format(intval($price) * intval($qty));
                                             })
-                                            ->label("Sub Total")
+                                            ->label('Sub Total')
                                             ->columnSpan([
                                                 'md' => 3,
-                                            ])
+                                            ]),
                                     ])
                                     ->defaultItems(1)
                                     ->columns([
@@ -150,15 +150,13 @@ class QuotesRelationManager extends RelationManager
                                     ->cloneable()
                                     ->createItemButtonLabel('Add Item'),
 
-
                             ]),
-
 
                         Card::make()
                             ->schema([
 
-                                TextInput::make("invoice_subtotal")
-                                    ->label("Sub Total")
+                                TextInput::make('invoice_subtotal')
+                                    ->label('Sub Total')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
@@ -176,7 +174,7 @@ class QuotesRelationManager extends RelationManager
                                         foreach ($fields as $field) {
                                             $value = floatval($field['price']) * intval($field['qty']);
 
-                                            if ($field['price'] == "" or $field['price'] == null) {
+                                            if ($field['price'] == '' or $field['price'] == null) {
                                                 $value = 0;
                                             }
 
@@ -189,9 +187,8 @@ class QuotesRelationManager extends RelationManager
                                         'md' => 3,
                                     ]),
 
-
                                 TextInput::make('invoice_discount')
-                                    ->label("Discount")
+                                    ->label('Discount')
                                     ->required()
                                     ->reactive()
                                     ->type('number')
@@ -200,7 +197,7 @@ class QuotesRelationManager extends RelationManager
                                     ->minValue(0)
                                     ->default(0.00)
                                     ->extraAttributes([
-                                        "step" => "0.01"
+                                        'step' => '0.01',
                                     ])
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         if ($state == null) {
@@ -213,12 +210,8 @@ class QuotesRelationManager extends RelationManager
                                         'md' => 3,
                                     ]),
 
-
-
-
-
-                                TextInput::make("invoice_tax")
-                                    ->label("Tax")
+                                TextInput::make('invoice_tax')
+                                    ->label('Tax')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
@@ -227,25 +220,27 @@ class QuotesRelationManager extends RelationManager
                                     ->placeholder(function (Closure $get, $set) {
                                         $tax = $get('invoice_subtotal') * 0.15 ?? 0;
                                         $set('invoice_tax', number_format($tax, 2));
+
                                         return number_format($tax, 2);
                                     })
                                     ->columnSpan([
                                         'md' => 3,
                                     ]),
 
-                                TextInput::make("invoice_total")
-                                    ->label("Total Amount")
+                                TextInput::make('invoice_total')
+                                    ->label('Total Amount')
                                     ->numeric()
                                     ->type('number')
                                     ->prefix('R')
                                     ->disabled()
                                     ->default(0)
                                     ->placeholder(function (Closure $get, $set) {
-                                        $tax =  $get('invoice_tax');
-                                        $discount =  $get('invoice_discount');
-                                        $subtotal =  $get('invoice_subtotal');
+                                        $tax = $get('invoice_tax');
+                                        $discount = $get('invoice_discount');
+                                        $subtotal = $get('invoice_subtotal');
                                         $total = $subtotal + $tax - $discount;
                                         $set('invoice_total', number_format($total, 2));
+
                                         return number_format($total, 2);
                                     })
                                     ->columnSpan([
@@ -256,7 +251,7 @@ class QuotesRelationManager extends RelationManager
                                 'md' => 12,
                             ]),
                     ])
-                    ->columnSpan('full')
+                    ->columnSpan('full'),
 
             ]);
     }
@@ -277,55 +272,46 @@ class QuotesRelationManager extends RelationManager
                 DateFilter::make('invoice_due_date'),
                 NumberFilter::make('invoice_total'),
                 MultiSelectFilter::make('invoice_status')
-                    ->options(Invoice::where('is_quote', true)->get()->pluck("invoice_status", "invoice_status")->toArray())
+                    ->options(Invoice::where('is_quote', true)->get()->pluck('invoice_status', 'invoice_status')->toArray())
                     ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Action::make('Pdf Downlaod')
-                    ->label("Pdf Download")
+                    ->label('Pdf Download')
                     ->color('warning')
                     ->url(function (Invoice $record) {
                         return route('pdf-download', $record);
                     })
                     ->visible(function (Invoice $record) {
-
-                        if (auth()->user()->can("download pdf quotes") and $record->deleted_at === null) {
+                        if (auth()->user()->can('download pdf quotes') and $record->deleted_at === null) {
                             return true;
                         }
+
                         return false;
                     }),
                 Tables\Actions\Action::make('email')
                     ->color('success')
                     ->action(
                         function (Invoice $record, $data) {
-
                             $removedItems = [];
 
                             foreach ($data['cc'] as $key => $email) {
-
-                                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                                     $removedItems[] = $email;
                                     unset($data['cc'][$key]);
                                 }
                             }
 
-
-
-
-
                             if ($data['attached_invoice'] == true) {
-
                                 $pdfInvoice = new PdfInvoice();
 
-                                $attachement =  $pdfInvoice->GetAttachedInvoice($record, $isInvoice = false);
+                                $attachement = $pdfInvoice->GetAttachedInvoice($record, $isInvoice = false);
 
                                 Mail::send(
                                     'mails.invoice',
                                     ['body' => $data['body']],
                                     function ($message) use ($data, $attachement) {
-
-
                                         $message->from('john@johndoe.com', 'John Doe');
                                         $message->to($data['to']);
                                         $message->cc(array_values($data['cc']));
@@ -333,12 +319,10 @@ class QuotesRelationManager extends RelationManager
                                         $message->attach($attachement);
 
                                         if ($data['attachments']) {
-
-                                            foreach ($data["attachments"] as $key => $at) {
-
-                                                $at = $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                            foreach ($data['attachments'] as $key => $at) {
+                                                $at = $message->attach(public_path("storage/{$data['attachments'][$key]}"));
                                             }
-                                        };
+                                        }
                                     }
                                 );
 
@@ -350,40 +334,33 @@ class QuotesRelationManager extends RelationManager
                                     $message->cc(array_values($data['cc']));
                                     $message->subject($data['subject']);
                                     if ($data['attachments']) {
-
-                                        foreach ($data["attachments"] as $key => $at) {
-
-                                            $message->attach(public_path("storage/{$data["attachments"][$key]}"));
+                                        foreach ($data['attachments'] as $key => $at) {
+                                            $message->attach(public_path("storage/{$data['attachments'][$key]}"));
                                         }
-                                    };
+                                    }
                                 });
                             }
 
                             if ($data['attachments']) {
-
                                 try {
-                                    foreach ($data["attachments"] as $key => $at) {
-                                        unlink(public_path("storage/{$data["attachments"][$key]}"));
+                                    foreach ($data['attachments'] as $key => $at) {
+                                        unlink(public_path("storage/{$data['attachments'][$key]}"));
                                     }
                                 } catch (\Exception $e) {
                                     Log::error($e->getMessage());
                                 }
                             }
 
-
-
-
                             Notification::make()
-                                ->title("Emails Send Succesfully")
+                                ->title('Emails Send Succesfully')
                                 ->body('send')
                                 ->success()
                                 ->send();
 
-
                             if (count($removedItems) > 0) {
                                 Notification::make()
-                                    ->title("Some Emails Were Removed From The CC")
-                                    ->body('the folowing emails were not valid so it had been removed from the cc:' . implode(PHP_EOL, $removedItems))
+                                    ->title('Some Emails Were Removed From The CC')
+                                    ->body('the folowing emails were not valid so it had been removed from the cc:'.implode(PHP_EOL, $removedItems))
                                     ->danger()
                                     ->persistent()
                                     ->send();
@@ -391,7 +368,6 @@ class QuotesRelationManager extends RelationManager
                                 return;
                             }
                         }
-
 
                     )
                     ->label('Email Quote')
@@ -409,8 +385,6 @@ class QuotesRelationManager extends RelationManager
                                 TagsInput::make('cc')
                                     ->label('CC')
                                     ->placeholder(fn () => auth()->user()->email),
-
-
 
                                 TextInput::make('subject')
                                     ->label('Subject')
@@ -448,14 +422,12 @@ class QuotesRelationManager extends RelationManager
                                     ->required()
                                     ->columnSpan('full'),
 
-
                             ])
 
                             ->columns(2),
 
                     ]),
                 Tables\Actions\ViewAction::make(),
-
 
                 Tables\Actions\EditAction::make()
                     ->label('Change Status')
@@ -465,7 +437,6 @@ class QuotesRelationManager extends RelationManager
                             ->options(Status::pluck('name', 'name'))
                             ->required(),
                     ]),
-
 
                 Action::make('Convert To Invoice')
                     ->icon('heroicon-o-arrow-circle-down')
@@ -500,11 +471,11 @@ class QuotesRelationManager extends RelationManager
                             ->required(),
                     ])
                     ->visible(function () {
-                        return auth()->user()->can("convert quotes to invoices");
+                        return auth()->user()->can('convert quotes to invoices');
                     })
                     ->action(fn (Collection $records, $data) => $records->each->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
                     ->deselectRecordsAfterCompletion()
-                    ->requiresConfirmation()
+                    ->requiresConfirmation(),
             ]);
     }
 
@@ -512,6 +483,7 @@ class QuotesRelationManager extends RelationManager
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\AttendanceResource\Pages;
 
 use App\Filament\Resources\AttendanceResource;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditAttendance extends EditRecord
@@ -13,7 +12,7 @@ class EditAttendance extends EditRecord
     protected function getActions(): array
     {
         return [
-            
+
         ];
     }
 }

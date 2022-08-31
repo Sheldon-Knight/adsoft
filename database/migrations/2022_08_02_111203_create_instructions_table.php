@@ -15,13 +15,13 @@ class CreateInstructionsTable extends Migration
     {
         Schema::create('instructions', function (Blueprint $table) {
             $table->id();
-            $table->string("title");
-            $table->longText("instruction");
-            $table->date("due_date");
-            $table->date("date_completed")->nullable();
-            $table->boolean("status")->default(0);
-            $table->foreignId("created_by")->nullable()->constrained('users')->onDelete('cascade');   
-            $table->foreignId("assigned_to")->nullable()->constrained('users')->onDelete('cascade');   
+            $table->string('title');
+            $table->longText('instruction');
+            $table->date('due_date');
+            $table->date('date_completed')->nullable();
+            $table->boolean('status')->default(0);
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

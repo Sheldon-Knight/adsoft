@@ -15,7 +15,7 @@ class Statement extends Model
         'transaction_id',
         'description',
         'debit',
-        'credit',        
+        'credit',
         'opening_balance',
         'closing_balance',
     ];

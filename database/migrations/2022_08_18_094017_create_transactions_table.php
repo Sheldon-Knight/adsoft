@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->uuid('transaction_id');
             $table->foreignId('account_id')->nullable()->constrained('accounts')->onDelete('cascade');
-            $table->string("description");
-            $table->string("type");
-            $table->decimal("amount",8,2);
+            $table->string('description');
+            $table->string('type');
+            $table->decimal('amount', 8, 2);
             $table->timestamps();
             $table->softDeletes();
         });

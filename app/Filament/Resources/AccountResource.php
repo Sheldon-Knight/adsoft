@@ -21,11 +21,10 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Filters\MultiSelectFilter;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class AccountResource extends Resource
 {
@@ -62,8 +61,8 @@ class AccountResource extends Resource
                         fn (Mask $mask) => $mask
                             ->numeric()
                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                            ->minValue(0) // Set the minimum value that the number can be.                     
+                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                            ->minValue(0) // Set the minimum value that the number can be.
                     )
                     ->required()
                     ->hiddenOn('edit'),
@@ -105,22 +104,21 @@ class AccountResource extends Resource
 
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make("add_funds")
-                    ->label("Add Funds")
+                Tables\Actions\Action::make('add_funds')
+                    ->label('Add Funds')
                     ->color('success')
                     ->visible(fn (Account $record): bool => auth()->user()->can('add funds to accounts', $record))
                     ->action(function ($data, Model $record) {
-
                         $transaction = Transaction::create([
                             'transaction_id' => str()->uuid(),
                             'account_id' => $record->id,
-                            'description' => "R" . number_format($data['amount'], 2) . " Has Been Added To Your Account",
+                            'description' => 'R'.number_format($data['amount'], 2).' Has Been Added To Your Account',
                             'type' => 'credit',
                             'amount' => $data['amount'],
                         ]);
 
                         Notification::make()
-                            ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
+                            ->title('R'.number_format($data['amount'], 2).' Has Been Added To Account: '.$record->account_number)
                             ->success()
                             ->duration(5000)
                             ->persistent()
@@ -138,8 +136,8 @@ class AccountResource extends Resource
                                         fn (Mask $mask) => $mask
                                             ->numeric()
                                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(0) // Set the minimum value that the number can be.                     
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                            ->minValue(0) // Set the minimum value that the number can be.
                                     )
                                     ->disabled()
                                     ->dehydrated(false)
@@ -159,11 +157,10 @@ class AccountResource extends Resource
                                         fn (Mask $mask) => $mask
                                             ->numeric()
                                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(1) // Set the minimum value that the number can be.                     
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                            ->minValue(1) // Set the minimum value that the number can be.
                                     )
                                     ->required(),
-
 
                                 TextInput::make('new_balance')
                                     ->integer()
@@ -175,8 +172,8 @@ class AccountResource extends Resource
                                         fn (Mask $mask) => $mask
                                             ->numeric()
                                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(0) // Set the minimum value that the number can be.                     
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                            ->minValue(0) // Set the minimum value that the number can be.
                                     )
                                     ->disabled()
                                     ->dehydrated(false)
@@ -187,15 +184,14 @@ class AccountResource extends Resource
                 Tables\Actions\Action::make('Transfer')
                     ->color('secondary')
                     ->visible(function (Model $record) {
-
                         if (auth()->user()->can('create transfers', $record) and $record->balance >= 1) {
                             return true;
                         }
 
                         return true;
                     })
-                    ->label("Transfer")
-                    ->icon("heroicon-s-switch-vertical")
+                    ->label('Transfer')
+                    ->icon('heroicon-s-switch-vertical')
                     ->action(function ($data, Model $record) {
                         $data['from_account'] = $record->id;
 
@@ -204,8 +200,8 @@ class AccountResource extends Resource
                         $toAccount = Account::find($data['to_account']);
 
                         Notification::make()
-                            ->title("Transfer Succesfull")
-                            ->body("Transfer of R" . number_format($data['amount'], 2) . " has been made from acccount: " . $record->account_number . " to account: " . $toAccount->account_number)
+                            ->title('Transfer Succesfull')
+                            ->body('Transfer of R'.number_format($data['amount'], 2).' has been made from acccount: '.$record->account_number.' to account: '.$toAccount->account_number)
                             ->duration(5000)
                             ->persistent()
                             ->success()
@@ -223,8 +219,8 @@ class AccountResource extends Resource
                                         fn (Mask $mask) => $mask
                                             ->numeric()
                                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(0) // Set the minimum value that the number can be.                     
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                            ->minValue(0) // Set the minimum value that the number can be.
                                     )
                                     ->disabled()
                                     ->dehydrated(false)
@@ -236,10 +232,10 @@ class AccountResource extends Resource
                                     ->reactive()
                                     ->options(function (Model $record) {
                                         $accounts = Account::where('id', '!=', $record->id)->get();
+
                                         return $accounts->pluck('full_name', 'id')->toArray();
                                     })
                                     ->required(),
-
 
                                 TextInput::make('amount')
                                     ->integer()
@@ -247,6 +243,7 @@ class AccountResource extends Resource
                                     ->minValue(1)
                                     ->rule(function (model $record) {
                                         $balance = $record->balance;
+
                                         return $record->balance ? "max:{$balance}" : null;
                                     })
                                     ->prefix('R')
@@ -254,8 +251,8 @@ class AccountResource extends Resource
                                         fn (Mask $mask) => $mask
                                             ->numeric()
                                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                                            ->minValue(1) // Set the minimum value that the number can be.                     
+                                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                                            ->minValue(1) // Set the minimum value that the number can be.
                                     )
                                     ->required()
                                     ->hiddenOn('edit'),
@@ -265,7 +262,6 @@ class AccountResource extends Resource
                     ]),
 
                 Tables\Actions\DeleteAction::make()->visible(function (Account $record) {
-
                     if ($record->deleted_at != null) {
                         return false;
                     }
@@ -274,7 +270,6 @@ class AccountResource extends Resource
                 }),
 
                 Tables\Actions\RestoreAction::make()->visible(function (Account $record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -283,7 +278,6 @@ class AccountResource extends Resource
                 }),
 
                 Tables\Actions\ForceDeleteAction::make()->visible(function (Account $record) {
-
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -292,14 +286,12 @@ class AccountResource extends Resource
                 }),
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
-
- 
 
     public static function getRelations(): array
     {
@@ -327,5 +319,4 @@ class AccountResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
-  
 }

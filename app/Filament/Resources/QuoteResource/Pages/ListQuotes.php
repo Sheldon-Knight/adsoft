@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\QuoteResource;
-use App\Models\Invoice;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +17,7 @@ class ListQuotes extends ListRecords
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';
@@ -27,6 +27,7 @@ class ListQuotes extends ListRecords
     {
         return true;
     }
+
     protected function getBreadcrumbs(): array
     {
         return [
@@ -38,10 +39,10 @@ class ListQuotes extends ListRecords
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        };
-        return auth()->user()->can('update quotes',$record);
+        }
+
+        return auth()->user()->can('update quotes', $record);
     }
- 
 
     protected function getActions(): array
     {

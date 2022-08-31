@@ -21,6 +21,7 @@ class ListInstructions extends ListRecords
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';

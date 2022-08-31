@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Attendance;
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -17,10 +16,9 @@ class AttendanceSeeder extends Seeder
      */
     public function run()
     {
-
         $startDate = new Carbon('2022-08-01');
         $endDate = new Carbon('2023-01-01');
-        $all_dates = array();
+        $all_dates = [];
         while ($startDate->lte($endDate)) {
             $all_dates[] = $startDate->toDateString();
             $startDate->addDay();
@@ -29,7 +27,6 @@ class AttendanceSeeder extends Seeder
         $data = [];
 
         for ($i = 0; $i < count($all_dates); $i++) {
-
             $present = mt_rand(0, 1);
 
             $timeIn = null;
@@ -37,8 +34,8 @@ class AttendanceSeeder extends Seeder
             $timeOut = null;
 
             if ($present == 1) {
-                $timeIn = "07:00";
-                $timeOut = "16:00";
+                $timeIn = '07:00';
+                $timeOut = '16:00';
             }
 
             $data[] = [

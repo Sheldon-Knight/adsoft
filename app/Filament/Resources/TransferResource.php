@@ -17,7 +17,6 @@ class TransferResource extends Resource
 {
     protected static ?string $model = Transfer::class;
 
-
     protected static ?string $navigationIcon = 'heroicon-o-switch-horizontal';
 
     protected static ?int $navigationSort = 2;
@@ -26,7 +25,6 @@ class TransferResource extends Resource
 
     public static function form(Form $form): Form
     {
-
         return $form
             ->schema([
                 Select::make('from_account')
@@ -44,7 +42,7 @@ class TransferResource extends Resource
                     ->options(function (callable $get) {
                         $accounts = Account::where('id', '!=', $get('from_account'))->get();
 
-                        if (!$accounts) {
+                        if (! $accounts) {
                             return Account::all()->pluck('full_name', 'id')->toArray();
                         }
 
@@ -59,6 +57,7 @@ class TransferResource extends Resource
                     ->rule(function (callable $get) {
                         $account = Account::where('id', $get('from_account'))->first();
                         $balance = $account->balance;
+
                         return $account ? "max:{$balance}" : null;
                     }, fn (callable $get) => Account::where('id', $get('from_account'))->exists())
                     ->prefix('R')
@@ -66,8 +65,8 @@ class TransferResource extends Resource
                         fn (Mask $mask) => $mask
                             ->numeric()
                             ->decimalPlaces(2) // Set the number of digits after the decimal point.
-                            ->decimalSeparator('.') // Add a separator for decimal numbers.                                             
-                            ->minValue(1) // Set the minimum value that the number can be.                     
+                            ->decimalSeparator('.') // Add a separator for decimal numbers.
+                            ->minValue(1) // Set the minimum value that the number can be.
                     )
                     ->required()
                     ->hiddenOn('edit'),
@@ -101,7 +100,7 @@ class TransferResource extends Resource
             ])
             ->actions([])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 

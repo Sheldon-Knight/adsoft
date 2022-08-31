@@ -3,8 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\JobResource\Pages;
-use App\Filament\Resources\JobResource\RelationManagers;
-use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Job;
 use App\Models\Status;
@@ -32,7 +30,6 @@ class JobResource extends Resource
 
     protected static ?string $navigationGroup = 'Jobs';
 
-
     public static function getEloquentQuery(): EloquentBuilder
     {
         return parent::getEloquentQuery()
@@ -40,7 +37,6 @@ class JobResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
-
 
     public static function form(Form $form): Form
     {
@@ -86,8 +82,6 @@ class JobResource extends Resource
 
     public static function table(Table $table): Table
     {
-
-
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('client.client_name')->searchable(),
@@ -126,12 +120,13 @@ class JobResource extends Resource
                             ->options(Status::pluck('name', 'id'))
                             ->required(),
                     ])
-                    ->color("success")
-                    ->icon("heroicon-o-check")
+                    ->color('success')
+                    ->icon('heroicon-o-check')
                     ->visible(function (Model $record) {
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
 
@@ -147,6 +142,7 @@ class JobResource extends Resource
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
                 Tables\Actions\EditAction::make('user_id')
@@ -162,6 +158,7 @@ class JobResource extends Resource
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
                 Tables\Actions\ViewAction::make(),
@@ -171,10 +168,10 @@ class JobResource extends Resource
 
             ])
             ->headerActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -184,8 +181,6 @@ class JobResource extends Resource
             //
         ];
     }
-
-
 
     public static function getPages(): array
     {

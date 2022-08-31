@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\InstructionResource\Pages;
 
 use App\Filament\Resources\InstructionResource;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateInstruction extends CreateRecord
@@ -12,9 +11,8 @@ class CreateInstruction extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['created_by'] = auth()->id();          
+        $data['created_by'] = auth()->id();
 
         return $data;
     }
-
 }

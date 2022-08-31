@@ -23,6 +23,6 @@ class TransactionFactory extends Factory
             'description' => $this->faker->sentence,
             'type' => $this->faker->randomElement(['credit', 'debit']),
             'amount' => $this->faker->numberBetween(1, 100),
-        ];       
+        ];
     }
 }

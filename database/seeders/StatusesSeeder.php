@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\InvoiceBasicInfo;
-use App\Models\InvoiceStatus;
 use App\Models\Status;
 use Illuminate\Database\Seeder;
 
@@ -16,31 +14,27 @@ class StatusesSeeder extends Seeder
      */
     public function run()
     {
-
         Status::create([
-            'name' => "New",
+            'name' => 'New',
         ]);
 
         Status::create([
-            'name' => "In Progress",          
+            'name' => 'In Progress',
         ]);
 
         Status::create([
-            'name' => "Done",
+            'name' => 'Done',
         ]);
 
         Status::create([
-            'name' => "Paid",
+            'name' => 'Paid',
         ]);
 
         Status::create([
-            'name' => "Cancelled",
+            'name' => 'Cancelled',
         ]);
         Status::create([
-            'name' => "UnPaid",
+            'name' => 'UnPaid',
         ]);
-
-
-        
     }
 }

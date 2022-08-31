@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\DepartmentResource\Pages;
 
 use App\Filament\Resources\DepartmentResource;
+use App\Filament\Resources\InstructionResource\Widgets\Comments;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ViewRecord;
-use App\Filament\Resources\InstructionResource\Widgets\Comments;
 
 class ViewDepartment extends ViewRecord
 {

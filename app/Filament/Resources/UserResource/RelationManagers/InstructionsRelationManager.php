@@ -14,9 +14,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
@@ -53,7 +51,6 @@ class InstructionsRelationManager extends RelationManager
                 Forms\Components\DatePicker::make('due_date')
                     ->required(),
 
-
                 Forms\Components\DatePicker::make('date_completed')
                     ->required()
                     ->visibleOn('view'),
@@ -77,18 +74,18 @@ class InstructionsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('date_completed')
                     ->date(),
                 Tables\Columns\BooleanColumn::make('status')
-                    ->label("Completed")
+                    ->label('Completed')
                     ->trueIcon('heroicon-o-badge-check')
                     ->falseIcon('heroicon-o-x-circle'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
             ])
             ->filters([
-                DateFilter::make("date_completed"),
-                DateFilter::make("created_at"),
-                DateFilter::make("due_date"),
-                TextFilter::make("instruction"),
-                TextFilter::make("title"),
+                DateFilter::make('date_completed'),
+                DateFilter::make('created_at'),
+                DateFilter::make('due_date'),
+                TextFilter::make('instruction'),
+                TextFilter::make('title'),
                 SelectFilter::make('status')
                     ->options([
                         0 => 'In-Completed',
@@ -114,10 +111,11 @@ class InstructionsRelationManager extends RelationManager
                             ->label('Completed At')
                             ->required(),
                     ])
-                    ->color("success")
-                    ->icon("heroicon-o-check")
+                    ->color('success')
+                    ->icon('heroicon-o-check')
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['status'] = true;
+
                         return $data;
                     })
 
@@ -125,15 +123,16 @@ class InstructionsRelationManager extends RelationManager
                         if ($record->date_completed != null) {
                             return false;
                         }
+
                         return true;
                     }),
-            ViewAction::make()->url(fn (Instruction $record): string => route('filament.resources.instructions.view', $record)),  
+                ViewAction::make()->url(fn (Instruction $record): string => route('filament.resources.instructions.view', $record)),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
-            ])           
+            ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export')
+                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
             ]);
     }
 
@@ -141,6 +140,7 @@ class InstructionsRelationManager extends RelationManager
     {
         return 3;
     }
+
     protected function getTableFiltersFormWidth(): string
     {
         return '4xl';
