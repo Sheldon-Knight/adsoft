@@ -86,6 +86,12 @@ class UserPolicy
      */
     public function delete(User $user, User $model)
     {
+
+        if ($model->is_admin) {
+            return false;
+        }
+
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -106,6 +112,12 @@ class UserPolicy
      */
     public function restore(User $user, User $model)
     {
+
+        if ($model->is_admin) {
+            return false;
+        }
+
+      
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -113,7 +125,7 @@ class UserPolicy
             return false;
         }
 
-        return auth()->user()->can('restore users');
+        return auth()->user()->can('restore users', $user);
     }
 
     /**
@@ -125,6 +137,11 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model)
     {
+
+        if ($model->is_admin) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }

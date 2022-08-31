@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\OmsSetting;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class CheckIfSubscriptionExpires extends Command
@@ -30,9 +31,12 @@ class CheckIfSubscriptionExpires extends Command
     public function handle()
     {
         $omsSettings = OmsSetting::first();
-
+ 
         if ($omsSettings->hasExpired()) {
             DB::table('subscriptions')->where('subscriber_id', $omsSettings->id)->delete();
         }
+
+        Artisan::call('cache:clear');
+
     }
 }

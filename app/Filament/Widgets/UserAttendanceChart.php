@@ -46,7 +46,7 @@ class UserAttendanceChart extends BarChartWidget
     protected function getFilteredQuery($present = false)
     {
         $activeFilter = $this->filter;
-
+        
         $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
             ->between(
                 start: now()->startOfYear(),
@@ -54,6 +54,7 @@ class UserAttendanceChart extends BarChartWidget
             )
             ->perMonth()
             ->count();
+        
 
         if ($activeFilter == 'year') {
             $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))

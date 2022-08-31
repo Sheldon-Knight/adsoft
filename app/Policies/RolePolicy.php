@@ -21,6 +21,9 @@ class RolePolicy
 
     public function view(User $user, Role $role)
     {
+        if ($role->name == "Super Admin") {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -33,6 +36,7 @@ class RolePolicy
 
     public function create(User $user)
     {
+        
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -42,6 +46,10 @@ class RolePolicy
 
     public function update(User $user, Role $role)
     {
+        if ($role->name == "Super Admin") {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -54,6 +62,10 @@ class RolePolicy
 
     public function delete(User $user, Role $role)
     {
+
+        if ($role->name == "Super Admin") {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }

@@ -287,6 +287,7 @@
         </div>
 
         <x-filament::hr />
+        @if(cache()->get('hasExpired') == false)
         <form wire:submit.prevent="submit" class="space-y-6">
             {{ $this->form }}
 
@@ -306,6 +307,8 @@
                 </x-filament::button>
             </div>
         </form>
+
+        @endif
         @php
             $currenPlan = cache()->get('current_plan') ?? null;
         @endphp

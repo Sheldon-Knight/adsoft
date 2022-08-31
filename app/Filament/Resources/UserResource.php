@@ -202,13 +202,7 @@ class UserResource extends Resource
                             }),
                     ]),
 
-                DeleteAction::make()->visible(function (User $user) {
-                    if ($user->deleted_at != null) {
-                        return false;
-                    }
-
-                    return auth()->user()->can('delete users', $user);
-                }),
+                DeleteAction::make(),
 
                 RestoreAction::make()->visible(function ($record) {
                     if ($record->deleted_at === null) {
