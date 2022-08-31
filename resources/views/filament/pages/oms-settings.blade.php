@@ -1,6 +1,8 @@
 <x-filament::page>
     <header>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+            integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
         <script>
             var public_key = '{{ config('yoco.public_key') }}';
@@ -246,110 +248,353 @@
             </x-filament::button>
         </div>
     </form>
+    @php
+        $currenPlan = cache()->get('current_plan') ?? null;
+    @endphp
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
+        integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    @if ($currenPlan != null)
+        <script>
+            function log_activity($log) {
+                console.log($log);
+            }
+
+            $('#renew')
+                .css('display', 'unset')
+                .on('click', function() {
+                    $('#renew')
+                        .css('display', 'none');
+
+                    $('#subscribe-to-premium-button')
+                        .css('display', 'none');
+
+                    $('#subscribe-to-basic-button')
+                        .css('display', 'none');
+                        
+                    var currentPlan = "{{ $currenPlan }}";                   
+
+                    var price = 0;
+
+                    if(currentPlan === "Basic")
+                    {
+                        price = 1000;
+                    }else{
+                        price = 2000;
+                    }
+                   
+                    // the currency (must be ZAR)
+                    var currency = 'ZAR';
+                    // the name at the top of the popup (either shop or product)
+                    var product_title = "Renew Your Current Plan";
+                    // the description of the purchase (product or product description)
+                    var product_description = "Renewal Of Plan";
+                    yoco.showPopup({
+                        amountInCents: price * 100,
+                        // the currency (eg. ZAR/USD/GBP)
+                        currency: currency,
+                        // the name at the top of the popup (either shop or product)
+                        name: product_title,
+                        // the description of the purchase (product or product description)
+                        description: product_description,
+
+                        callback: function(chargeToken) {
+                            // Pass back the token to the backend for verification
+                            $.ajax({
+                                // This is the URL to your backend
+                                'url': '/yoco/charge',
+                                'method': 'POST',
+                                'dataType': 'json',
+                                'headers': {
+                                    // necessary for laravel's anti x-site hacking functionality
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                'data': 'token=' + chargeToken.id +
+                                    '&amountInCents=' + (price * 100) +
+                                    "&currency=" + currency +
+                                    "&metadata[method]=" + "renew",
+
+                                'success': function(data) {
+                                    swal({
+                                        title: "Purchase successful",
+                                        text: "Your Plan Has Been Renewd",
+                                        icon: "success",
+                                        button: "OK",
+                                    }).then(function() {
+                                        location.reload();
+                                    });
+                                },
+                                'error': function(result) {
+                                    error = result.responseJSON;
+                                    if (error) {
+                                        if (error.errors) {
+                                            log_activity("Failed to charge " + currency + " " +
+                                                price + " : " + error.message);
+                                            $.each(error.errors, function(key, value) {
+                                                log_activity("Validation: " + key + " : " +
+                                                    value[0]);
+                                            });
+                                        } else if (error.charge_error) {
+                                            log_activity("Failed to charge " + currency + " " +
+                                                price + " : " + error.charge_error
+                                                .displayMessage);
+                                        } else {
+                                            log_activity("Failed to charge " + currency + " " +
+                                                price + " : Unknown Error");
+                                        }
+                                    } else {
+                                        log_activity("Failed to charge " + currency + " " + price +
+                                            " : Unknown Error");
+                                    }
+                                    console.log(error);
+                                    // Popup notification
+                                    swal({
+                                        title: "Purchase failed",
+                                        text: "Something went wrong and we couldn't get this for you",
+                                        icon: "error",
+                                        button: "OK",
+                                    });
+                                },
+                                'complete': function(result) {
+                                    log_activity("Backend server call complete");
+                                }
+                            });
+                        },
+                        onCancel: function() {
+                            $('#renew')
+                                .css('display', 'unset');
+
+                            $('#subscribe-to-premium-button')
+                                .css('display', 'unset');
+
+                            $('#subscribe-to-basic-button')
+                                .css('display', 'unset');
+                        }
+                    });
+                });
+        </script>
+    @endif
 
 
     <script>
-        var subscribeToBasicButton = document.querySelector('#subscribe-to-basic-button');
-        if(subscribeToBasicButton != null){
-            subscribeToBasicButton.addEventListener('click', function() {
-            yoco.showPopup({
-                amountInCents: 5000,
-                currency: 'ZAR',
-                name: 'Basic Plan',
-                description: 'Subsribe To Basic Plan',
-                callback: function(result) {
-                    $.ajax({
-                        'url': '/yoco/charge',
-                        'method': 'POST',
-                        'dataType': 'json',
-                        'headers': {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        'data': 'token=' + result.id +
-                            '&amountInCents=' + 5000 +
-                            "&currency=" + "ZAR" +
-                            "&metadata[plan_id]=" + 1 +
-                            "&metadata[user_id]=" + {{ auth()->id() }},
-                        'success': function(data) {
-                            alert("success");
-                        },
-                        'error': function(result) {
-                            alert("something went wrong");
-                        },
-                    });
-                }
-            })
-        });
+        function log_activity($log) {
+            console.log($log);
         }
-    </script>
-    <script>
-        var subscribeToPremiumButton = document.querySelector('#subscribe-to-premium-button'); 
-            if(subscribeToPremiumButton != null){     
-        subscribeToPremiumButton.addEventListener('click', function() {
-            yoco.showPopup({
-                amountInCents: 1000,
-                currency: 'ZAR',
-                name: 'Premium Plan',
-                description: 'Subscribe To Premium Plan',
-                callback: function(result) {
-                    $.ajax({
-                        'url': '/yoco/charge',
-                        'method': 'POST',
-                        'dataType': 'json',
-                        'headers': {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        'data': 'token=' + result.id +
-                            '&amountInCents=' + 1000 +
-                            "&currency=" + "ZAR" +
-                            "&metadata[plan_id]=" + 2 +
-                            "&metadata[user_id]=" + {{ auth()->id() }},
-                        'success': function(data) {
-                            alert("success");
-                        },
-                        'error': function(result) {
-                            alert("something went wrong");
-                        },
-                    });
-                }
-            })
-        });
-    }
-    </script>
 
-    <script>
-        var renewButton = document.querySelector('#renew');
-           if(renewButton != null){     
-        renewButton.addEventListener('click', function() {
-            yoco.showPopup({
-                amountInCents: 6000,
-                currency: 'ZAR',
-                name: 'Renew Plan',
-                description: 'Renew Plan',
-                callback: function(result) {
-                    $.ajax({
-                        'url': '/yoco/charge',
-                        'method': 'POST',
-                        'dataType': 'json',
-                        'headers': {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        'data': 'token=' + result.id +
-                            '&amountInCents=' + 6000 +
-                            "&currency=" + "ZAR" +
-                            "&metadata[plan_id]=" + 2 +
-                            "&metadata[user_id]=" + {{ auth()->id() }},
-                        'success': function(data) {
-                            alert("success");
-                        },
-                        'error': function(result) {
-                            alert("something went wrong");
-                        },
-                    });
-                }
-            })
-        });
-    }
+        $('#subscribe-to-basic-button')
+            .css('display', 'unset')
+            .on('click', function() {
+                $('#subscribe-to-basic-button')
+                    .css('display', 'none');
+
+                $('#subscribe-to-premium-button')
+                    .css('display', 'none');
+
+                $('#renew')
+                    .css('display', 'none');
+
+
+                var price = 1000;
+                // the currency (must be ZAR)
+                var currency = 'ZAR';
+                // the name at the top of the popup (either shop or product)
+                var product_title = "Basic Plan";
+                // the description of the purchase (product or product description)
+                var product_description =
+                    "Subribing To The Basic Plan";
+
+                yoco.showPopup({
+                    amountInCents: price * 100,
+                    // the currency (eg. ZAR/USD/GBP)
+                    currency: currency,
+                    // the name at the top of the popup (either shop or product)
+                    name: product_title,
+                    // the description of the purchase (product or product description)
+                    description: product_description,
+
+                    callback: function(chargeToken) {
+                        // Pass back the token to the backend for verification
+                        $.ajax({
+                            // This is the URL to your backend
+                            'url': '/yoco/charge',
+                            'method': 'POST',
+                            'dataType': 'json',
+                            'headers': {
+                                // necessary for laravel's anti x-site hacking functionality
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            'data': 'token=' + chargeToken.id +
+                                '&amountInCents=' + (price * 100) +
+                                "&currency=" + currency +
+                                "&metadata[method]=" + "subscribe-to-basic-plan",
+
+                            'success': function(data) {
+                                swal({
+                                    title: "Purchase successful",
+                                    text: "You Are Now On The Basic Plan",
+                                    icon: "success",
+                                    button: "OK",
+                                }).then(function() {
+                                    location.reload();
+                                });
+                            },
+                            'error': function(result) {
+                                error = result.responseJSON;
+                                if (error) {
+                                    if (error.errors) {
+                                        log_activity("Failed to charge " + currency + " " +
+                                            price + " : " + error.message);
+                                        $.each(error.errors, function(key, value) {
+                                            log_activity("Validation: " + key + " : " +
+                                                value[0]);
+                                        });
+                                    } else if (error.charge_error) {
+                                        log_activity("Failed to charge " + currency + " " +
+                                            price + " : " + error.charge_error
+                                            .displayMessage);
+                                    } else {
+                                        log_activity("Failed to charge " + currency + " " +
+                                            price + " : Unknown Error");
+                                    }
+                                } else {
+                                    log_activity("Failed to charge " + currency + " " + price +
+                                        " : Unknown Error");
+                                }
+                                console.log(error);
+                                // Popup notification
+                                swal({
+                                    title: "Purchase failed",
+                                    text: "Something went wrong and we couldn't get this for you",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            },
+                            'complete': function(result) {
+                                log_activity("Backend server call complete");
+                            }
+                        });
+                    },
+                    onCancel: function() {
+                        $('#subscribe-to-basic-button')
+                            .css('display', 'unset');
+
+                        $('#subscribe-to-premium-button')
+                            .css('display', 'unset');
+
+                        $('#renew')
+                            .css('display', 'unset');
+
+                    }
+                });
+            });
+
+        $('#subscribe-to-premium-button')
+            .css('display', 'unset')
+            .on('click', function() {
+                $('#subscribe-to-basic-button')
+                    .css('display', 'none');
+
+                $('#renew')
+                    .css('display', 'none');
+
+                $('#subscribe-to-premium-button')
+                    .css('display', 'none');
+
+
+
+                var price = 2000;
+                // the currency (must be ZAR)
+                var currency = 'ZAR';
+                // the name at the top of the popup (either shop or product)
+                var product_title = "Premium Plan";
+                // the description of the purchase (product or product description)
+                var product_description = "Subribing To The Premium Plan";
+
+                yoco.showPopup({
+                    amountInCents: price * 100,
+                    // the currency (eg. ZAR/USD/GBP)
+                    currency: currency,
+                    // the name at the top of the popup (either shop or product)
+                    name: product_title,
+                    // the description of the purchase (product or product description)
+                    description: product_description,
+
+                    callback: function(chargeToken) {
+                        // Pass back the token to the backend for verification
+                        $.ajax({
+                            // This is the URL to your backend
+                            'url': '/yoco/charge',
+                            'method': 'POST',
+                            'dataType': 'json',
+                            'headers': {
+                                // necessary for laravel's anti x-site hacking functionality
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            'data': 'token=' + chargeToken.id +
+                                '&amountInCents=' + (price * 100) +
+                                "&currency=" + currency +
+                                "&metadata[method]=" + "subscribe-to-premium-plan",
+
+                            'success': function(data) {
+                                swal({
+                                    title: "Purchase successful",
+                                    text: "You Are Now On The Premium Plan",
+                                    icon: "success",
+                                    button: "OK",
+                                }).then(function() {
+                                    location.reload();
+                                });
+                            },
+                            'error': function(result) {
+                                error = result.responseJSON;
+                                if (error) {
+                                    if (error.errors) {
+                                        log_activity("Failed to charge " + currency + " " +
+                                            price + " : " + error.message);
+                                        $.each(error.errors, function(key, value) {
+                                            log_activity("Validation: " + key + " : " +
+                                                value[0]);
+                                        });
+                                    } else if (error.charge_error) {
+                                        log_activity("Failed to charge " + currency + " " +
+                                            price + " : " + error.charge_error
+                                            .displayMessage);
+                                    } else {
+                                        log_activity("Failed to charge " + currency + " " +
+                                            price + " : Unknown Error");
+                                    }
+                                } else {
+                                    log_activity("Failed to charge " + currency + " " + price +
+                                        " : Unknown Error");
+                                }
+                                console.log(error);
+                                // Popup notification
+                                swal({
+                                    title: "Purchase failed",
+                                    text: "Something went wrong and we couldn't get this for you",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            },
+                            'complete': function(result) {
+                                log_activity("Backend server call complete");
+                            }
+                        });
+                    },
+                    onCancel: function() {
+                        $('#subscribe-to-premium-button')
+                            .css('display', 'unset');
+
+                        $('#subscribe-to-basic-button')
+                            .css('display', 'unset');
+
+                        $('#renew')
+                            .css('display', 'unset');
+
+                    }
+                });
+            });
     </script>
 
 </x-filament::page>

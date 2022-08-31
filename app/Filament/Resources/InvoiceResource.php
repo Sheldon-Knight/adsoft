@@ -6,7 +6,6 @@ use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Status;
-use App\Services\PdfInvoice;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
