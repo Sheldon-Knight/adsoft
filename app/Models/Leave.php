@@ -28,8 +28,7 @@ class Leave extends Model
     protected $casts = [
         'type' => LeaveTypes::class,
         'from' => 'datetime',
-        'to' => 'datetime',
-        'status' => 'boolean',
+        'to' => 'datetime',       
         'attachments' => 'array',
     ];
 

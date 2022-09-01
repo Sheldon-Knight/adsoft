@@ -23,7 +23,7 @@ return new class extends Migration
             $table->json('attachments')->nullable();
             $table->foreignId('revisioned_by')->nullable()->constrained('users')->onDelete('cascade');
             $table->date('revisioned_on')->nullable();
-            $table->string('status')->default(0);
+            $table->string('status')->default("Pending");
             $table->longText('user_notes')->nullable();
             $table->longText('revisioned_notes')->nullable();
             $table->timestamps();

@@ -63,7 +63,17 @@ class MyLeaves extends Page implements HasTable
             \Filament\Tables\Columns\TextColumn::make('type'),
             \Filament\Tables\Columns\TextColumn::make('revisioned_on')
                 ->date(),
-            \Filament\Tables\Columns\BooleanColumn::make('status'),
+            \Filament\Tables\Columns\BadgeColumn::make('status')
+                ->colors([
+                    'danger' => 'Rejected',
+                    'success' => 'Approved',
+                    'warning' => 'Pending',
+                ])
+                ->icons([
+                    'heroicon-o-x-circle' => 'Rejected',
+                    'heroicon-o-badge-check' => 'Approved',
+                'heroicon-o-clock' => 'Pending',
+                ]),
             \Filament\Tables\Columns\TextColumn::make('created_at')->label("Applied Date")
                 ->date(),
         ];
@@ -80,7 +90,7 @@ class MyLeaves extends Page implements HasTable
                 ->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])
                 ->column('type'),
             MultiSelectFilter::make('status')
-                ->options([0 => "Rejected", 1 => "Approved"])
+                ->options(["Rejected" => "Rejected", "Approved" => "Approved", 'Pending' => "Pending"])
                 ->column('status'),
             MultiSelectFilter::make('user_id')
                 ->relationship("user", "name"),

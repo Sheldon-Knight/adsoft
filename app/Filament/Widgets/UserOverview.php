@@ -17,6 +17,8 @@ class UserOverview extends BaseWidget
 
             Card::make('My Instructions', auth()->user()->incompleteInstructions->count()),
 
+            Card::make('My Pending Leave Applications', auth()->user()->pendingLeaveApplications->count()),
+
         ];
     }
 
