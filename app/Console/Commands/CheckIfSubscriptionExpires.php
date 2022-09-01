@@ -31,12 +31,11 @@ class CheckIfSubscriptionExpires extends Command
     public function handle()
     {
         $omsSettings = OmsSetting::first();
- 
+
         if ($omsSettings->hasExpired()) {
             DB::table('subscriptions')->where('subscriber_id', $omsSettings->id)->delete();
         }
 
         Artisan::call('cache:clear');
-
     }
 }

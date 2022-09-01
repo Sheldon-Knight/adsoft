@@ -17,7 +17,6 @@ class EditRole extends EditRecord
 
     public static function canEdit(Model $record): bool
     {
-        return $record->name === "Super Admin" ? false : true;
+        return $record->name === 'Super Admin' ? false : true;
     }
-
 }

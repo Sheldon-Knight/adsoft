@@ -48,7 +48,6 @@ class PermissionsRelationManager extends RelationManager
                         $livewire->ownerRecord->givePermissionTo($permission->name);
 
                         Artisan::call('cache:clear');
-
                     }),
             ])
             ->actions([

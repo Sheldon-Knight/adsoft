@@ -2,10 +2,11 @@
 
 namespace App\Policies;
 
+use App\Models\Leave;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy
+class LeavePolicy
 {
     use HandlesAuthorization;
 
@@ -21,26 +22,26 @@ class UserPolicy
             return false;
         }
 
-        return auth()->user()->can('view any users');
+        return $user->can('view any leaves');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Leave  $leave
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, User $model)
+    public function view(User $user, Leave $leave)
     {
         if (cache()->get('hasExpired') == true) {
             return false;
         }
-        if ($model->deleted_at != null) {
+        if ($leave->deleted_at != null) {
             return false;
         }
 
-        return auth()->user()->can('view users');
+        return $user->can('view leaves');
     }
 
     /**
@@ -55,95 +56,85 @@ class UserPolicy
             return false;
         }
 
-        return auth()->user()->can('create users');
+        return $user->can('create leaves');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Leave  $leave
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, User $model)
+    public function update(User $user, Leave $leave)
     {
         if (cache()->get('hasExpired') == true) {
             return false;
         }
-        if ($model->deleted_at != null) {
+
+        if ($leave->deleted_at != null) {
             return false;
         }
 
-        return auth()->user()->can('update users');
+        return $user->can('update leaves');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Leave  $leave
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, User $model)
+    public function delete(User $user, Leave $leave)
     {
-        if ($model->is_admin) {
-            return false;
-        }
-
         if (cache()->get('hasExpired') == true) {
             return false;
         }
 
-        if ($model->deleted_at != null) {
+        if ($leave->deleted_at != null) {
             return false;
         }
 
-        return auth()->user()->can('delete users');
+        return $user->can('delete leaves');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Leave  $leave
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, User $model)
+    public function restore(User $user, Leave $leave)
     {
-        if ($model->is_admin) {
-            return false;
-        }
-
         if (cache()->get('hasExpired') == true) {
             return false;
         }
-        if ($model->deleted_at === null) {
+        if ($leave->deleted_at === null) {
             return false;
         }
 
-        return auth()->user()->can('restore users', $user);
+        return $user->can('restore leaves');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Leave  $leave
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, User $model)
+    public function forceDelete(User $user, Leave $leave)
     {
-        if ($model->is_admin) {
-            return false;
-        }
-
         if (cache()->get('hasExpired') == true) {
             return false;
         }
-        if ($model->deleted_at === null) {
+
+        if ($leave->deleted_at === null) {
             return false;
         }
 
-        return auth()->user()->can('force delete users');
+        return $user->can('force delete leaves');
     }
 }

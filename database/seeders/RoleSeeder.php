@@ -145,6 +145,16 @@ class RoleSeeder extends Seeder
 
         Permission::create(['name' => 'change application settings']);
 
+        //Leaves Permissions
+
+        Permission::create(['name' => 'view any leaves']);
+        Permission::create(['name' => 'create leaves']);
+        Permission::create(['name' => 'update leaves']);
+        Permission::create(['name' => 'view leaves']);
+        Permission::create(['name' => 'delete leaves']);
+        Permission::create(['name' => 'restore leaves']);
+        Permission::create(['name' => 'force delete leaves']);
+
         // Admin Role with All Permissions
 
         $role = Role::create([

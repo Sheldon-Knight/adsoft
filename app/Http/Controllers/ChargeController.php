@@ -19,7 +19,7 @@ class ChargeController extends Controller
             'token' => 'required',
             'amountInCents' => 'required|int',
             'currency' => 'required',
-            'metadata' => 'required'
+            'metadata' => 'required',
         ]);
         $token = request()->input('token');
         $amountInCents = request()->input('amountInCents');
@@ -28,25 +28,27 @@ class ChargeController extends Controller
 
         $client = new YocoClient(config('yoco.secret_key'), config('yoco.public_key'));
 
-
-
         try {
             $response = response()->json($client->charge($token, $amountInCents, $currency, $metadata));
 
-            $this->CheckMethod($metadata["method"]);
+            $this->CheckMethod($metadata['method']);
 
             return $response;
         } catch (ApiKeyException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
+
             return response()->json(['charge_error' => $e], 400);
         } catch (DeclinedException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
+
             return response()->json(['charge_error' => $e], 400);
         } catch (InternalException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
+
             return response()->json(['charge_error' => $e], 400);
         }
     }
+
     private function CheckMethod($method)
     {
         switch ($method) {
@@ -61,6 +63,7 @@ class ChargeController extends Controller
                 break;
         }
     }
+
     private function renew()
     {
         $subscription = OmsSetting::first();

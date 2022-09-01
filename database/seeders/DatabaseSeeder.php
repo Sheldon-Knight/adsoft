@@ -15,11 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(
             [
-                AdminSeeder::class,
-                OmsSettingsSeeder::class,
-                StatusesSeeder::class,
-                DepartmentSeeder::class,
-                RoleSeeder::class,
+                // AdminSeeder::class,
+                // OmsSettingsSeeder::class,
+                // StatusesSeeder::class,
+                // DepartmentSeeder::class,
+                // RoleSeeder::class,
                 // UserSeeder::class,
                 // InstructionSeeder::class,
                 // AccountSeeder::class,
@@ -27,7 +27,9 @@ class DatabaseSeeder extends Seeder
                 // TransactionSeeder::class,
                 // StatementSeeder::class,
                 // AttendanceSeeder::class,
-                FeatureSeeder::class,
+                // FeatureSeeder::class,
+
+                LeaveSeeder::class,
             ]
         );
     }

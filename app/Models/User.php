@@ -39,7 +39,6 @@ class User extends Authenticatable implements FilamentUser
      *
      * @var array<int, string>
      */
-
     protected $hidden = [
         'password',
         'remember_token',
@@ -58,19 +57,15 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessFilament(): bool
     {
         if (cache()->get('hasExpired') == true) {
-
-            if (auth()->user()->is_admin == true)
-            {
+            if (auth()->user()->is_admin == true) {
                 return true;
             }
 
             return false;
         }
 
-
         return true;
     }
-    
 
     public function jobs()
     {
