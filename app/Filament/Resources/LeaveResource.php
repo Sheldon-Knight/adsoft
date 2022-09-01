@@ -8,7 +8,6 @@ use App\Models\User;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput\Mask;
 use Filament\Notifications\Notification;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -31,27 +30,23 @@ class LeaveResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-
-
-
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')->relationship("user", "name")->required()->searchable()->reactive()->disabled()->hiddenOn('create'),
-                Forms\Components\Select::make('user_id')->relationship("user", "name")->required()->searchable()->reactive()->hiddenOn(['edit', 'view']),
+                Forms\Components\Select::make('user_id')->relationship('user', 'name')->required()->searchable()->reactive()->disabled()->hiddenOn('create'),
+                Forms\Components\Select::make('user_id')->relationship('user', 'name')->required()->searchable()->reactive()->hiddenOn(['edit', 'view']),
                 Forms\Components\Select::make('type')->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])->disabled()->required()->hiddenOn('create'),
                 Forms\Components\Select::make('type')->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])->required()->hiddenOn(['edit', 'view']),
                 Forms\Components\DatePicker::make('from')
                     ->default(now()->addDay())
                     ->required()
-                    ->disabled()                   
+                    ->disabled()
                     ->before('to')
                     ->hiddenOn('create'),
                 Forms\Components\DatePicker::make('from')
                     ->default(now()->addDay())
-                    ->required()                   
+                    ->required()
                     ->before('to')
                     ->hiddenOn(['edit', 'view']),
                 Forms\Components\DatePicker::make('to')
@@ -65,15 +60,10 @@ class LeaveResource extends Resource
                     ->after('from')
                     ->hiddenOn(['edit', 'view']),
 
-
-
-
-
                 Forms\Components\Textarea::make('user_notes')->columnSpan('full')->disabled()->hiddenOn('create'),
                 Forms\Components\Textarea::make('user_notes')->columnSpan('full')->hiddenOn(['edit', 'view']),
                 Forms\Components\Textarea::make('revisioned_notes')
                     ->disabled(function (Model $record) {
-
                         if ($record->revisioned_by !== null and $record->revisioned_on != null) {
                             return true;
                         }
@@ -81,27 +71,25 @@ class LeaveResource extends Resource
                         return false;
                     })->hiddenOn('create')->columnSpan('full'),
 
-
                 Forms\Components\Select::make('status')
                     ->required()
                     ->disabled(function (Model $record) {
-
                         if ($record->revisioned_by !== null and $record->revisioned_on != null) {
                             return true;
                         }
 
                         return false;
                     })
-                ->options(["Rejected" => "Rejected", "Approved" => "Approved"])
+                ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved'])
                     ->hiddenOn('create')->columnSpan('full'),
 
                 FileUpload::make('attachments')
                     ->disabled()
                     ->reactive()
                     ->directory(function (Closure $get) {
-                        $user = User::find($get("user_id"));
+                        $user = User::find($get('user_id'));
 
-                        return 'user/' . $user->id . '/leave-attachments';
+                        return 'user/'.$user->id.'/leave-attachments';
                     })
                     ->enableDownload()
                     ->enableOpen()
@@ -111,9 +99,9 @@ class LeaveResource extends Resource
                 FileUpload::make('attachments')
                     ->reactive()
                     ->directory(function (Closure $get) {
-                        $user = User::find($get("user_id"));
+                        $user = User::find($get('user_id'));
 
-                        return 'user/' . $user->id . '/leave-attachments';
+                        return 'user/'.$user->id.'/leave-attachments';
                     })
                     ->enableDownload()
                     ->enableOpen()
@@ -121,8 +109,6 @@ class LeaveResource extends Resource
                     ->multiple()->columnSpan('full'),
             ]);
     }
-
-
 
     public static function table(Table $table): Table
     {
@@ -135,7 +121,7 @@ class LeaveResource extends Resource
                     ->date(),
                 Tables\Columns\TextColumn::make('to')
                     ->date(),
-                Tables\Columns\TextColumn::make('type'),               
+                Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('revisioned_on')
                     ->date(),
                 Tables\Columns\BadgeColumn::make('status')
@@ -147,9 +133,9 @@ class LeaveResource extends Resource
                 ->icons([
                     'heroicon-o-x-circle' => 'Rejected',
                     'heroicon-o-badge-check' => 'Approved',
-                'heroicon-o-clock' => 'Pending',
+                    'heroicon-o-clock' => 'Pending',
                 ]),
-                Tables\Columns\TextColumn::make('created_at')->label("Applied Date")
+                Tables\Columns\TextColumn::make('created_at')->label('Applied Date')
                     ->date(),
             ])
             ->filters([
@@ -161,14 +147,14 @@ class LeaveResource extends Resource
                     ->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])
                     ->column('type'),
                 MultiSelectFilter::make('status')
-                ->options(["Rejected" => "Rejected", "Approved" => "Approved",'Pending' => "Pending"])
+                ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved', 'Pending' => 'Pending'])
                     ->column('status'),
                 MultiSelectFilter::make('user_id')
-                    ->relationship("user", "name"),
+                    ->relationship('user', 'name'),
                 MultiSelectFilter::make('department_id')
-                    ->relationship("department", "name"),
+                    ->relationship('department', 'name'),
                 MultiSelectFilter::make('revisioned_by')
-                    ->relationship("revisionedBy", "name"),
+                    ->relationship('revisionedBy', 'name'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
@@ -180,9 +166,9 @@ class LeaveResource extends Resource
 
                         return false;
                     }
-                )->label("Revise")
+                )->label('Revise')
                     ->color('success'),
-                Action::make("Upload Files")
+                Action::make('Upload Files')
                     ->icon('heroicon-o-upload')->hidden(
                         function (Model $record) {
                             if ($record->user_id !== auth()->id()) {
@@ -191,12 +177,13 @@ class LeaveResource extends Resource
                             if ($record->deleted_at != null) {
                                 return true;
                             }
+
                             return false;
                         }
                     )->form([
                         FileUpload::make('attachments')
                             ->directory(function (Model $record) {
-                                return 'user/' . $record->user_id . '/leave-attachments';
+                                return 'user/'.$record->user_id.'/leave-attachments';
                             })
                             ->enableDownload()
                             ->enableOpen()
@@ -208,7 +195,6 @@ class LeaveResource extends Resource
                         foreach ($data['attachments'] as $attachment) {
                             array_push($attachments, $attachment);
                         }
-
 
                         $record->update(['attachments' => $attachments]);
 

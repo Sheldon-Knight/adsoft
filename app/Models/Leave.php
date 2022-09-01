@@ -28,13 +28,13 @@ class Leave extends Model
     protected $casts = [
         'type' => LeaveTypes::class,
         'from' => 'datetime',
-        'to' => 'datetime',       
+        'to' => 'datetime',
         'attachments' => 'array',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function revisionedBy()

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,7 +27,7 @@ class LeaveFactory extends Factory
             'department_id' => $user->department_id ?? null,
             'from' => $from,
             'to' => $to,
-            'type' => $this->faker->randomElement(['Annual', 'Sick', 'Family', 'Maternity','Unpaid','Study']),          
+            'type' => $this->faker->randomElement(['Annual', 'Sick', 'Family', 'Maternity', 'Unpaid', 'Study']),
             'revisioned_by' => User::find(1)->id,
             'revisioned_on' => $from->addDay(),
             'status' => rand(0, 1),

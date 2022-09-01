@@ -83,9 +83,9 @@ class User extends Authenticatable implements FilamentUser
      }
 
   public function pendingLeaveApplications()
-     {
-         return $this->hasMany(Leave::class, 'user_id')->where('status', "Pending");
-     }
+  {
+      return $this->hasMany(Leave::class, 'user_id')->where('status', 'Pending');
+  }
 
     public function comments()
     {

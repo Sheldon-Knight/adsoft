@@ -129,6 +129,15 @@
                             <p>Attendance</p>
                         </li>
 
+                        <li class="flex space-x-6 ">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p>Leave Applications</p>
+                        </li>
+
 
                         <li class="flex space-x-6 ">
                             <svg class="w-6 h-6 mr-3" fill="none" stroke="#E11D48" viewBox="0 0 24 24"
@@ -222,7 +231,7 @@
                             </svg>
                             <p>Invoices & Quotes</p>
                         </li>
-
+                        
                         <li class="flex space-x-6 ">
                             <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -231,6 +240,17 @@
                             </svg>
                             <p>Attendance</p>
                         </li>
+
+                        <li class="flex space-x-6 ">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p>Leave Applications</p>
+                        </li>
+
+
 
 
                         <li class="flex space-x-6 ">
@@ -287,27 +307,26 @@
         </div>
 
         <x-filament::hr />
-        @if(cache()->get('hasExpired') == false)
-        <form wire:submit.prevent="submit" class="space-y-6">
-            {{ $this->form }}
+        @if (cache()->get('hasExpired') == false)
+            <form wire:submit.prevent="submit" class="space-y-6">
+                {{ $this->form }}
 
-            <div class="flex flex-wrap items-center gap-4 justify-start">
-                <x-filament::button type="submit">
-                    Update Settings
-                </x-filament::button>
-            </div>
+                <div class="flex flex-wrap items-center gap-4 justify-start">
+                    <x-filament::button type="submit">
+                        Update Settings
+                    </x-filament::button>
+                </div>
 
-        </form>
+            </form>
 
-        <form action="{{ Route('invoice-settings.downloadPdf') }}" class="space-y-6">
+            <form action="{{ Route('invoice-settings.downloadPdf') }}" class="space-y-6">
 
-            <div class="flex flex-wrap items-center gap-4 justify-start">
-                <x-filament::button type="submit" color="secondary">
-                    Download Preview
-                </x-filament::button>
-            </div>
-        </form>
-
+                <div class="flex flex-wrap items-center gap-4 justify-start">
+                    <x-filament::button type="submit" color="secondary">
+                        Download Preview
+                    </x-filament::button>
+                </div>
+            </form>
         @endif
         @php
             $currenPlan = cache()->get('current_plan') ?? null;

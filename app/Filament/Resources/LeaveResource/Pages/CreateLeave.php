@@ -9,7 +9,7 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateLeave extends CreateRecord
 {
     protected static string $resource = LeaveResource::class;
-    
+
     protected static ?string $title = 'Leave Application';
 
     protected function mutateFormDataBeforeCreate(array $data): array
@@ -20,11 +20,8 @@ class CreateLeave extends CreateRecord
 
         $user = User::find($data['user_id']);
 
-        $data['department_id'] =  $user->department_id ?? null;
-        
+        $data['department_id'] = $user->department_id ?? null;
+
         return $data;
     }
-
-
-
 }

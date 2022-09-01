@@ -6,7 +6,6 @@ use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Models\Leave;
 use App\Models\User;
-use Closure;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -15,17 +14,17 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action as TableAction;
-use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
 
 class MyLeaves extends Page implements HasTable
 {
@@ -72,9 +71,9 @@ class MyLeaves extends Page implements HasTable
                 ->icons([
                     'heroicon-o-x-circle' => 'Rejected',
                     'heroicon-o-badge-check' => 'Approved',
-                'heroicon-o-clock' => 'Pending',
+                    'heroicon-o-clock' => 'Pending',
                 ]),
-            \Filament\Tables\Columns\TextColumn::make('created_at')->label("Applied Date")
+            \Filament\Tables\Columns\TextColumn::make('created_at')->label('Applied Date')
                 ->date(),
         ];
     }
@@ -90,14 +89,14 @@ class MyLeaves extends Page implements HasTable
                 ->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])
                 ->column('type'),
             MultiSelectFilter::make('status')
-                ->options(["Rejected" => "Rejected", "Approved" => "Approved", 'Pending' => "Pending"])
+                ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved', 'Pending' => 'Pending'])
                 ->column('status'),
             MultiSelectFilter::make('user_id')
-                ->relationship("user", "name"),
+                ->relationship('user', 'name'),
             MultiSelectFilter::make('department_id')
-                ->relationship("department", "name"),
+                ->relationship('department', 'name'),
             MultiSelectFilter::make('revisioned_by')
-                ->relationship("revisionedBy", "name"),
+                ->relationship('revisionedBy', 'name'),
             TrashedFilter::make(),
         ];
     }
@@ -105,7 +104,7 @@ class MyLeaves extends Page implements HasTable
     protected function getTableActions(): array
     {
         return [
-            TableAction::make("Upload Files")
+            TableAction::make('Upload Files')
                 ->icon('heroicon-o-upload')->hidden(
                     function (Model $record) {
                         if ($record->user_id !== auth()->id()) {
@@ -114,12 +113,13 @@ class MyLeaves extends Page implements HasTable
                         if ($record->deleted_at != null) {
                             return true;
                         }
+
                         return false;
                     }
                 )->form([
                     FileUpload::make('attachments')
                         ->directory(function (Model $record) {
-                            return 'user/' . $record->user_id . '/leave-attachments';
+                            return 'user/'.$record->user_id.'/leave-attachments';
                         })
                         ->enableDownload()
                         ->enableOpen()
@@ -131,7 +131,6 @@ class MyLeaves extends Page implements HasTable
                     foreach ($data['attachments'] as $attachment) {
                         array_push($attachments, $attachment);
                     }
-
 
                     $record->update(['attachments' => $attachments]);
 
@@ -150,27 +149,66 @@ class MyLeaves extends Page implements HasTable
                         ->before('to')
                         ->required(),
 
-
                     DatePicker::make('to')
                         ->required()
                         ->after('from'),
-
 
                     Textarea::make('user_notes')->columnSpan('full'),
 
                     FileUpload::make('attachments')
                         ->reactive()
-                        ->directory('user/' . auth()->id() . '/leave-attachments')
+                        ->directory('user/'.auth()->id().'/leave-attachments')
                         ->enableDownload()
                         ->enableOpen()
                         ->multiple()->columnSpan('full'),
                 ]),
-            DeleteAction::make(),
-            RestoreAction::make(),
-            ForceDeleteAction::make(),
+            DeleteAction::make()->visible(function (Leave $record) {
+                if (cache()->get('hasExpired') == true) {
+                    return false;
+                }
+
+                if ($record->status != 'Pending') {
+                    return false;
+                }
+
+                if ($record->deleted_at != null) {
+                    return false;
+                }
+
+                return true;
+
+                // return auth()->user()->can('delete leaves');
+            }),
+            RestoreAction::make()->visible(function (Leave $leave) {
+                if (cache()->get('hasExpired') == true) {
+                    return false;
+                }
+                if ($leave->deleted_at === null) {
+                    return false;
+                }
+
+                if ($leave->status != 'Pending') {
+                    return false;
+                }
+
+                return auth()->user()->can('restore leaves');
+            }),
+            ForceDeleteAction::make()->visible(function (Leave $leave) {
+                if (cache()->get('hasExpired') == true) {
+                    return false;
+                }
+
+                if ($leave->deleted_at === null) {
+                    return false;
+                }
+                if ($leave->status != 'Pending') {
+                    return false;
+                }
+
+                return auth()->user()->can('force delete leaves');
+            }),
         ];
     }
-
 
     protected static function shouldRegisterNavigation(): bool
     {
@@ -180,7 +218,6 @@ class MyLeaves extends Page implements HasTable
 
         return true;
     }
-
 
     protected function getTableBulkActions(): array
     {
@@ -202,10 +239,9 @@ class MyLeaves extends Page implements HasTable
         return [
             Action::make('Apply For Leave')
                 ->action(function (array $data) {
+                    $data['user_id'] = auth()->id();
 
-                    $data["user_id"] = auth()->id();
-
-                    $data["department_id"] = auth()->user()->department_id ?? null;
+                    $data['department_id'] = auth()->user()->department_id ?? null;
 
                     Leave::create($data);
 
@@ -223,17 +259,15 @@ class MyLeaves extends Page implements HasTable
                         ->before('to')
                         ->required(),
 
-
                     DatePicker::make('to')
                         ->required()
                         ->after('from'),
-
 
                     Textarea::make('user_notes')->columnSpan('full'),
 
                     FileUpload::make('attachments')
                         ->reactive()
-                        ->directory('user/' . auth()->id() . '/leave-attachments')
+                        ->directory('user/'.auth()->id().'/leave-attachments')
                         ->enableDownload()
                         ->enableOpen()
                         ->multiple()->columnSpan('full'),
@@ -241,6 +275,7 @@ class MyLeaves extends Page implements HasTable
 
         ];
     }
+
     protected function getTableFiltersFormColumns(): int
     {
         return 3;

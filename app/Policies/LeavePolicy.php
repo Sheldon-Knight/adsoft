@@ -96,6 +96,10 @@ class LeavePolicy
             return false;
         }
 
+        if ($leave->status != 'Pending') {
+            return false;
+        }
+
         return $user->can('delete leaves');
     }
 
@@ -112,6 +116,10 @@ class LeavePolicy
             return false;
         }
         if ($leave->deleted_at === null) {
+            return false;
+        }
+
+        if ($leave->status === 'Pending') {
             return false;
         }
 
@@ -132,6 +140,9 @@ class LeavePolicy
         }
 
         if ($leave->deleted_at === null) {
+            return false;
+        }
+        if ($leave->status != 'Pending') {
             return false;
         }
 
