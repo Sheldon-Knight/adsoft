@@ -33,6 +33,8 @@ class LeaveResource extends Resource
 
 
 
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -42,22 +44,31 @@ class LeaveResource extends Resource
                 Forms\Components\Select::make('type')->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])->disabled()->required()->hiddenOn('create'),
                 Forms\Components\Select::make('type')->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])->required()->hiddenOn(['edit', 'view']),
                 Forms\Components\DatePicker::make('from')
-                    ->default(now())
+                    ->default(now()->addDay())
                     ->required()
-                    ->disabled()
+                    ->disabled()                   
+                    ->before('to')
                     ->hiddenOn('create'),
                 Forms\Components\DatePicker::make('from')
-                    ->default(now())
-                    ->required()
+                    ->default(now()->addDay())
+                    ->required()                   
+                    ->before('to')
                     ->hiddenOn(['edit', 'view']),
                 Forms\Components\DatePicker::make('to')
                     ->required()
                     ->disabled()
+                    ->after('from')
                     ->hiddenOn('create'),
-                Forms\Components\DatePicker::make('from')
+                Forms\Components\DatePicker::make('to')
                     ->default(now())
                     ->required()
+                    ->after('from')
                     ->hiddenOn(['edit', 'view']),
+
+
+
+
+
                 Forms\Components\Textarea::make('user_notes')->columnSpan('full')->disabled()->hiddenOn('create'),
                 Forms\Components\Textarea::make('user_notes')->columnSpan('full')->hiddenOn(['edit', 'view']),
                 Forms\Components\Textarea::make('revisioned_notes')
@@ -124,8 +135,7 @@ class LeaveResource extends Resource
                     ->date(),
                 Tables\Columns\TextColumn::make('to')
                     ->date(),
-                Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('file'),
+                Tables\Columns\TextColumn::make('type'),               
                 Tables\Columns\TextColumn::make('revisioned_on')
                     ->date(),
                 Tables\Columns\BooleanColumn::make('status'),
@@ -140,7 +150,6 @@ class LeaveResource extends Resource
                 MultiSelectFilter::make('type')
                     ->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])
                     ->column('type'),
-                Tables\Filters\TrashedFilter::make(),
                 MultiSelectFilter::make('status')
                     ->options([0 => "Rejected", 1 => "Approved"])
                     ->column('status'),
@@ -169,9 +178,9 @@ class LeaveResource extends Resource
                             if ($record->user_id !== auth()->id()) {
                                 return true;
                             }
-                    if ($record->deleted_at != null) {
-                        return true;
-                    }
+                            if ($record->deleted_at != null) {
+                                return true;
+                            }
                             return false;
                         }
                     )->form([

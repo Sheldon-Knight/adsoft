@@ -27,7 +27,7 @@ class MyJobs extends Page implements HasTable
 
     protected static string $view = 'filament.pages.my-jobs';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $navigationGroup = 'My Workflow';
 
