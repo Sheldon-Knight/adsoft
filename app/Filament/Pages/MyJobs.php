@@ -36,11 +36,6 @@ class MyJobs extends Page implements HasTable
         return Job::query()->where('user_id', auth()->id());
     }
 
-    // protected static function getNavigationBadge(): ?string
-    // {
-    //     return auth()->user()->incompleteInstructions->count();
-    // }
-
     protected function getTableColumns(): array
     {
         return [
@@ -62,7 +57,7 @@ class MyJobs extends Page implements HasTable
         return [
             MultiSelectFilter::make('status')->relationship('status', 'name'),
             MultiSelectFilter::make('client')->relationship('client', 'client_name'),
-            MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
+            MultiSelectFilter::make('department')->relationship('department', 'name'),
             TextFilter::make('title'),
             TextFilter::make('description'),
             DateFilter::make('date_completed'),
