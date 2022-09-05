@@ -48,6 +48,7 @@ class UserAttendanceChart extends BarChartWidget
         $activeFilter = $this->filter;
 
         $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
+        ->dateColumn('day')
             ->between(
                 start: now()->startOfYear(),
                 end: now()->endOfYear(),
@@ -57,6 +58,7 @@ class UserAttendanceChart extends BarChartWidget
 
         if ($activeFilter == 'year') {
             $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
+                ->dateColumn('day')
                 ->between(
                     start: now()->startOfYear(),
                     end: now()->endOfYear(),
@@ -67,6 +69,7 @@ class UserAttendanceChart extends BarChartWidget
 
         if ($activeFilter == 'this_month') {
             $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
+                ->dateColumn('day')
                 ->between(
                     start: now()->startOfMonth(),
                     end: now()->endOfMonth(),
@@ -77,6 +80,7 @@ class UserAttendanceChart extends BarChartWidget
 
         if ($activeFilter == 'last_month') {
             $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
+                ->dateColumn('day')
                 ->between(
                     start: now()->subMonth(1)->startOfMonth(),
                     end: now()->subMonth(1)->endOfMonth(),

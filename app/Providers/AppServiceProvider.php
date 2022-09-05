@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
+    {     
         Filament::serving(function () {
             Filament::registerNavigationGroups([
                 NavigationGroup::make()

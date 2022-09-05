@@ -32,25 +32,29 @@ class AttendanceCalendarWidget extends FullCalendarWidget
             $backgroundColor = $attendance->present ? 'green' : 'red';
 
             if ($title == 'Present') {
-                $data[] =
-                    [
-                        'id' => $attendance->id,
-                        'title' => 'Check In: '.Carbon::parse($attendance->time_in)->format('H:i:a'),
-                        'start' => $attendance->day,
-                        'textColor' => '#fff',
-                        'backgroundColor' => $backgroundColor,
-                        'borderColor' => $backgroundColor,
-                    ];
+                if ($attendance->time_in) {
+                    $data[] =
+                        [
+                            'id' => $attendance->id,
+                            'title' => 'Check In: ' . Carbon::parse($attendance->time_in)->format('H:i:a'),
+                            'start' => $attendance->day,
+                            'textColor' => '#fff',
+                            'backgroundColor' => $backgroundColor,
+                            'borderColor' => $backgroundColor,
+                        ];
+                }
 
-                $data[] =
-                    [
-                        'id' => $attendance->id,
-                        'title' => 'Check Out: '.Carbon::parse($attendance->time_out)->format('H:i:a'),
-                        'start' => $attendance->day,
-                        'textColor' => '#fff',
-                        'backgroundColor' => $backgroundColor,
-                        'borderColor' => $backgroundColor,
-                    ];
+                if ($attendance->time_out) {
+                    $data[] =
+                        [
+                            'id' => $attendance->id,
+                            'title' => 'Check Out: ' . Carbon::parse($attendance->time_out)->format('H:i:a'),
+                            'start' => $attendance->day,
+                            'textColor' => '#fff',
+                            'backgroundColor' => $backgroundColor,
+                            'borderColor' => $backgroundColor,
+                        ];
+                }
             } else {
                 $data[] =
 

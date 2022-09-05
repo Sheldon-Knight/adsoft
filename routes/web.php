@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicePreviewController;
 use App\Http\Controllers\PdfController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +18,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', HomeController::class);
-
 Route::get('/download/pdf-preview', InvoicePreviewController::class)->name('invoice-settings.downloadPdf');
 Route::get('/download/pdf-preview/{record}', PdfController::class)->name('pdf-download');
