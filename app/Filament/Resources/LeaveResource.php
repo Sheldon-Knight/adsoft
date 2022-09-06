@@ -45,17 +45,19 @@ class LeaveResource extends Resource
                     ->before('to')
                     ->hiddenOn('create'),
                 Forms\Components\DatePicker::make('from')
-                    ->default(now()->addDay())
+                    ->default(now())
                     ->required()
                     ->before('to')
                     ->hiddenOn(['edit', 'view']),
                 Forms\Components\DatePicker::make('to')
                     ->required()
                     ->disabled()
+                    ->default(now()->addDays(2))
                     ->after('from')
                     ->hiddenOn('create'),
                 Forms\Components\DatePicker::make('to')
                     ->default(now())
+                ->default(now()->addDays(2))
                     ->required()
                     ->after('from')
                     ->hiddenOn(['edit', 'view']),
