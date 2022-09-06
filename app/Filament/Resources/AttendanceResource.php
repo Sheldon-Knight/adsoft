@@ -8,13 +8,19 @@ use App\Models\User;
 use Carbon\Carbon;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\TimePicker;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 
 class AttendanceResource extends Resource
 {
@@ -100,6 +106,39 @@ class AttendanceResource extends Resource
                 Tables\Columns\TextColumn::make('time_out'),
             ])
             ->filters([
+                MultiSelectFilter::make('users')
+                ->relationship('user', 'name'),
+
+            SelectFilter::make('present')
+            ->options([
+                0 => 'Absent',
+                1 => 'Present',
+            ]),
+            DateFilter::make('day'),
+
+            Filter::make('time_in')
+            ->form([
+                TimePicker::make('time_in')->withoutSeconds(),
+            ])
+                ->query(function (EloquentBuilder $query, array $data): EloquentBuilder {
+                    return $query
+                        ->when(
+                            $data['time_in'],
+                            fn (EloquentBuilder $query, $date): EloquentBuilder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
+                        );
+                }),
+
+            Filter::make('time_out')
+            ->form([
+                TimePicker::make('time_out')->withoutSeconds(),
+            ])
+            ->query(function (EloquentBuilder $query, array $data): EloquentBuilder {
+                return $query
+                    ->when(
+                        $data['time_out'],
+                        fn (EloquentBuilder $query, $date): EloquentBuilder => $query->where('time_out', '=', Carbon::parse($date)->format('H:i:s')),
+                    );
+            }),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
