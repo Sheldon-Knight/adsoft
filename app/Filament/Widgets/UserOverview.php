@@ -15,7 +15,7 @@ class UserOverview extends BaseWidget
         return [
             Card::make('Clients', Client::count()),
 
-            Card::make('My Instructions', auth()->user()->incompleteInstructions->count()),
+            Card::make('Incomplete Instructions', auth()->user()->incompleteInstructions->count()),
             
             Card::make('Incomplete Jobs', auth()->user()->incompleteJobs->count()),
 
