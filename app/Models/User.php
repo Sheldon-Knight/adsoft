@@ -77,15 +77,20 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Instruction::class, 'assigned_to');
     }
 
-     public function incompleteInstructions()
-     {
-         return $this->hasMany(Instruction::class, 'assigned_to')->where('status', 0);
-     }
+    public function incompleteInstructions()
+    {
+        return $this->hasMany(Instruction::class, 'assigned_to')->where('status', 0);
+    }
 
-  public function pendingLeaveApplications()
-  {
-      return $this->hasMany(Leave::class, 'user_id')->where('status', 'Pending');
-  }
+    public function incompleteJobs()
+    {
+        return $this->hasMany(Job::class, 'user_id')->where('date_completed',null);
+    }
+
+    public function pendingLeaveApplications()
+    {
+        return $this->hasMany(Leave::class, 'user_id')->where('status', 'Pending');
+    }
 
     public function comments()
     {
@@ -107,8 +112,8 @@ class User extends Authenticatable implements FilamentUser
         $now = $this->freshTimestamp();
 
         return $this->attendances()
-             ->where('day', $now->format('Y-m-d'))
-             ->first();
+            ->where('day', $now->format('Y-m-d'))
+            ->first();
     }
 
     public function getYesterdaysAttendance()

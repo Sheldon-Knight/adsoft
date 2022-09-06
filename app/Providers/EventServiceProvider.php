@@ -13,7 +13,7 @@ use App\Observers\TransferObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -38,7 +38,7 @@ class EventServiceProvider extends ServiceProvider
         Transfer::observe(TransferObserver::class);
         Account::observe(AccountObserver::class);
         Transaction::observe(TransactionObserver::class);
-        Role::observe(RoleObserver::class);
+        Role::observe(RoleObserver::class);      
     }
 
     /**
