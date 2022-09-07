@@ -15,8 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $this->call('update:attendance');
-        $this->call('subsriptions:expires');
+        $schedule->command('update:attendance')->timezone('Africa/Johannesburg')->daily();
+        $schedule->command('subsriptions:expires')->timezone('Africa/Johannesburg')->daily();
     }
 
     /**

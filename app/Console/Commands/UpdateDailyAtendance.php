@@ -26,6 +26,7 @@ class UpdateDailyAtendance extends Command
      *
      * @return int
      */
+    
     public function handle()
     {
         $users = User::all();

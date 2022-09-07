@@ -101,8 +101,12 @@ class MyLeaves extends Page implements HasTable
         ];
     }
 
+
     protected function getTableActions(): array
     {
+
+      
+
         return [
             TableAction::make('Upload Files')
                 ->icon('heroicon-o-upload')->hidden(
@@ -119,13 +123,15 @@ class MyLeaves extends Page implements HasTable
                 )->form([
                     FileUpload::make('attachments')
                         ->directory(function (Model $record) {
-                            return 'user/'.$record->user_id.'/leave-attachments';
+                            return 'user/' . $record->user_id . '/leave-attachments';
                         })
                         ->enableDownload()
                         ->enableOpen()
-                        ->multiple()->columnSpan('full'),
+                        ->multiple()
+                        ->columnSpan('full'),
                 ])
                 ->action(function (Model $record, $data) {
+
                     $attachments = $record->attachments;
 
                     foreach ($data['attachments'] as $attachment) {
@@ -157,10 +163,11 @@ class MyLeaves extends Page implements HasTable
 
                     FileUpload::make('attachments')
                         ->reactive()
-                        ->directory('user/'.auth()->id().'/leave-attachments')
+                        ->directory('user/' . auth()->id() . '/leave-attachments')
                         ->enableDownload()
                         ->enableOpen()
-                        ->multiple()->columnSpan('full'),
+                        ->multiple()
+                        ->columnSpan('full'),
                 ]),
             DeleteAction::make()->visible(function (Leave $record) {
                 if (cache()->get('hasExpired') == true) {
@@ -212,6 +219,8 @@ class MyLeaves extends Page implements HasTable
 
     protected static function shouldRegisterNavigation(): bool
     {
+    
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -229,7 +238,6 @@ class MyLeaves extends Page implements HasTable
     protected function getTableHeaderActions(): array
     {
         return [
-
             FilamentExportHeaderAction::make('export'),
         ];
     }
@@ -267,7 +275,7 @@ class MyLeaves extends Page implements HasTable
 
                     FileUpload::make('attachments')
                         ->reactive()
-                        ->directory('user/'.auth()->id().'/leave-attachments')
+                        ->directory('user/' . auth()->id() . '/leave-attachments')
                         ->enableDownload()
                         ->enableOpen()
                         ->multiple()->columnSpan('full'),

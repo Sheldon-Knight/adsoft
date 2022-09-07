@@ -57,7 +57,7 @@ class LeaveResource extends Resource
                     ->hiddenOn('create'),
                 Forms\Components\DatePicker::make('to')
                     ->default(now())
-                ->default(now()->addDays(2))
+                    ->default(now()->addDays(2))
                     ->required()
                     ->after('from')
                     ->hiddenOn(['edit', 'view']),
@@ -82,7 +82,7 @@ class LeaveResource extends Resource
 
                         return false;
                     })
-                ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved'])
+                    ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved'])
                     ->hiddenOn('create')->columnSpan('full'),
 
                 FileUpload::make('attachments')
@@ -91,7 +91,7 @@ class LeaveResource extends Resource
                     ->directory(function (Closure $get) {
                         $user = User::find($get('user_id'));
 
-                        return 'user/'.$user->id.'/leave-attachments';
+                        return 'user/' . $user->id . '/leave-attachments';
                     })
                     ->enableDownload()
                     ->enableOpen()
@@ -103,7 +103,7 @@ class LeaveResource extends Resource
                     ->directory(function (Closure $get) {
                         $user = User::find($get('user_id'));
 
-                        return 'user/'.$user->id.'/leave-attachments';
+                        return 'user/' . $user->id . '/leave-attachments';
                     })
                     ->enableDownload()
                     ->enableOpen()
@@ -127,16 +127,16 @@ class LeaveResource extends Resource
                 Tables\Columns\TextColumn::make('revisioned_on')
                     ->date(),
                 Tables\Columns\BadgeColumn::make('status')
-                ->colors([
-                    'danger' => 'Rejected',
-                    'success' => 'Approved',
-                    'warning' => 'Pending',
-                ])
-                ->icons([
-                    'heroicon-o-x-circle' => 'Rejected',
-                    'heroicon-o-badge-check' => 'Approved',
-                    'heroicon-o-clock' => 'Pending',
-                ]),
+                    ->colors([
+                        'danger' => 'Rejected',
+                        'success' => 'Approved',
+                        'warning' => 'Pending',
+                    ])
+                    ->icons([
+                        'heroicon-o-x-circle' => 'Rejected',
+                        'heroicon-o-badge-check' => 'Approved',
+                        'heroicon-o-clock' => 'Pending',
+                    ]),
                 Tables\Columns\TextColumn::make('created_at')->label('Applied Date')
                     ->date(),
             ])
@@ -149,7 +149,7 @@ class LeaveResource extends Resource
                     ->options(['Annual' => 'Annual Leave', 'Sick' => 'Sick Leave', 'Family' => 'Family Leave', 'Maternity' => 'Maternity Leave', 'Unpaid' => 'Unpaid Leave', 'Study' => 'Study Leave'])
                     ->column('type'),
                 MultiSelectFilter::make('status')
-                ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved', 'Pending' => 'Pending'])
+                    ->options(['Rejected' => 'Rejected', 'Approved' => 'Approved', 'Pending' => 'Pending'])
                     ->column('status'),
                 MultiSelectFilter::make('user_id')
                     ->relationship('user', 'name'),
@@ -185,7 +185,7 @@ class LeaveResource extends Resource
                     )->form([
                         FileUpload::make('attachments')
                             ->directory(function (Model $record) {
-                                return 'user/'.$record->user_id.'/leave-attachments';
+                                return 'user/' . $record->user_id . '/leave-attachments';
                             })
                             ->enableDownload()
                             ->enableOpen()
