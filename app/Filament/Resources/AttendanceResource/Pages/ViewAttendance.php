@@ -16,7 +16,7 @@ class ViewAttendance extends ViewRecord
         return [];
     }
 
-    protected function getHeaderWidgets(): array
+    protected function getFooterWidgets(): array
     {
         return [
             AttendanceCalendarWidget::class,
