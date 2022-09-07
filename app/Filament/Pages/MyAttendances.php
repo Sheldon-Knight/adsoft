@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Widgets\AttendanceCalendarWidget;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Filament\Forms\Components\TimePicker;
@@ -27,6 +28,15 @@ class MyAttendances extends Page implements HasTable
     protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationGroup = 'My Workflow';
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            AttendanceCalendarWidget::class,
+        ];
+    }
+
+
 
     protected function getTableQuery(): Builder
     {

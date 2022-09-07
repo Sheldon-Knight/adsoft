@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AttendanceResource\Pages;
+use App\Filament\Widgets\AttendanceCalendarWidget;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
@@ -186,6 +187,7 @@ class AttendanceResource extends Resource
             'index' => Pages\ListAttendances::route('/'),
             'create' => Pages\CreateAttendance::route('/create'),
             'edit' => Pages\EditAttendance::route('/{record}/edit'),
+            'view' => Pages\ViewAttendance::route('/view/{record}'),
         ];
     }
 
@@ -196,4 +198,12 @@ class AttendanceResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            AttendanceCalendarWidget::class,
+        ];
+    }
+
 }

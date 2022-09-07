@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Saade\FilamentFullCalendar\Widgets\Concerns\CantManageEvents;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
@@ -11,20 +12,22 @@ class AttendanceCalendarWidget extends FullCalendarWidget
 {
     use CantManageEvents;
 
+    public ?Model $record = null;
+
     protected static ?int $sort = 4;
 
     public static function canView(): bool
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        }
+        }        
 
         return true;
-    }
+    }   
 
     public function getViewData(): array
     {
-        $attendances = Attendance::where('user_id', auth()->id())->get();
+        $attendances = Attendance::where('user_id', $this->record->user_id  ?? auth()->id())->get();
 
         $data = [];
         foreach ($attendances as $attendance) {

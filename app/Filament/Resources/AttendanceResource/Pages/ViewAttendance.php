@@ -3,18 +3,24 @@
 namespace App\Filament\Resources\AttendanceResource\Pages;
 
 use App\Filament\Resources\AttendanceResource;
-use Filament\Pages\Actions;
-use Filament\Resources\Pages\ListRecords;
+use App\Filament\Widgets\AttendanceCalendarWidget;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListAttendances extends ListRecords
+class ViewAttendance extends ViewRecord
 {
     protected static string $resource = AttendanceResource::class;
 
+
     protected function getActions(): array
     {
+        return [];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
         return [
-            Actions\CreateAction::make(),
+            AttendanceCalendarWidget::class,
         ];
-    }  
+    }
 
 }
