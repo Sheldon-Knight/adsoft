@@ -30,6 +30,7 @@ class AttendanceCalendarWidget extends FullCalendarWidget
         foreach ($attendances as $attendance) {
             $title = $attendance->present ? 'Present' : 'Abscent';
             $backgroundColor = $attendance->present ? 'green' : 'red';
+            $pendingColor = "orange";
 
             if ($title == 'Present') {
                 if ($attendance->time_in) {
@@ -42,6 +43,17 @@ class AttendanceCalendarWidget extends FullCalendarWidget
                             'backgroundColor' => $backgroundColor,
                             'borderColor' => $backgroundColor,
                         ];
+                   
+                }else{
+                    $data[] =
+                        [
+                            'id' => $attendance->id,
+                            'title' => 'Not Checked In',
+                            'start' => $attendance->day,
+                            'textColor' => '#fff',
+                            'backgroundColor' => $pendingColor,
+                            'borderColor' => $pendingColor,
+                        ];                  
                 }
 
                 if ($attendance->time_out) {
@@ -53,6 +65,16 @@ class AttendanceCalendarWidget extends FullCalendarWidget
                             'textColor' => '#fff',
                             'backgroundColor' => $backgroundColor,
                             'borderColor' => $backgroundColor,
+                        ];
+                }else {
+                    $data[] =
+                        [
+                            'id' => $attendance->id,
+                            'title' => 'Not Checked Out',
+                            'start' => $attendance->day,
+                            'textColor' => '#fff',
+                            'backgroundColor' => $pendingColor,
+                            'borderColor' => $pendingColor,
                         ];
                 }
             } else {
