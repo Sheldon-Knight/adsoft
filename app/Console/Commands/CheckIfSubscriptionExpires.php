@@ -37,5 +37,7 @@ class CheckIfSubscriptionExpires extends Command
         }
 
         Artisan::call('cache:clear');
+
+        $this->info("Subsriptions Command Completed");
     }
 }
