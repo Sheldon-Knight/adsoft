@@ -15,21 +15,26 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(
             [
-                AdminSeeder::class,
-                OmsSettingsSeeder::class,
+                // OmsSettingsSeeder::class,
+                // FeatureSeeder::class,
+                // RolesPermissionSeeder::class,
+                // AdminSeeder::class,
+                EmployeeSeeder::class,
+                ClientSeeder::class,
                 StatusesSeeder::class,
-                DepartmentSeeder::class,
-                RoleSeeder::class,
-                // UserSeeder::class,
+                DepartmentSeeder::class,             
                 // InstructionSeeder::class,
                 // AccountSeeder::class,
                 // TransferSeeder::class,
                 // TransactionSeeder::class,
                 // StatementSeeder::class,
                 // AttendanceSeeder::class,
-                FeatureSeeder::class,
                 // LeaveSeeder::class,
             ]
         );
+
+        app()['cache']->forget('spatie.permission.cache');
+
+        
     }
 }

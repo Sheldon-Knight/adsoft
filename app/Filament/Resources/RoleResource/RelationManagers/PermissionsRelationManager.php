@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Permission;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class PermissionsRelationManager extends RelationManager
 {
@@ -37,14 +38,13 @@ class PermissionsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
             ])
-            ->filters([
-                //
+            ->filters([TextFilter::make('name'),
             ])
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
                     ->using(function (HasRelationshipTable $livewire, array $data) {
-                        $permission = Permission::find($data['recordId']);
+                        $permission = Permission::find($data['recordId']);                        
                         $livewire->ownerRecord->givePermissionTo($permission->name);
 
                         Artisan::call('cache:clear');
@@ -55,7 +55,6 @@ class PermissionsRelationManager extends RelationManager
                     ->using(function (Model $record, array $data): Model {
                         $record->removeRole($record->role_id);
                         Artisan::call('cache:clear');
-
                         return $record;
                     }),
 

@@ -1,31 +1,25 @@
 <?php
 
-namespace App\Filament\Resources\UserResource\RelationManagers;
+namespace App\Filament\Resources\RoleResource\RelationManagers;
 
-use App\Models\Role;
+use App\Models\Permission;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Contracts\HasRelationshipTable;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
-class RolesRelationManager extends RelationManager
+class UsersRelationManager extends RelationManager
 {
-    protected static string $relationship = 'roles';
+    protected static string $relationship = 'users';
 
     protected static ?string $recordTitleAttribute = 'name';
-
-    protected function canAttach(): bool
-    {
-        if ($this->ownerRecord->hasAnyRole(Role::all())) {
-            return false;
-        }
-        return true;
-    }
-
 
     public static function form(Form $form): Form
     {
@@ -41,36 +35,23 @@ class RolesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
             ])
             ->filters([
                 TextFilter::make('name'),
             ])
             ->headerActions([
                 Tables\Actions\AttachAction::make()
+                    ->preloadRecordSelect()
+                    ->recordSelectOptionsQuery(function ($query) {
+                        return $query->doesntHave('roles');
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DetachAction::make(),
             ])
             ->bulkActions([
-                \AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction::make('export'),
                 Tables\Actions\DetachBulkAction::make(),
             ]);
-    }
-
-    protected function getTableFiltersFormColumns(): int
-    {
-        return 3;
-    }
-
-    protected function getTableFiltersFormWidth(): string
-    {
-        return '4xl';
-    }
-
-    protected function shouldPersistTableFiltersInSession(): bool
-    {
-        return true;
     }
 }

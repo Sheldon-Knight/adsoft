@@ -24,6 +24,10 @@ class RolePolicy
         if ($role->name == 'Super Admin') {
             return false;
         }
+
+        if ($role->name == 'Client') {
+            return false;
+        }       
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -49,6 +53,10 @@ class RolePolicy
             return false;
         }
 
+        if ($role->name == 'Client') {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -62,6 +70,10 @@ class RolePolicy
     public function delete(User $user, Role $role)
     {
         if ($role->name == 'Super Admin') {
+            return false;
+        }
+
+        if ($role->name == 'Client') {
             return false;
         }
         if (cache()->get('hasExpired') == true) {

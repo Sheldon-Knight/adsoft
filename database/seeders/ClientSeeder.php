@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ClientSeeder extends Seeder
@@ -16,6 +17,9 @@ class ClientSeeder extends Seeder
      */
     public function run()
     {
-        Client::factory()->times(12)->create();
+        User::factory()->times(10)->create()
+            ->each(function ($user) {
+                $user->assignRole('Client');
+            });
     }
 }
