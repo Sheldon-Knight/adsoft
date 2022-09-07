@@ -23,6 +23,7 @@ class RolesRelationManager extends RelationManager
         if ($this->ownerRecord->hasAnyRole(Role::all())) {
             return false;
         }
+        
         return true;
     }
 

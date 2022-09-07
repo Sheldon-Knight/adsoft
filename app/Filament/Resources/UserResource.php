@@ -10,6 +10,7 @@ use App\Filament\Resources\UserResource\RelationManagers\JobsRelationManager as 
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\Department;
 use App\Models\Job;
+use App\Models\Role;
 use App\Models\User;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
@@ -64,10 +65,11 @@ class UserResource extends Resource
                     static::getPhoneFormField(),
                     static::getAddressFormField(),
                     static::getPasswordFormField(),
+                   
                 ]),
             ]);
     }
-
+      
     public static function getPasswordFormField()
     {
         return TextInput::make('password')
