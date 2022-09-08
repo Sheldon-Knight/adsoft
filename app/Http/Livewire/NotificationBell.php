@@ -5,8 +5,10 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 
 class NotificationBell extends Component
-{    
-    public $MyInstructions, $myJobs;
+{
+    public $MyInstructions;
+
+    public $myJobs;
 
     public function mount()
     {

@@ -25,7 +25,7 @@ class CreateQuote extends CreateRecord
 
         $data['is_quote'] = true;
 
-        $data['invoice_status'] = Status::find($data['invoice_status'])->first()->name ?? '';
+        $data['invoice_status'] = Status::where('name', $data['invoice_status'])->first()->name ?? '';
 
         return $data;
     }

@@ -109,36 +109,36 @@ class AttendanceResource extends Resource
                 MultiSelectFilter::make('users')
                 ->relationship('user', 'name'),
 
-            SelectFilter::make('present')
-            ->options([
-                0 => 'Absent',
-                1 => 'Present',
-            ]),
-            DateFilter::make('day'),
+                SelectFilter::make('present')
+                ->options([
+                    0 => 'Absent',
+                    1 => 'Present',
+                ]),
+                DateFilter::make('day'),
 
-            Filter::make('time_in')
-            ->form([
-                TimePicker::make('time_in')->withoutSeconds(),
-            ])
+                Filter::make('time_in')
+                ->form([
+                    TimePicker::make('time_in')->withoutSeconds(),
+                ])
+                    ->query(function (EloquentBuilder $query, array $data): EloquentBuilder {
+                        return $query
+                            ->when(
+                                $data['time_in'],
+                                fn (EloquentBuilder $query, $date): EloquentBuilder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
+                            );
+                    }),
+
+                Filter::make('time_out')
+                ->form([
+                    TimePicker::make('time_out')->withoutSeconds(),
+                ])
                 ->query(function (EloquentBuilder $query, array $data): EloquentBuilder {
                     return $query
                         ->when(
-                            $data['time_in'],
-                            fn (EloquentBuilder $query, $date): EloquentBuilder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
+                            $data['time_out'],
+                            fn (EloquentBuilder $query, $date): EloquentBuilder => $query->where('time_out', '=', Carbon::parse($date)->format('H:i:s')),
                         );
                 }),
-
-            Filter::make('time_out')
-            ->form([
-                TimePicker::make('time_out')->withoutSeconds(),
-            ])
-            ->query(function (EloquentBuilder $query, array $data): EloquentBuilder {
-                return $query
-                    ->when(
-                        $data['time_out'],
-                        fn (EloquentBuilder $query, $date): EloquentBuilder => $query->where('time_out', '=', Carbon::parse($date)->format('H:i:s')),
-                    );
-            }),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
@@ -205,5 +205,4 @@ class AttendanceResource extends Resource
             AttendanceCalendarWidget::class,
         ];
     }
-
 }

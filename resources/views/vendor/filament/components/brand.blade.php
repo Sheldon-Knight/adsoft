@@ -20,8 +20,10 @@
     </div>
 
     @if (!request()->routeIs('filament.auth.login'))
-    {{-- @dd($hasExpired); --}}
-        @if ($hasExpired == false)
+        @if (auth()->user()->hasRole('Client'))
+            
+        @else
+            @if ($hasExpired == false)
             <small>
                 Current Plan : {{ cache()->get('current_plan') }} - Expires In
                 {{ now()->diffInDays(cache()->get('subscription')->expired_at) }} Days
@@ -30,6 +32,7 @@
             <small>
                 You Have No Plans
             </small>
+        @endif
         @endif
     @endif
 @endif

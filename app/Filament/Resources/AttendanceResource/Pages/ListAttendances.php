@@ -15,6 +15,5 @@ class ListAttendances extends ListRecords
         return [
             Actions\CreateAction::make(),
         ];
-    }  
-
+    }
 }

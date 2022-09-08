@@ -3,9 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\InvoiceResource\Pages;
-use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Status;
+use App\Models\User;
 use App\Services\PdfInvoice;
 use Closure;
 use Filament\Forms;
@@ -66,7 +66,7 @@ class InvoiceResource extends Resource
                                     ->label('Client')
                                     ->required()
                                     ->searchable()
-                                    ->options(Client::query()->pluck('client_name', 'id')),
+                                    ->options(User::query()->role('Client')->pluck('name', 'id')),
 
                                 DatePicker::make('invoice_date')
                                     ->default(now())

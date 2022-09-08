@@ -44,6 +44,13 @@ class MyLeaves extends Page implements HasTable
 
     protected static ?string $slug = 'my-leaves-applications';
 
+    public function mount()
+    {
+        if (auth()->user()->role('Client')) {
+            return abort(404);
+        }
+    }
+
     protected function getTableQuery(): Builder
     {
         return Leave::query()->where('user_id', auth()->id());
@@ -101,12 +108,8 @@ class MyLeaves extends Page implements HasTable
         ];
     }
 
-
     protected function getTableActions(): array
     {
-
-      
-
         return [
             TableAction::make('Upload Files')
                 ->icon('heroicon-o-upload')->hidden(
@@ -123,7 +126,7 @@ class MyLeaves extends Page implements HasTable
                 )->form([
                     FileUpload::make('attachments')
                         ->directory(function (Model $record) {
-                            return 'user/' . $record->user_id . '/leave-attachments';
+                            return 'user/'.$record->user_id.'/leave-attachments';
                         })
                         ->enableDownload()
                         ->enableOpen()
@@ -131,7 +134,6 @@ class MyLeaves extends Page implements HasTable
                         ->columnSpan('full'),
                 ])
                 ->action(function (Model $record, $data) {
-
                     $attachments = $record->attachments;
 
                     foreach ($data['attachments'] as $attachment) {
@@ -163,7 +165,7 @@ class MyLeaves extends Page implements HasTable
 
                     FileUpload::make('attachments')
                         ->reactive()
-                        ->directory('user/' . auth()->id() . '/leave-attachments')
+                        ->directory('user/'.auth()->id().'/leave-attachments')
                         ->enableDownload()
                         ->enableOpen()
                         ->multiple()
@@ -219,7 +221,9 @@ class MyLeaves extends Page implements HasTable
 
     protected static function shouldRegisterNavigation(): bool
     {
-    
+        if (auth()->user()->role('Client')) {
+            return false;
+        }
 
         if (cache()->get('hasExpired') == true) {
             return false;
@@ -275,7 +279,7 @@ class MyLeaves extends Page implements HasTable
 
                     FileUpload::make('attachments')
                         ->reactive()
-                        ->directory('user/' . auth()->id() . '/leave-attachments')
+                        ->directory('user/'.auth()->id().'/leave-attachments')
                         ->enableDownload()
                         ->enableOpen()
                         ->multiple()->columnSpan('full'),

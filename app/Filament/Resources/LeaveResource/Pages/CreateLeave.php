@@ -14,7 +14,7 @@ class CreateLeave extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['revisioned_by'] = auth()->id();     
+        $data['revisioned_by'] = auth()->id();
 
         $user = User::find($data['user_id']);
 

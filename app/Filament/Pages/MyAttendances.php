@@ -36,16 +36,25 @@ class MyAttendances extends Page implements HasTable
         ];
     }
 
-
-
     protected function getTableQuery(): Builder
     {
         return Attendance::query()->where('user_id', auth()->id());
     }
 
+    public function mount()
+    {
+        if (auth()->user()->role('Client')) {
+            return abort(404);
+        }
+    }
+
     protected static function shouldRegisterNavigation(): bool
     {
         if (cache()->get('hasExpired') == true) {
+            return false;
+        }
+
+        if (auth()->user()->role('Client')) {
             return false;
         }
 
@@ -75,16 +84,16 @@ class MyAttendances extends Page implements HasTable
             DateFilter::make('day'),
 
             Filter::make('time_in')
-            ->form([
-                TimePicker::make('time_in')->withoutSeconds(),
-            ])
-            ->query(function (Builder $query, array $data): Builder {
-                return $query
-                    ->when(
-                        $data['time_in'],
-                        fn (Builder $query, $date): Builder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
-                    );
-            }),
+                ->form([
+                    TimePicker::make('time_in')->withoutSeconds(),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['time_in'],
+                            fn (Builder $query, $date): Builder => $query->where('time_in', '=', Carbon::parse($date)->format('H:i:s')),
+                        );
+                }),
 
             Filter::make('time_out')
                 ->form([

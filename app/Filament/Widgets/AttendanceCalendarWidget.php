@@ -20,34 +20,33 @@ class AttendanceCalendarWidget extends FullCalendarWidget
     {
         if (cache()->get('hasExpired') == true) {
             return false;
-        }        
+        }
 
         return true;
-    }   
+    }
 
     public function getViewData(): array
     {
-        $attendances = Attendance::where('user_id', $this->record->user_id  ?? auth()->id())->get();
+        $attendances = Attendance::where('user_id', $this->record->user_id ?? auth()->id())->get();
 
         $data = [];
         foreach ($attendances as $attendance) {
             $title = $attendance->present ? 'Present' : 'Abscent';
             $backgroundColor = $attendance->present ? 'green' : 'red';
-            $pendingColor = "orange";
+            $pendingColor = 'orange';
 
             if ($title == 'Present') {
                 if ($attendance->time_in) {
                     $data[] =
                         [
                             'id' => $attendance->id,
-                            'title' => 'Check In: ' . Carbon::parse($attendance->time_in)->format('H:i:a'),
+                            'title' => 'Check In: '.Carbon::parse($attendance->time_in)->format('H:i:a'),
                             'start' => $attendance->day,
                             'textColor' => '#fff',
                             'backgroundColor' => $backgroundColor,
                             'borderColor' => $backgroundColor,
                         ];
-                   
-                }else{
+                } else {
                     $data[] =
                         [
                             'id' => $attendance->id,
@@ -56,20 +55,20 @@ class AttendanceCalendarWidget extends FullCalendarWidget
                             'textColor' => '#fff',
                             'backgroundColor' => $pendingColor,
                             'borderColor' => $pendingColor,
-                        ];                  
+                        ];
                 }
 
                 if ($attendance->time_out) {
                     $data[] =
                         [
                             'id' => $attendance->id,
-                            'title' => 'Check Out: ' . Carbon::parse($attendance->time_out)->format('H:i:a'),
+                            'title' => 'Check Out: '.Carbon::parse($attendance->time_out)->format('H:i:a'),
                             'start' => $attendance->day,
                             'textColor' => '#fff',
                             'backgroundColor' => $backgroundColor,
                             'borderColor' => $backgroundColor,
                         ];
-                }else {
+                } else {
                     $data[] =
                         [
                             'id' => $attendance->id,

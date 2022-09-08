@@ -3,9 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuoteResource\Pages;
-use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Status;
+use App\Models\User;
 use App\Services\PdfInvoice;
 use Closure;
 use Filament\Forms\Components\Card;
@@ -130,7 +130,7 @@ class QuoteResource extends Resource
                                     ->label('Client')
                                     ->required()
                                     ->searchable()
-                                    ->options(Client::query()->pluck('client_name', 'id')),
+                                    ->options(User::query()->role('Client')->pluck('name', 'id')),
 
                                 Select::make('invoice_status')
                                     ->label('Status')

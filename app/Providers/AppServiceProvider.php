@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\OmsSetting;
-use Closure;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\UserMenuItem;
@@ -93,13 +92,13 @@ class AppServiceProvider extends ServiceProvider
 
             $plan = cache()->get('current_plan');
 
-            if (!$subscription) {
+            if (! $subscription) {
                 cache()->forever('subscription', OmsSetting::first()->subscription);
             }
 
-            if (!$plan) {
+            if (! $plan) {
                 cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
             }
-        }       
-    }   
+        }
+    }
 }

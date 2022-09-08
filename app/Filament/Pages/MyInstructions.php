@@ -37,6 +37,13 @@ class MyInstructions extends Page implements HasTable
         return Instruction::query()->where('assigned_to', auth()->id());
     }
 
+    public function mount()
+    {
+        if (auth()->user()->role('Client')) {
+            return abort(404);
+        }
+    }
+
     protected static function getNavigationBadge(): ?string
     {
         return auth()->user()->incompleteInstructions->count();
@@ -71,10 +78,10 @@ class MyInstructions extends Page implements HasTable
             TextFilter::make('instruction'),
             TextFilter::make('title'),
             SelectFilter::make('status')
-            ->options([
-                0 => 'In-Completed',
-                1 => 'Completed',
-            ]),
+                ->options([
+                    0 => 'In-Completed',
+                    1 => 'Completed',
+                ]),
             MultiSelectFilter::make('created_by')->relationship('createdBy', 'name'),
             MultiSelectFilter::make('assigend_to')->relationship('assignedTo', 'name'),
             TrashedFilter::make(),
@@ -133,6 +140,10 @@ class MyInstructions extends Page implements HasTable
     protected static function shouldRegisterNavigation(): bool
     {
         if (cache()->get('hasExpired') == true) {
+            return false;
+        }
+
+        if (auth()->user()->role('Client')) {
             return false;
         }
 

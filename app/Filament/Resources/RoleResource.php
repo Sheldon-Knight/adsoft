@@ -18,8 +18,6 @@ use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class RoleResource extends Resource
@@ -32,11 +30,8 @@ class RoleResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
-
-
-
     public static function form(Form $form): Form
-    {       
+    {
         return $form
             ->schema([
                 TextInput::make('name')->label('Name')->required()->unique()->columnSpan('full'),
@@ -44,24 +39,24 @@ class RoleResource extends Resource
                 MultiSelect::make('permissions')
                     ->options(
                         Permission::all()->pluck('name', 'id')->toArray(),
-                    )->columnSpan('full')->hiddenOn(['edit','view']),
+                    )->columnSpan('full')->hiddenOn(['edit', 'view']),
 
                 MultiSelect::make('users')
                     ->options(
                         User::doesntHave('roles')->get()->pluck('name', 'id')->toArray(),
-                    )->columnSpan('full')->hiddenOn(['edit','view']),
+                    )->columnSpan('full')->hiddenOn(['edit', 'view']),
 
-                MultiSelect::make('permissions')                
+                MultiSelect::make('permissions')
                     ->relationship(
                         'permissions',
                         'name'
-                    )->columnSpan('full')->hiddenOn(['edit','create']),
+                    )->columnSpan('full')->hiddenOn(['edit', 'create']),
 
-              MultiSelect::make('users')
-                    ->relationship(
-                        'users',
-                        'name'
-                    )->columnSpan('full')->hiddenOn(['edit','create']),                       
+                MultiSelect::make('users')
+                      ->relationship(
+                          'users',
+                          'name'
+                      )->columnSpan('full')->hiddenOn(['edit', 'create']),
 
             ]);
     }
@@ -103,7 +98,6 @@ class RoleResource extends Resource
             ->where('name', '!=', 'Client')
             ->withoutGlobalScopes();
     }
-
 
     public static function getPages(): array
     {

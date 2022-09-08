@@ -9,5 +9,5 @@ class Permission extends ModelsPermission
 {
     use HasFactory;
 
-      protected $guard_name = 'web';
+    protected $guard_name = 'web';
 }

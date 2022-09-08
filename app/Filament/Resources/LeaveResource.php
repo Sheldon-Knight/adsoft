@@ -91,7 +91,7 @@ class LeaveResource extends Resource
                     ->directory(function (Closure $get) {
                         $user = User::find($get('user_id'));
 
-                        return 'user/' . $user->id . '/leave-attachments';
+                        return 'user/'.$user->id.'/leave-attachments';
                     })
                     ->enableDownload()
                     ->enableOpen()
@@ -103,7 +103,7 @@ class LeaveResource extends Resource
                     ->directory(function (Closure $get) {
                         $user = User::find($get('user_id'));
 
-                        return 'user/' . $user->id . '/leave-attachments';
+                        return 'user/'.$user->id.'/leave-attachments';
                     })
                     ->enableDownload()
                     ->enableOpen()
@@ -185,7 +185,7 @@ class LeaveResource extends Resource
                     )->form([
                         FileUpload::make('attachments')
                             ->directory(function (Model $record) {
-                                return 'user/' . $record->user_id . '/leave-attachments';
+                                return 'user/'.$record->user_id.'/leave-attachments';
                             })
                             ->enableDownload()
                             ->enableOpen()

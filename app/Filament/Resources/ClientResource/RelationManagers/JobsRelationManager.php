@@ -23,7 +23,7 @@ use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class JobsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'jobs';
+    protected static string $relationship = 'clientJobs';
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -73,7 +73,7 @@ class JobsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('client.client_name')->searchable(),
+                Tables\Columns\TextColumn::make('client.name')->searchable(),
                 Tables\Columns\TextColumn::make('user.name')->searchable(),
                 Tables\Columns\TextColumn::make('department.name')->searchable(),
                 Tables\Columns\TextColumn::make('invoice.invoice_number')->searchable(),
@@ -87,7 +87,7 @@ class JobsRelationManager extends RelationManager
             ])
             ->filters([MultiSelectFilter::make('status')->relationship('status', 'name'),
                 MultiSelectFilter::make('user')->relationship('user', 'name'),
-                MultiSelectFilter::make('client')->relationship('client', 'client_name'),
+                MultiSelectFilter::make('client')->relationship('client', 'name'),
                 MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
                 TextFilter::make('title'),
                 TextFilter::make('description'),

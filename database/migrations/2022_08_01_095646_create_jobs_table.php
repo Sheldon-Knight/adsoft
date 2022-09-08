@@ -18,7 +18,7 @@ class CreateJobsTable extends Migration
             $table->string('title');
             $table->longText('description');
             $table->date('date_completed')->nullable();
-            $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('cascade');
+            $table->foreignId('client_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('cascade');

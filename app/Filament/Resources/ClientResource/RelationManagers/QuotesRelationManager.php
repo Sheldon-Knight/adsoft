@@ -33,7 +33,7 @@ use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
 class QuotesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'quotes';
+    protected static string $relationship = 'clientQuotes';
 
     protected static ?string $recordTitleAttribute = 'invoice_number';
 

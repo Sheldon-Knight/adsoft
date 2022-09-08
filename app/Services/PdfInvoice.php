@@ -33,8 +33,6 @@ class PdfInvoice
             'address' => $invoice->client->address,
             'custom_fields' => [
                 'email' => $invoice->client->email,
-                'vat' => $invoice->client->vat_number,
-                'registration' => $invoice->client->reg_number,
             ],
         ]);
 
@@ -95,8 +93,7 @@ class PdfInvoice
             'address' => $invoice->client->address,
             'custom_fields' => [
                 'email' => $invoice->client->email,
-                'vat' => $invoice->client->vat_number,
-                'registration' => $invoice->client->reg_number,
+
             ],
         ]);
 

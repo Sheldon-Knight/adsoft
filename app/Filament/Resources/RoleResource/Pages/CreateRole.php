@@ -22,24 +22,19 @@ class CreateRole extends CreateRecord
         $permissions = Permission::whereIn('id', $data['permissions'])->get();
 
         if ($permissions) {
-
             $givePermissionTo = [];
 
             foreach ($permissions  as $permission) {
                 $givePermissionTo[] = ['permission_id' => $permission->id, 'role_id' => $role->id];
             }
-           
+
             DB::table('role_has_permissions')->insert($givePermissionTo);
         }
 
         if ($users) {
-
             foreach ($users  as $user) {
-
                 $user->assignRole($role->name);
-
             }
-
         }
 
         return $role;

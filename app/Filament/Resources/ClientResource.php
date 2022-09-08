@@ -6,8 +6,10 @@ use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers\InvoicesRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\JobsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\QuotesRelationManager;
-use App\Models\Client;
-use Filament\Forms;
+use App\Models\User;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -16,12 +18,13 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class ClientResource extends Resource
 {
-    protected static ?string $model = Client::class;
+    protected static bool $isGloballySearchable = false;
+
+    protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
@@ -29,55 +32,56 @@ class ClientResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
+    protected static ?string $recordTitleAttribute = 'Client';
+
+    protected static ?string $modelLabel = 'Client';
+
+    protected static ?string $slug = 'clients';
+
     protected static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    public static function getEloquentQuery(): EloquentBuilder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes()->whereHas('roles', function ($q) {
+                $q->where('name', '=', 'Client');
+            });
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('postal_address')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('physical_address')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('branch_name')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('vat_number')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('client_name')
-                    ->maxLength(255)
+                TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('client_surname')
-                    ->maxLength(255)
+                TextInput::make('surname')
                     ->required(),
-                Forms\Components\TextInput::make('tel_num')
-                    ->tel()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('cell_num')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('fax_num')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('contact_person')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('reg_type')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('reg_number')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('account_name')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('account_number')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('account_type')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('branch_code')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('bank_name')
-                    ->maxLength(255),
+                TextInput::make('email')
+                    ->required()
+                    ->email(),
+                Select::make('gender')
+                    ->required()
+                    ->options([
+                        'male' => 'male',
+                        'female' => 'female',
+                        'other' => 'other',
+                    ]),
+                TextInput::make('phone')
+                    ->required()
+                    ->numeric()
+                    ->minValue(10),
+                TextInput::make('password')
+                    ->required()
+                    ->password()
+                    ->disableAutocomplete(),
+                Textarea::make('address')
+                    ->rows(12)
+                    ->cols(20)
+                    ->columnSpan('full'),
+
             ]);
     }
 
@@ -85,30 +89,26 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('client_name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('client_surname')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->label('Client Name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('surname')->label('Client Surname')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('tel_num')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('contact_person')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('client_status')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('phone')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('address')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('gender')->searchable()->sortable(),
             ])
             ->filters([
-
-                TextFilter::make('client_name'),
-                TextFilter::make('client_surname'),
+                TextFilter::make('name'),
+                TextFilter::make('surname'),
+                SelectFilter::make('gender')->options(['male' => 'male', 'female' => 'female', 'other' => 'other']),
+                TextFilter::make('phone'),
                 TextFilter::make('email'),
-                TextFilter::make('tel_num'),
-                TextFilter::make('contact_person'),
-                SelectFilter::make('client_status')->options([
-                    'Active' => 'Active',
-                    'In-Active' => 'In-Active',
-                ]),
+                TextFilter::make('address'),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 EditAction::make(),
                 ViewAction::make(),
-                Tables\Actions\DeleteAction::make()->visible(function (Client $record) {
+                Tables\Actions\DeleteAction::make()->visible(function (User $record) {
                     if ($record->deleted_at != null) {
                         return false;
                     }
@@ -116,7 +116,7 @@ class ClientResource extends Resource
                     return auth()->user()->can('delete clients', $record);
                 }),
 
-                Tables\Actions\RestoreAction::make()->visible(function (Client $record) {
+                Tables\Actions\RestoreAction::make()->visible(function (User $record) {
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -124,7 +124,7 @@ class ClientResource extends Resource
                     return auth()->user()->can('restore clients', $record);
                 }),
 
-                Tables\Actions\ForceDeleteAction::make()->visible(function (Client $record) {
+                Tables\Actions\ForceDeleteAction::make()->visible(function (User $record) {
                     if ($record->deleted_at === null) {
                         return false;
                     }
@@ -157,13 +157,5 @@ class ClientResource extends Resource
             'edit' => Pages\EditClient::route('/{record}/edit'),
             'view' => Pages\ViewClient::route('/view/{record}'),
         ];
-    }
-
-    public static function getEloquentQuery(): EloquentBuilder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

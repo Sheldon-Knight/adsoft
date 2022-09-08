@@ -32,7 +32,7 @@ use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
 class InvoicesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'invoices';
+    protected static string $relationship = 'ClientInvoices';
 
     protected static ?string $recordTitleAttribute = 'invoice_number';
 

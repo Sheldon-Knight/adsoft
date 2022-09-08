@@ -42,10 +42,14 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
+    protected static ?string $modelLabel = 'Employee';
+
     public static function getEloquentQuery(): EloquentBuilder
     {
         return parent::getEloquentQuery()
-            ->withoutGlobalScopes();
+            ->withoutGlobalScopes()->whereHas('roles', function ($q) {
+                $q->where('name', '!=', 'Client');
+            });
     }
 
     protected static function getNavigationBadge(): ?string
@@ -58,68 +62,35 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Card::make([
-                    static::getNameFormField(),
-                    static::getSurnameFormField(),
-                    static::getGenderFormField(),
-                    static::getEmailFormField(),
-                    static::getPhoneFormField(),
-                    static::getAddressFormField(),
-                    static::getPasswordFormField(),
-                   
+                    TextInput::make('name')
+                        ->required(),
+                    TextInput::make('surname')
+                        ->required(),
+                    TextInput::make('email')
+                        ->required()
+                        ->email(),
+
+                    Select::make('role')->options(Role::where('name', '!=', 'Client')->pluck('name', 'id')->toArray())->columnSpan('full')->visibleOn('create'),
+
+                    Select::make('gender')
+                        ->required()
+                        ->options([
+                            'male' => 'male',
+                            'female' => 'female',
+                            'other' => 'other',
+                        ]),
+                    TextInput::make('phone')
+                        ->required()
+                        ->numeric()
+                        ->minValue(10),
+                    Textarea::make('address')
+                        ->rows(12)
+                        ->cols(20),
+                    TextInput::make('password')
+                        ->required()
+                        ->password()
+                        ->disableAutocomplete(),
                 ]),
-            ]);
-    }
-      
-    public static function getPasswordFormField()
-    {
-        return TextInput::make('password')
-            ->required()
-            ->password()
-            ->disableAutocomplete();
-    }
-
-    public static function getEmailFormField()
-    {
-        return TextInput::make('email')
-            ->required()
-            ->email();
-    }
-
-    public static function getPhoneFormField()
-    {
-        return TextInput::make('phone')
-            ->required()
-            ->numeric()
-            ->minValue(10);
-    }
-
-    public static function getAddressFormField()
-    {
-        return Textarea::make('address')
-            ->rows(12)
-            ->cols(20);
-    }
-
-    public static function getNameFormField()
-    {
-        return TextInput::make('name')
-            ->required();
-    }
-
-    public static function getSurnameFormField()
-    {
-        return TextInput::make('surname')
-            ->required();
-    }
-
-    public static function getGenderFormField()
-    {
-        return Select::make('gender')
-            ->required()
-            ->options([
-                'male' => 'male',
-                'female' => 'female',
-                'other' => 'other',
             ]);
     }
 
@@ -138,7 +109,7 @@ class UserResource extends Resource
             ->filters([
                 TextFilter::make('name'),
                 SelectFilter::make('department')->relationship('department', 'name'),
-                SelectFilter::make('roles')->relationship('roles', 'name'),
+                SelectFilter::make('roles')->relationship('roles', 'name', fn (EloquentBuilder $query) => $query->where('name', '!=', 'Client')),
                 SelectFilter::make('gender')->options(['male' => 'male', 'female' => 'female', 'other' => 'other']),
                 TextFilter::make('phone'),
                 TrashedFilter::make(),

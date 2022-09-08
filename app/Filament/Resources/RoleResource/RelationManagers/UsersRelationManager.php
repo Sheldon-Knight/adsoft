@@ -2,17 +2,11 @@
 
 namespace App\Filament\Resources\RoleResource\RelationManagers;
 
-use App\Models\Permission;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Filament\Tables\Contracts\HasRelationshipTable;
-use Filament\Tables\Filters\MultiSelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class UsersRelationManager extends RelationManager

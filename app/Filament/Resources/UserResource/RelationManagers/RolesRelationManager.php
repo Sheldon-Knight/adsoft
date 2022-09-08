@@ -3,13 +3,11 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Role;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Model;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class RolesRelationManager extends RelationManager
@@ -23,10 +21,9 @@ class RolesRelationManager extends RelationManager
         if ($this->ownerRecord->hasAnyRole(Role::all())) {
             return false;
         }
-        
+
         return true;
     }
-
 
     public static function form(Form $form): Form
     {
@@ -48,7 +45,7 @@ class RolesRelationManager extends RelationManager
                 TextFilter::make('name'),
             ])
             ->headerActions([
-                Tables\Actions\AttachAction::make()
+                Tables\Actions\AttachAction::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

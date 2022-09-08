@@ -84,7 +84,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function incompleteJobs()
     {
-        return $this->hasMany(Job::class, 'user_id')->where('date_completed',null);
+        return $this->hasMany(Job::class, 'user_id')->where('date_completed', null);
     }
 
     public function pendingLeaveApplications()
@@ -147,5 +147,20 @@ class User extends Authenticatable implements FilamentUser
             ->update([
                 'time_out' => $now->format('H:i'),
             ]);
+    }
+
+    public function clientInvoices()
+    {
+        return $this->hasMany(Invoice::class, 'client_id')->where('is_quote', false);
+    }
+
+    public function clientQuotes()
+    {
+        return $this->hasMany(Invoice::class, 'client_id')->where('is_quote', true);
+    }
+
+    public function clientJobs()
+    {
+        return $this->hasMany(Job::class, 'client_id');
     }
 }

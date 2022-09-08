@@ -27,7 +27,7 @@ class RolePolicy
 
         if ($role->name == 'Client') {
             return false;
-        }       
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }

@@ -10,7 +10,6 @@ class ViewAttendance extends ViewRecord
 {
     protected static string $resource = AttendanceResource::class;
 
-
     protected function getActions(): array
     {
         return [];
@@ -22,5 +21,4 @@ class ViewAttendance extends ViewRecord
             AttendanceCalendarWidget::class,
         ];
     }
-
 }

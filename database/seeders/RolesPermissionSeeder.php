@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -18,7 +16,6 @@ class RolesPermissionSeeder extends Seeder
      */
     public function run()
     {
-
         app()['cache']->forget('spatie.permission.cache');
 
         $roles = [
@@ -122,13 +119,13 @@ class RolesPermissionSeeder extends Seeder
             ['name' => 'delete leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'restore leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'force delete leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
-        ];       
+        ];
 
         Role::insert($roles);
 
-        Permission::insert($permissions);        
+        Permission::insert($permissions);
 
-        $superAdminRole = Role::where("name", "Super Admin")->first();
+        $superAdminRole = Role::where('name', 'Super Admin')->first();
 
         $givePermissionTo = [];
 
@@ -136,7 +133,6 @@ class RolesPermissionSeeder extends Seeder
             $givePermissionTo[] = ['permission_id' => $permission->id, 'role_id' => $superAdminRole->id];
         }
 
-        DB::table('role_has_permissions')->insert($givePermissionTo);      
-
+        DB::table('role_has_permissions')->insert($givePermissionTo);
     }
 }

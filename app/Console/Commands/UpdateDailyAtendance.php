@@ -26,7 +26,6 @@ class UpdateDailyAtendance extends Command
      *
      * @return int
      */
-
     public function handle()
     {
         $users = User::all();
@@ -34,7 +33,6 @@ class UpdateDailyAtendance extends Command
         $this->info("Geting All Users Total:{$users->count()}");
 
         foreach ($users as $user) {
-
             $this->info("Geting User {$user->name}");
 
             $yesterDaysAttendance = $user->getYesterdaysAttendance();
@@ -42,7 +40,6 @@ class UpdateDailyAtendance extends Command
             $this->info("Checking yesterdays attendance for user {$user->name}");
 
             if ($yesterDaysAttendance == null) {
-
                 $this->info("found no entry for yesterday user {$user->name}");
 
                 $now = $user->freshTimestamp();
@@ -56,9 +53,9 @@ class UpdateDailyAtendance extends Command
 
                 $this->info("updated {$user->name} attendance yesterday to absent");
             } else {
-                $this->info("nothing to update");
+                $this->info('nothing to update');
             }
         }
-        $this->info("Attendance Command Completed");
+        $this->info('Attendance Command Completed');
     }
 }

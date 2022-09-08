@@ -44,7 +44,7 @@ class PermissionsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
                     ->using(function (HasRelationshipTable $livewire, array $data) {
-                        $permission = Permission::find($data['recordId']);                        
+                        $permission = Permission::find($data['recordId']);
                         $livewire->ownerRecord->givePermissionTo($permission->name);
 
                         Artisan::call('cache:clear');
@@ -55,6 +55,7 @@ class PermissionsRelationManager extends RelationManager
                     ->using(function (Model $record, array $data): Model {
                         $record->removeRole($record->role_id);
                         Artisan::call('cache:clear');
+
                         return $record;
                     }),
 

@@ -2,8 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
-use Closure;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -41,5 +39,5 @@ class UserFactory extends Factory
                 'email_verified_at' => null,
             ];
         });
-    }  
+    }
 }

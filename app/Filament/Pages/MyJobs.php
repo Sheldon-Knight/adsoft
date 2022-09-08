@@ -36,10 +36,17 @@ class MyJobs extends Page implements HasTable
         return Job::query()->where('user_id', auth()->id());
     }
 
+    public function mount()
+    {
+        if (auth()->user()->role('Client')) {
+            return abort(404);
+        }
+    }
+
     protected function getTableColumns(): array
     {
         return [
-            \Filament\Tables\Columns\TextColumn::make('client.client_name')->searchable(),
+            \Filament\Tables\Columns\TextColumn::make('client.name')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('department.name')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('invoice.invoice_number')->searchable(),
             \Filament\Tables\Columns\BadgeColumn::make('status.name')->searchable(),
@@ -56,7 +63,7 @@ class MyJobs extends Page implements HasTable
     {
         return [
             MultiSelectFilter::make('status')->relationship('status', 'name'),
-            MultiSelectFilter::make('client')->relationship('client', 'client_name'),
+            MultiSelectFilter::make('client')->relationship('client', 'name'),
             MultiSelectFilter::make('department')->relationship('department', 'name'),
             TextFilter::make('title'),
             TextFilter::make('description'),
@@ -129,6 +136,10 @@ class MyJobs extends Page implements HasTable
     protected static function shouldRegisterNavigation(): bool
     {
         if (cache()->get('hasExpired') == true) {
+            return false;
+        }
+
+        if (auth()->user()->role('Client')) {
             return false;
         }
 
