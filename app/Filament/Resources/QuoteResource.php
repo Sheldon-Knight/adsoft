@@ -29,6 +29,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -347,14 +348,13 @@ class QuoteResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_total')->label('Quote Total')->sortable()->searchable()->money('zar', true),
                 Tables\Columns\TextColumn::make('invoice_status')->label('Quote Status')->sortable()->searchable(),
             ])
-            ->filters([
-                DateFilter::make('invoice_date'),
-                DateFilter::make('invoice_due_date'),
-                NumberFilter::make('invoice_total'),
-                MultiSelectFilter::make('invoice_status')
-                    ->options(Invoice::where('is_quote', true)->get()->pluck('invoice_status', 'invoice_status')->toArray())
-                    ->column('invoice_status'),
-                Tables\Filters\TrashedFilter::make(),
+            ->filters([DateFilter::make('invoice_date')->label('Quote Date'),
+            DateFilter::make('invoice_due_date')->label("Quote Due Date"),
+            NumberFilter::make('invoice_total')->label('Quote Total'),
+            MultiSelectFilter::make('invoice_status')->label('Quote Status')
+                ->options(Invoice::where('is_quote', false)->get()->pluck('invoice_status', 'invoice_status')->toArray())
+                ->column('invoice_status'),
+            TrashedFilter::make(),
             ])
             ->actions([
                 Action::make('Pdf Downlaod')

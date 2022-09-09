@@ -29,6 +29,10 @@ class UserOverview extends BaseWidget
             return false;
         }
 
+        if (auth()->user()->HasRole("Client")) {
+            return false;
+        }
+
         return true;
     }
 }

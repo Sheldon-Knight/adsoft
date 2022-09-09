@@ -22,6 +22,10 @@ class AttendanceCalendarWidget extends FullCalendarWidget
             return false;
         }
 
+        if (auth()->user()->HasRole("Client")) {
+            return false;
+        }
+
         return true;
     }
 

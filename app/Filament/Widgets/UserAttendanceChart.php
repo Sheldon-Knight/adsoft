@@ -24,6 +24,9 @@ class UserAttendanceChart extends BarChartWidget
         if (cache()->get('hasExpired') == true) {
             return false;
         }
+        if (auth()->user()->HasRole("Client")) {
+            return false;
+        }
 
         return true;
     }
