@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\QuoteResource;
-use App\Models\Status;
+use App\Models\Invoice;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateQuote extends CreateRecord
@@ -25,7 +25,7 @@ class CreateQuote extends CreateRecord
 
         $data['is_quote'] = true;
 
-        $data['invoice_status'] = Status::where('name', $data['invoice_status'])->first()->name ?? '';
+        $data['invoice_status'] = Invoice::PENDING;
 
         return $data;
     }

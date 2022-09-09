@@ -10,12 +10,13 @@ use App\Models\User;
 use Closure;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\CreateAction;
@@ -27,7 +28,6 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class ClientInvoices extends Page implements HasTable
 {
@@ -54,7 +54,7 @@ class ClientInvoices extends Page implements HasTable
 
     public function mount()
     {
-        if (!auth()->user()->Hasrole('Client')) {
+        if (! auth()->user()->Hasrole('Client')) {
             return abort(404);
         }
     }
@@ -87,7 +87,7 @@ class ClientInvoices extends Page implements HasTable
             DateFilter::make('invoice_due_date'),
             NumberFilter::make('invoice_total'),
             MultiSelectFilter::make('invoice_status')
-                ->options(Invoice::where('is_quote', false)->get()->pluck('invoice_status', 'invoice_status')->toArray())
+                ->options(Invoice::invoiceStatuses())
                 ->column('invoice_status'),
             TrashedFilter::make(),
         ];
@@ -96,6 +96,53 @@ class ClientInvoices extends Page implements HasTable
     protected function getTableActions(): array
     {
         return [
+
+            Action::make('online_payment')
+            ->action(fn () => $this->record->advance())
+                ->modalContent(function (Invoice $record) {
+                    return view('filament.online-payment', ['record' => $record]);
+                }),
+
+            ViewAction::make('uploads')->form([
+                FileUpload::make('eft_uploads')
+                    ->multiple()
+                    ->enableOpen()
+                    ->enableDownload()
+                    ->directory(function (Invoice $record) {
+                        return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
+                    })
+                    ->preserveFilenames(),
+            ])
+                ->label('View Uploads')
+                ->color('danger'),
+
+            Action::make('eft Payment')->icon('heroicon-o-upload')->action(function (Invoice $record, $data) {
+                $attachments = $record->eft_uploads;
+                if ($attachments != null) {
+                    foreach ($data['proof of payment'] as $attachment) {
+                        array_push($attachments, $attachment);
+                    }
+                } else {
+                    $attachments = $data['proof of payment'];
+                }
+
+                $record->update(['eft_uploads' => $attachments]);
+
+                Notification::make()
+                    ->title('Eft Uploaded Successfully')
+                    ->success()
+                    ->send();
+            })->form([
+                FileUpload::make('proof of payment')
+                    ->multiple()
+                    ->required()
+                    ->directory(function (Invoice $record) {
+                        return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
+                    })
+                    ->enableOpen()
+                    ->enableDownload()
+                    ->preserveFilenames(),
+            ])->color('success'),
             Action::make('Pdf Downlaod')
                 ->label('Pdf Download')
                 ->color('warning')
@@ -110,7 +157,7 @@ class ClientInvoices extends Page implements HasTable
                                 Card::make()
                                     ->schema([
                                         TextInput::make('invoice_number')
-                                            ->default('ABC-' . random_int(10000, 999999))
+                                            ->default('ABC-'.random_int(10000, 999999))
                                             ->required(),
 
                                         Select::make('client_id')
@@ -153,8 +200,7 @@ class ClientInvoices extends Page implements HasTable
 
                                                 TextInput::make('price')
                                                     ->required()
-                                                    ->reactive()
-                                                    ->type('number')
+                                                    ->reactive()->type('number')
                                                     ->prefix('R')
                                                     ->numeric()
                                                     ->minValue(0)
@@ -320,7 +366,6 @@ class ClientInvoices extends Page implements HasTable
 
                     ]
                 ),
-
 
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Widgets\AttendanceCalendarWidget;
+use App\Filament\Widgets\UserAttendanceChart;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Filament\Forms\Components\TimePicker;
@@ -33,6 +34,7 @@ class MyAttendances extends Page implements HasTable
     {
         return [
             AttendanceCalendarWidget::class,
+            UserAttendanceChart::class,
         ];
     }
 
@@ -43,7 +45,7 @@ class MyAttendances extends Page implements HasTable
 
     public function mount()
     {
-        if (auth()->user()->role('Client')) {
+        if (auth()->user()->hasRole('Client')) {
             return abort(404);
         }
     }
@@ -54,7 +56,7 @@ class MyAttendances extends Page implements HasTable
             return false;
         }
 
-        if (auth()->user()->role('Client')) {
+        if (auth()->user()->hasRole('Client')) {
             return false;
         }
 

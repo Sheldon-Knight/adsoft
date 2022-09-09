@@ -39,7 +39,7 @@ class MyInstructions extends Page implements HasTable
 
     public function mount()
     {
-        if (auth()->user()->role('Client')) {
+        if (auth()->user()->hasRole('Client')) {
             return abort(404);
         }
     }
@@ -143,7 +143,7 @@ class MyInstructions extends Page implements HasTable
             return false;
         }
 
-        if (auth()->user()->role('Client')) {
+        if (auth()->user()->hasRole('Client')) {
             return false;
         }
 

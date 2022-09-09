@@ -22,7 +22,11 @@ class AttendanceCalendarWidget extends FullCalendarWidget
             return false;
         }
 
-        if (auth()->user()->HasRole("Client")) {
+        if (auth()->user()->HasRole('Client')) {
+            return false;
+        }
+
+        if (request()->routeIs('filament.pages.dashboard')) {
             return false;
         }
 

@@ -22,6 +22,7 @@
                         @endif
 
                         @if ($attendance->time_in != null and $attendance->time_out != null)
+                        
                         @endif
 
                     @endif

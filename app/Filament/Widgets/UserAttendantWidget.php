@@ -28,7 +28,7 @@ class UserAttendantWidget extends Widget implements HasForms
         if (cache()->get('hasExpired') == true) {
             return false;
         }
-        if (auth()->user()->HasRole("Client")) {
+        if (auth()->user()->HasRole('Client')) {
             return false;
         }
 

@@ -46,7 +46,7 @@ class MyLeaves extends Page implements HasTable
 
     public function mount()
     {
-        if (auth()->user()->role('Client')) {
+        if (auth()->user()->hasRole('Client')) {
             return abort(404);
         }
     }
@@ -221,7 +221,7 @@ class MyLeaves extends Page implements HasTable
 
     protected static function shouldRegisterNavigation(): bool
     {
-        if (auth()->user()->role('Client')) {
+        if (auth()->user()->hasRole('Client')) {
             return false;
         }
 

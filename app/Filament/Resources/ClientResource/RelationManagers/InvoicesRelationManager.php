@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ClientResource\RelationManagers;
 
 use App\Models\Invoice;
-use App\Models\Status;
 use App\Services\PdfInvoice;
 use Closure;
 use Filament\Forms;
@@ -24,6 +23,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -59,7 +59,7 @@ class InvoicesRelationManager extends RelationManager
                                     ->label('Status')
                                     ->required()
                                     ->searchable()
-                                    ->options(Status::pluck('name', 'name')),
+                                    ->options(Invoice::invoiceStatuses()),
 
                             ])->columns([
                                 'sm' => 2,
@@ -264,7 +264,7 @@ class InvoicesRelationManager extends RelationManager
                 DateFilter::make('invoice_due_date'),
                 NumberFilter::make('invoice_total'),
                 MultiSelectFilter::make('invoice_status')
-                    ->options(Invoice::where('is_quote', false)->get()->pluck('invoice_status', 'invoice_status')->toArray())
+                    ->options(Invoice::invoiceStatuses())
                     ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
@@ -278,7 +278,47 @@ class InvoicesRelationManager extends RelationManager
                     }),
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
-            ->actions([
+            ->actions([ViewAction::make('uploads')->form([
+                FileUpload::make('eft_uploads')
+                    ->multiple()
+                    ->enableOpen()
+                    ->enableDownload()
+                    ->directory(function (Invoice $record) {
+                        return 'user/'.$record->client_id.'/invoice/'.$record->id.'/eft-uploads';
+                    })
+                    ->preserveFilenames(),
+            ])
+                ->label('View Uploads')
+                ->color('danger'),
+
+                Action::make('upload')->icon('heroicon-o-upload')->action(function (Invoice $record, $data) {
+                    $attachments = $record->eft_uploads;
+                    if ($attachments != null) {
+                        foreach ($data['proof of payment'] as $attachment) {
+                            array_push($attachments, $attachment);
+                        }
+                    } else {
+                        $attachments = $data['proof of payment'];
+                    }
+
+                    $record->update(['eft_uploads' => $attachments]);
+
+                    Notification::make()
+                        ->title('Eft Uploaded Successfully')
+                        ->success()
+                        ->send();
+                })->form([
+                    FileUpload::make('proof of payment')
+                        ->multiple()
+                        ->required()
+                        ->directory(function (Invoice $record) {
+                            return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
+                        })
+                        ->enableOpen()
+                        ->enableDownload()
+                        ->preserveFilenames(),
+                ])->color('success'),
+
                 Action::make('Pdf Downlaod')
                     ->label('Pdf Download')
                     ->color('warning')
@@ -436,7 +476,7 @@ class InvoicesRelationManager extends RelationManager
                     ->form([
                         Forms\Components\Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
+                            ->options(Invoice::invoiceStatuses())
                             ->required(),
                     ]),
                 Tables\Actions\DeleteAction::make(),

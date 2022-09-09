@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Models\Invoice;
-use App\Models\Status;
 use App\Models\User;
 use Closure;
 use Filament\Forms\Components\Card;
@@ -14,12 +13,11 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\MultiSelectFilter;
@@ -27,7 +25,6 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
-use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
 class ClientQuotes extends Page implements HasTable
 {
@@ -54,7 +51,7 @@ class ClientQuotes extends Page implements HasTable
 
     public function mount()
     {
-        if (!auth()->user()->Hasrole('Client')) {
+        if (! auth()->user()->Hasrole('Client')) {
             return abort(404);
         }
     }
@@ -84,10 +81,10 @@ class ClientQuotes extends Page implements HasTable
     {
         return [
             DateFilter::make('invoice_date')->label('Quote Date'),
-            DateFilter::make('invoice_due_date')->label("Quote Due Date"),
+            DateFilter::make('invoice_due_date')->label('Quote Due Date'),
             NumberFilter::make('invoice_total')->label('Quote Total'),
             MultiSelectFilter::make('invoice_status')->label('Quote Status')
-                ->options(Invoice::where('is_quote', false)->get()->pluck('invoice_status', 'invoice_status')->toArray())
+                ->options(Invoice::QuoteStatuses())
                 ->column('invoice_status'),
             TrashedFilter::make(),
         ];
@@ -95,8 +92,39 @@ class ClientQuotes extends Page implements HasTable
 
     protected function getTableActions(): array
     {
+        $invoiceStatuses = Invoice::quoteStatuses();
+
+        unset($invoiceStatuses[Invoice::PENDING]);
+
         return [
-            Action::make('Pdf Downlaod')
+
+            Action::make('Change Status')
+                ->form([
+                    Select::make('invoice_status')
+                        ->label('Status')
+                        ->options($invoiceStatuses)
+                        ->required(),
+                ])
+                ->action(function (Invoice $record, $data) {
+                    $record->update(['invoice_status' => $data['invoice_status']]);
+
+                    return Notification::make()
+                        ->title('Status Updated')
+                        ->success()
+                        ->send();
+                })
+                ->requiresConfirmation()
+                ->label('Review')
+                ->color('success')
+                ->visible(function (Invoice $record) {
+                    if ($record->invoice_status != Invoice::PENDING) {
+                        return false;
+                    }
+
+                    return true;
+                }),
+
+            Action::make('Pdf Download')
                 ->label('Pdf Download')
                 ->color('warning')
                 ->url(function (Invoice $record) {
@@ -109,8 +137,8 @@ class ClientQuotes extends Page implements HasTable
                             ->schema([
                                 Card::make()
                                     ->schema([
-                                        TextInput::make('invoice_number')->label("Quote Number")
-                                            ->default('ABC-' . random_int(10000, 999999))
+                                        TextInput::make('invoice_number')->label('Quote Number')
+                                            ->default('ABC-'.random_int(10000, 999999))
                                             ->required(),
 
                                         Select::make('client_id')
@@ -119,19 +147,19 @@ class ClientQuotes extends Page implements HasTable
                                             ->searchable()
                                             ->options(User::query()->role('Client')->pluck('name', 'id')),
 
-                                        DatePicker::make('invoice_date')->label("Quote Label")
+                                        DatePicker::make('invoice_date')->label('Quote Label')
                                             ->default(now())
                                             ->required(),
 
-                                        DatePicker::make('invoice_due_date')->label("Quote Due Date")
+                                        DatePicker::make('invoice_due_date')->label('Quote Due Date')
                                             ->default(now()->addDays(7))
                                             ->required(),
 
-                                        Select::make('invoice_status')->label("Quote Status")
+                                        Select::make('invoice_status')->label('Quote Status')
                                             ->label('Status')
                                             ->required()
                                             ->searchable()
-                                            ->options(Status::pluck('name', 'name')),
+                                            ->options(Invoice::QuoteStatuses()),
 
                                     ])->columns([
                                         'sm' => 2,
@@ -320,7 +348,6 @@ class ClientQuotes extends Page implements HasTable
 
                     ]
                 ),
-
 
         ];
     }

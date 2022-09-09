@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuoteResource\Pages;
 use App\Models\Invoice;
-use App\Models\Status;
 use App\Models\User;
 use App\Services\PdfInvoice;
 use Closure;
@@ -133,11 +132,10 @@ class QuoteResource extends Resource
                                     ->searchable()
                                     ->options(User::query()->role('Client')->pluck('name', 'id')),
 
-                                Select::make('invoice_status')
+                                TextInput::make('invoice_status')
                                     ->label('Status')
-                                    ->required()
-                                    ->searchable()
-                                    ->options(Status::pluck('name', 'name')),
+                                    ->disabled()
+                                    ->placeholder(Invoice::PENDING),
 
                                 DatePicker::make('invoice_date')
                                     ->default(now())
@@ -348,13 +346,14 @@ class QuoteResource extends Resource
                 Tables\Columns\TextColumn::make('invoice_total')->label('Quote Total')->sortable()->searchable()->money('zar', true),
                 Tables\Columns\TextColumn::make('invoice_status')->label('Quote Status')->sortable()->searchable(),
             ])
-            ->filters([DateFilter::make('invoice_date')->label('Quote Date'),
-            DateFilter::make('invoice_due_date')->label("Quote Due Date"),
-            NumberFilter::make('invoice_total')->label('Quote Total'),
-            MultiSelectFilter::make('invoice_status')->label('Quote Status')
-                ->options(Invoice::where('is_quote', false)->get()->pluck('invoice_status', 'invoice_status')->toArray())
-                ->column('invoice_status'),
-            TrashedFilter::make(),
+            ->filters([
+                DateFilter::make('invoice_date')->label('Quote Date'),
+                DateFilter::make('invoice_due_date')->label('Quote Due Date'),
+                NumberFilter::make('invoice_total')->label('Quote Total'),
+                MultiSelectFilter::make('invoice_status')->label('Quote Status')
+                    ->options(Invoice::quoteStatuses())
+                    ->column('invoice_status'),
+                TrashedFilter::make(),
             ])
             ->actions([
                 Action::make('Pdf Downlaod')
@@ -529,33 +528,6 @@ class QuoteResource extends Resource
                         return false;
                     }),
 
-                Action::make('Change Status')
-                    ->icon('heroicon-o-arrows-expand')
-                    ->visible(function (Invoice $record) {
-                        if (auth()->user()->can('update quotes') and $record->deleted_at === null) {
-                            return true;
-                        }
-
-                        return false;
-                    })
-                    ->form([
-                        Select::make('invoice_status')
-                            ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
-                            ->required(),
-                    ])
-                    ->action(function (Invoice $record, $data) {
-                        $record->update(['invoice_status' => $data['invoice_status']]);
-
-                        return Notification::make()
-                            ->title('Status Updated')
-                            ->success()
-                            ->send();
-                    })
-
-                    ->requiresConfirmation()
-                    ->color('secondary'),
-
                 Action::make('Convert To Invoice')
                     ->icon('heroicon-o-arrow-circle-down')
                     ->visible(function (Invoice $record) {
@@ -568,7 +540,7 @@ class QuoteResource extends Resource
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
+                            ->options(Invoice::quoteStatuses())
                             ->required(),
                     ])
                     ->action(fn (Invoice $record, $data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
@@ -587,7 +559,7 @@ class QuoteResource extends Resource
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
+                            ->options(Invoice::invoiceStatuses())
                             ->required(),
                     ])
                     ->visible(function () {

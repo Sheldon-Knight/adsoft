@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ClientResource\RelationManagers;
 
 use App\Models\Invoice;
-use App\Models\Status;
 use App\Services\PdfInvoice;
 use Closure;
 use Filament\Forms\Components\Card;
@@ -50,11 +49,10 @@ class QuotesRelationManager extends RelationManager
                                     ->required()
                                     ->label('Quote Number'),
 
-                                Select::make('invoice_status')
+                                TextInput::make('invoice_status')
                                     ->label('Status')
-                                    ->required()
-                                    ->searchable()
-                                    ->options(Status::pluck('name', 'name')),
+                                    ->disabled()
+                                    ->placeholder(Invoice::PENDING),
 
                                 DatePicker::make('invoice_date')
                                     ->default(now())
@@ -272,7 +270,7 @@ class QuotesRelationManager extends RelationManager
                 DateFilter::make('invoice_due_date'),
                 NumberFilter::make('invoice_total'),
                 MultiSelectFilter::make('invoice_status')
-                    ->options(Invoice::where('is_quote', true)->get()->pluck('invoice_status', 'invoice_status')->toArray())
+                    ->options(Invoice::quoteStatuses())
                     ->column('invoice_status'),
                 Tables\Filters\TrashedFilter::make(),
             ])
@@ -429,21 +427,12 @@ class QuotesRelationManager extends RelationManager
                     ]),
                 Tables\Actions\ViewAction::make(),
 
-                Tables\Actions\EditAction::make()
-                    ->label('Change Status')
-                    ->form([
-                        Select::make('invoice_status')
-                            ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
-                            ->required(),
-                    ]),
-
                 Action::make('Convert To Invoice')
                     ->icon('heroicon-o-arrow-circle-down')
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
+                            ->options(Invoice::invoiceStatuses())
                             ->required(),
                     ])
                     ->action(fn (Invoice $record, $data) => $record->update(['is_quote' => false, 'invoice_status' => $data['invoice_status']]))
@@ -456,6 +445,7 @@ class QuotesRelationManager extends RelationManager
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['user_id'] = auth()->id();
                         $data['is_quote'] = true;
+                        $data['invoice_status'] = Invoice::PENDING;
 
                         return $data;
                     }),
@@ -467,7 +457,7 @@ class QuotesRelationManager extends RelationManager
                     ->form([
                         Select::make('invoice_status')
                             ->label('Status')
-                            ->options(Status::pluck('name', 'name'))
+                            ->options(Invoice::quoteStatuses())
                             ->required(),
                     ])
                     ->visible(function () {

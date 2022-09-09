@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AttendanceResource\Pages;
 
 use App\Filament\Resources\AttendanceResource;
 use App\Filament\Widgets\AttendanceCalendarWidget;
+use App\Filament\Widgets\UserAttendanceChart;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewAttendance extends ViewRecord
@@ -19,6 +20,7 @@ class ViewAttendance extends ViewRecord
     {
         return [
             AttendanceCalendarWidget::class,
+            UserAttendanceChart::class,
         ];
     }
 }

@@ -8,7 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Card;
 
 class UserOverview extends BaseWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 2;
 
     protected function getCards(): array
     {
@@ -29,7 +29,7 @@ class UserOverview extends BaseWidget
             return false;
         }
 
-        if (auth()->user()->HasRole("Client")) {
+        if (auth()->user()->HasRole('Client')) {
             return false;
         }
 
