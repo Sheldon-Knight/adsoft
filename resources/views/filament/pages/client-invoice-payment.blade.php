@@ -69,10 +69,10 @@
         </div>
     </div>
 
-   <br>
-        <x-filament::button id="checkout-button">
-            Pay Now!
-        </x-filament::button>
+    <br>
+    <x-filament::button id="checkout-button">
+        Pay Now!
+    </x-filament::button>
     <form wire:submit.prevent="submit">
         {{ $this->form }}
 
@@ -174,7 +174,7 @@
                             }
                         });
                     },
-                    onCancel: function() {                   
+                    onCancel: function() {
                         $("#yoco-spinner-custom").css('display', 'none');
                     }
                 });
