@@ -8,6 +8,8 @@ use App\Models\Invoice;
 use App\Models\Status;
 use App\Models\User;
 use Closure;
+use Filament\Facades\Filament;
+use Filament\Forms\ComponentContainer;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -26,6 +28,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
@@ -54,7 +57,7 @@ class ClientInvoices extends Page implements HasTable
 
     public function mount()
     {
-        if (! auth()->user()->Hasrole('Client')) {
+        if (!auth()->user()->Hasrole('Client')) {
             return abort(404);
         }
     }
@@ -96,11 +99,10 @@ class ClientInvoices extends Page implements HasTable
     protected function getTableActions(): array
     {
         return [
-
             Action::make('online_payment')
-            ->action(fn () => $this->record->advance())
-                ->modalContent(function (Invoice $record) {
-                    return view('filament.online-payment', ['record' => $record]);
+            ->icon('heroicon-o-status-online')
+                ->url(function (Invoice $record) {
+                    return  "invoices/" . $record->id . '/make-payment';
                 }),
 
             ViewAction::make('uploads')->form([
@@ -109,7 +111,7 @@ class ClientInvoices extends Page implements HasTable
                     ->enableOpen()
                     ->enableDownload()
                     ->directory(function (Invoice $record) {
-                        return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
+                        return 'user/' . auth()->id() . '/invoice/' . $record->id . '/eft-uploads';
                     })
                     ->preserveFilenames(),
             ])
@@ -137,7 +139,7 @@ class ClientInvoices extends Page implements HasTable
                     ->multiple()
                     ->required()
                     ->directory(function (Invoice $record) {
-                        return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
+                        return 'user/' . auth()->id() . '/invoice/' . $record->id . '/eft-uploads';
                     })
                     ->enableOpen()
                     ->enableDownload()
@@ -157,7 +159,7 @@ class ClientInvoices extends Page implements HasTable
                                 Card::make()
                                     ->schema([
                                         TextInput::make('invoice_number')
-                                            ->default('ABC-'.random_int(10000, 999999))
+                                            ->default('ABC-' . random_int(10000, 999999))
                                             ->required(),
 
                                         Select::make('client_id')

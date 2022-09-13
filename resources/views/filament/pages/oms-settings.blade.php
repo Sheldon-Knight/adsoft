@@ -341,7 +341,6 @@
                     console.log($log);
                 }
 
-
                 $("#yoco-spinner-custom").css('display', 'none');
 
                 $('#renew')

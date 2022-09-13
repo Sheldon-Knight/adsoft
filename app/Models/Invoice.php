@@ -76,7 +76,7 @@ class Invoice extends Model
     }
 
     protected $casts = [
-        'items' => 'json',
+        'items' => 'array',
         'eft_uploads' => 'array',
     ];
 
