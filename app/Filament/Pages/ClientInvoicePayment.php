@@ -5,12 +5,9 @@ namespace App\Filament\Pages;
 use App\Models\Invoice;
 use App\Models\User;
 use Closure;
-use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Group;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -178,8 +175,6 @@ class ClientInvoicePayment extends Page implements HasForms
 
                         ]),
 
-
-
                     Card::make()
                         ->schema([
                             TextInput::make('invoice_subtotal')
@@ -281,10 +276,6 @@ class ClientInvoicePayment extends Page implements HasForms
 
                 ])->columnSpan('full'),
 
-             
-
-                
         ];
     }
-
 }

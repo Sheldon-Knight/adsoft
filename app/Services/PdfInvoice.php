@@ -177,7 +177,7 @@ class PdfInvoice
             ->buyer($buyer)
             ->date(Carbon::parse($invoice->invoice_date))
             ->dateFormat($omsSettings->date_format)
-            ->currencySymbol('R')     
+            ->currencySymbol('R')
             ->currencyCode('ZAR')
             ->currencyFormat('{SYMBOL}{VALUE}')
             ->currencyThousandsSeparator('.')
@@ -186,7 +186,7 @@ class PdfInvoice
             ->notes($notes)
             ->filename("client/{$invoice->client_id}/file/$invoice->id/$name")
             ->setCustomData(['invoice_due_date' => $invoice->invoice_due_date, 'invoice_number' => $invoice->invoice_number])
-            ->logo(public_path('/storage/' . $omsSettings->oms_logo))
+            ->logo(public_path('/storage/'.$omsSettings->oms_logo))
             ->save('public');
 
         $file = public_path("storage/client/{$invoice->client_id}/file/$invoice->id/$name.pdf");

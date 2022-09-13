@@ -8,8 +8,6 @@ use App\Models\Invoice;
 use App\Models\Status;
 use App\Models\User;
 use Closure;
-use Filament\Facades\Filament;
-use Filament\Forms\ComponentContainer;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -28,7 +26,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\HtmlString;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 
@@ -100,9 +97,9 @@ class ClientInvoices extends Page implements HasTable
     {
         return [
             Action::make('online_payment')
-            ->icon('heroicon-o-status-online')
+                ->icon('heroicon-o-status-online')
                 ->url(function (Invoice $record) {
-                    return  "invoices/" . $record->id . '/make-payment';
+                    return  'invoices/' . $record->id . '/make-payment';
                 }),
 
             ViewAction::make('uploads')->form([

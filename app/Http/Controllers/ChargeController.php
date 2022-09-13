@@ -37,23 +37,26 @@ class ChargeController extends Controller
 
             return $response;
         } catch (ApiKeyException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
 
-            if ($metadata["method"] == "client_invoice") {
-                DB::table('invoices')->where('id', $metadata["id"])->update(["invoice_status" => "Failed"]);
+            if ($metadata['method'] == 'client_invoice') {
+                DB::table('invoices')->where('id', $metadata['id'])->update(['invoice_status' => 'Failed']);
             }
+
             return response()->json(['charge_error' => $e], 400);
         } catch (DeclinedException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
-            if ($metadata["method"] == "client_invoice") {
-                DB::table('invoices')->where('id', $metadata["id"])->update(["invoice_status" => "Failed"]);
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
+            if ($metadata['method'] == 'client_invoice') {
+                DB::table('invoices')->where('id', $metadata['id'])->update(['invoice_status' => 'Failed']);
             }
+
             return response()->json(['charge_error' => $e], 400);
         } catch (InternalException $e) {
-            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : " . $e->getMessage());
-            if ($metadata["method"] == "client_invoice") {
-                DB::table('invoices')->where('id', $metadata["id"])->update(["invoice_status" => "Failed"]);
+            Log::error("Failed to charge card with token $token, amount $currency $amountInCents : ".$e->getMessage());
+            if ($metadata['method'] == 'client_invoice') {
+                DB::table('invoices')->where('id', $metadata['id'])->update(['invoice_status' => 'Failed']);
             }
+
             return response()->json(['charge_error' => $e], 400);
         }
     }
@@ -68,7 +71,7 @@ class ChargeController extends Controller
                 $this->subscribeTo(2);
                 break;
             case 'client_invoice':
-                $this->clientInvoicePayment($method["id"]);
+                $this->clientInvoicePayment($method['id']);
                 break;
             default:
                 $this->renew();
@@ -87,7 +90,7 @@ class ChargeController extends Controller
 
     private function clientInvoicePayment($id)
     {
-        DB::table('invoices')->where('id', $id)->update(["invoice_status" => "Paid"]);
+        DB::table('invoices')->where('id', $id)->update(['invoice_status' => 'Paid']);
     }
 
     private function subscribeTo($id)
@@ -114,13 +117,5 @@ class ChargeController extends Controller
         cache()->forever('subscription', OmsSetting::first()->subscription);
 
         cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
-    }
-
-    public function clientMakePayment(Invoice $record)
-    {
-        // $pdfInvoice = new PdfInvoice();     
-        $omsSettings = OmsSetting::First();
-        
-        return view("client-invoice-payment", ['invoice' => $record,"omsSettings" => $omsSettings,'record' => $record]);
-    }
+    } 
 }

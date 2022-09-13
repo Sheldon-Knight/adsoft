@@ -20,4 +20,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class);
 Route::get('/download/pdf-preview', InvoicePreviewController::class)->name('invoice-settings.downloadPdf');
 Route::get('/download/pdf-preview/{record}', PdfController::class)->name('pdf-download');
-Route::get('/client/invoices/{record}/make-payment', [ChargeController::class,'clientMakePayment'])->name('client-invoices-make-payment');

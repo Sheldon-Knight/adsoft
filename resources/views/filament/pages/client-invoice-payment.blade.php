@@ -69,14 +69,14 @@
         </div>
     </div>
 
-
-    <form wire:submit.prevent="submit">
-        {{ $this->form }}
-
    <br>
         <x-filament::button id="checkout-button">
             Pay Now!
         </x-filament::button>
+    <form wire:submit.prevent="submit">
+        {{ $this->form }}
+
+
 
 
 
