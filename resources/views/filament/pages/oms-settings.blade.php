@@ -126,6 +126,15 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
+                            <p>Inventory Management</p>
+                        </li>
+
+                        <li class="flex space-x-6 ">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                             <p>Attendance</p>
                         </li>
 
@@ -164,12 +173,12 @@
                     <div class="text-center">
                         <button type="submit"
                             class="inline-flex items-center justify-center py-1 gap-1
-                                font-medium rounded-lg border 
-                                transition-colors focus:outline-none 
-                                focus:ring-offset-2 focus:ring-2 
-                                focus:ring-inset filament-button 
+                                font-medium rounded-lg border
+                                transition-colors focus:outline-none
+                                focus:ring-offset-2 focus:ring-2
+                                focus:ring-inset filament-button
                                 dark:focus:ring-offset-0 min-h-[2.25rem]
-                                px-4 text-sm text-white 
+                                px-4 text-sm text-white
                                 shadow focus:ring-white
                                 border-transparent
                                {{ $plan === 'Basic' ? 'bg-danger-600 hover:bg-danger-500 focus:bg-danger-700 focus:ring-offset-danger-700' : 'bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700' }}"
@@ -231,7 +240,16 @@
                             </svg>
                             <p>Invoices & Quotes</p>
                         </li>
-                        
+
+                        <li class="flex space-x-6 ">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p>Inventory Management</p>
+                        </li>
+
                         <li class="flex space-x-6 ">
                             <svg class="w-6 h-6 mr-3" fill="none" stroke="#21B531" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -278,12 +296,12 @@
                     <div class="text-center">
                         <button type="submit"
                             class="inline-flex items-center justify-center py-1 gap-1
-                                font-medium rounded-lg border 
-                                transition-colors focus:outline-none 
-                                focus:ring-offset-2 focus:ring-2 
-                                focus:ring-inset filament-button 
+                                font-medium rounded-lg border
+                                transition-colors focus:outline-none
+                                focus:ring-offset-2 focus:ring-2
+                                focus:ring-inset filament-button
                                 dark:focus:ring-offset-0 min-h-[2.25rem]
-                                px-4 text-sm text-white 
+                                px-4 text-sm text-white
                                 shadow focus:ring-white
                                 border-transparent
                                {{ $plan === 'Premium' ? 'bg-danger-600 hover:bg-danger-500 focus:bg-danger-700 focus:ring-offset-danger-700' : 'bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700' }}"

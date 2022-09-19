@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
 use App\Models\OmsSetting;
-use App\Services\PdfInvoice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LucasDotVin\Soulbscription\Models\Plan;
@@ -117,5 +115,5 @@ class ChargeController extends Controller
         cache()->forever('subscription', OmsSetting::first()->subscription);
 
         cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
-    } 
+    }
 }

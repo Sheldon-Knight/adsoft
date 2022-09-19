@@ -15,13 +15,12 @@ test('non_login_users_can_see_login_page', function () {
 });
 
 test('login_users_get_redirected_to_dashboard', function () {
+    User::factory()->times(1)->create(['is_admin' => true]);
 
-   User::factory()->times(1)->create(['is_admin' => true]);
+    $admin = User::first();
 
-   $admin = User::first();
-   
-   $admin->assignRole('Super Admin');
-        
+    $admin->assignRole('Super Admin');
+
     $this->actingAs($admin);
 
     $response = $this->get('/admin/login');
@@ -30,7 +29,6 @@ test('login_users_get_redirected_to_dashboard', function () {
 });
 
 it('can render dashboard for Admin', function () {
-
     User::factory()->times(1)->create(['is_admin' => true]);
 
     $admin = User::first();
@@ -38,7 +36,6 @@ it('can render dashboard for Admin', function () {
     $admin->assignRole('Super Admin');
 
     $this->actingAs($admin);
-   
+
     $this->get('/admin')->assertSuccessful();
-   
 });

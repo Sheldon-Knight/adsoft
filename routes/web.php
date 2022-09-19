@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ChargeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicePreviewController;
 use App\Http\Controllers\PdfController;

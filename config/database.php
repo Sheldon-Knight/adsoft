@@ -63,8 +63,6 @@ return [
             ]) : [],
         ],
 
-
-
         'testing' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),

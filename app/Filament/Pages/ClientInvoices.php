@@ -54,7 +54,7 @@ class ClientInvoices extends Page implements HasTable
 
     public function mount()
     {
-        if (!auth()->user()->Hasrole('Client')) {
+        if (! auth()->user()->Hasrole('Client')) {
             return abort(404);
         }
     }
@@ -99,7 +99,7 @@ class ClientInvoices extends Page implements HasTable
             Action::make('online_payment')
                 ->icon('heroicon-o-status-online')
                 ->url(function (Invoice $record) {
-                    return  'invoices/' . $record->id . '/make-payment';
+                    return  'invoices/'.$record->id.'/make-payment';
                 }),
 
             ViewAction::make('uploads')->form([
@@ -108,7 +108,7 @@ class ClientInvoices extends Page implements HasTable
                     ->enableOpen()
                     ->enableDownload()
                     ->directory(function (Invoice $record) {
-                        return 'user/' . auth()->id() . '/invoice/' . $record->id . '/eft-uploads';
+                        return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
                     })
                     ->preserveFilenames(),
             ])
@@ -136,7 +136,7 @@ class ClientInvoices extends Page implements HasTable
                     ->multiple()
                     ->required()
                     ->directory(function (Invoice $record) {
-                        return 'user/' . auth()->id() . '/invoice/' . $record->id . '/eft-uploads';
+                        return 'user/'.auth()->id().'/invoice/'.$record->id.'/eft-uploads';
                     })
                     ->enableOpen()
                     ->enableDownload()
@@ -156,7 +156,7 @@ class ClientInvoices extends Page implements HasTable
                                 Card::make()
                                     ->schema([
                                         TextInput::make('invoice_number')
-                                            ->default('ABC-' . random_int(10000, 999999))
+                                            ->default('ABC-'.random_int(10000, 999999))
                                             ->required(),
 
                                         Select::make('client_id')

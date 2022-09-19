@@ -112,13 +112,13 @@ class AccountResource extends Resource
                         $transaction = Transaction::create([
                             'transaction_id' => str()->uuid(),
                             'account_id' => $record->id,
-                            'description' => 'R'.number_format($data['amount'], 2).' Has Been Added To Your Account',
+                            'description' => 'R' . number_format($data['amount'], 2) . ' Has Been Added To Your Account',
                             'type' => 'credit',
                             'amount' => $data['amount'],
                         ]);
 
                         Notification::make()
-                            ->title('R'.number_format($data['amount'], 2).' Has Been Added To Account: '.$record->account_number)
+                            ->title('R' . number_format($data['amount'], 2) . ' Has Been Added To Account: ' . $record->account_number)
                             ->success()
                             ->duration(5000)
                             ->persistent()
@@ -201,7 +201,7 @@ class AccountResource extends Resource
 
                         Notification::make()
                             ->title('Transfer Succesfull')
-                            ->body('Transfer of R'.number_format($data['amount'], 2).' has been made from acccount: '.$record->account_number.' to account: '.$toAccount->account_number)
+                            ->body('Transfer of R' . number_format($data['amount'], 2) . ' has been made from acccount: ' . $record->account_number . ' to account: ' . $toAccount->account_number)
                             ->duration(5000)
                             ->persistent()
                             ->success()

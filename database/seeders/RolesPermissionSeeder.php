@@ -113,12 +113,19 @@ class RolesPermissionSeeder extends Seeder
             ['name' => 'restore instructions', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'force delete instructions', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'change application settings', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'view any leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()], ['name' => 'create leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'view any leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'update leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'view leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'delete leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'restore leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'force delete leaves', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'view any inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'create inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'update inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'view inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'delete inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'restore inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'force delete inventorys', 'guard_name' => 'web', 'created_at' => now(), 'updated_at' => now()],
         ];
 
         Role::insert($roles);

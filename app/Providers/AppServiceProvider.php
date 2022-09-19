@@ -40,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
                     ->collapsed(),
 
                 NavigationGroup::make()
+                ->label('Inventory Management')
+                ->icon('heroicon-s-view-grid')
+                ->collapsed(),
+
+                NavigationGroup::make()
                     ->label('Settings')
                     ->icon('heroicon-s-cog')
                     ->collapsed(),

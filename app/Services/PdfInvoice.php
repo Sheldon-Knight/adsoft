@@ -171,7 +171,7 @@ class PdfInvoice
         $name = $isInvoice ? 'invoice' : 'quote';
 
         $pdfInvoice = Invoice::make("{$series} # {$invoice->invoice_number}")
-        ->series($series)
+            ->series($series)
             ->status($invoice->invoice_status)
             ->seller($seller)
             ->buyer($buyer)
