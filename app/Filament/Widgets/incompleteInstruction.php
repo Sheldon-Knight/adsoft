@@ -29,6 +29,23 @@ class incompleteInstruction extends BaseWidget
         return Instruction::query()->where('assigned_to', auth()->id())->where('date_completed', '=', null);
     }
 
+    public static function canView(): bool
+    {
+        if (auth()->user()->is_admin == true) {
+            return false;
+        }
+
+        if (cache()->get('hasExpired') == true) {
+            return false;
+        }
+
+        if (auth()->user()->HasRole('Client')) {
+            return false;
+        }
+
+        return true;
+    }
+
     protected function getTableColumns(): array
     {
         return [
