@@ -18,6 +18,10 @@ class DepartmentPolicy
      */
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -34,6 +38,10 @@ class DepartmentPolicy
      */
     public function view(User $user, Department $department)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -53,6 +61,10 @@ class DepartmentPolicy
      */
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -69,6 +81,10 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -89,6 +105,10 @@ class DepartmentPolicy
      */
     public function delete(User $user, Department $department)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -108,6 +128,10 @@ class DepartmentPolicy
      */
     public function restore(User $user, Department $department)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -127,6 +151,10 @@ class DepartmentPolicy
      */
     public function forceDelete(User $user, Department $department)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }

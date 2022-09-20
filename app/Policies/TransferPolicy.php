@@ -11,6 +11,9 @@ class TransferPolicy
 
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -23,6 +26,9 @@ class TransferPolicy
 
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }

@@ -15,7 +15,7 @@ test('non_login_users_can_see_login_page', function () {
 });
 
 test('login_users_get_redirected_to_dashboard', function () {
-    User::factory()->times(1)->create(['is_admin' => true]);
+    User::factory()->times(1)->create(['is_admin' => false]);
 
     $admin = User::first();
 
@@ -29,7 +29,7 @@ test('login_users_get_redirected_to_dashboard', function () {
 });
 
 it('can render dashboard for Admin', function () {
-    User::factory()->times(1)->create(['is_admin' => true]);
+    User::factory()->times(1)->create(['is_admin' => false]);
 
     $admin = User::first();
 

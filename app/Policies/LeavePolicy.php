@@ -18,6 +18,9 @@ class LeavePolicy
      */
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -34,6 +37,9 @@ class LeavePolicy
      */
     public function view(User $user, Leave $leave)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -52,6 +58,9 @@ class LeavePolicy
      */
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -68,6 +77,9 @@ class LeavePolicy
      */
     public function update(User $user, Leave $leave)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -88,6 +100,9 @@ class LeavePolicy
      */
     public function delete(User $user, Leave $leave)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -112,6 +127,9 @@ class LeavePolicy
      */
     public function restore(User $user, Leave $leave)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -135,6 +153,9 @@ class LeavePolicy
      */
     public function forceDelete(User $user, Leave $leave)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }

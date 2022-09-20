@@ -31,8 +31,12 @@ class OmsSettings extends Page
 
     protected static function shouldRegisterNavigation(): bool
     {
-        if (auth()->user()->is_admin == true) {
+        if (auth()->user()->hasRole('Super Admin') == true) {
             return true;
+        }
+
+        if (auth()->user()->is_admin == true) {
+            return false;
         }
 
         return auth()->user()->can('change application settings');

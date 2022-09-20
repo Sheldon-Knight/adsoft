@@ -32,8 +32,12 @@ class ClientInvoicePayment extends Page implements HasForms
         return false;
     }
 
-    public function mount(Invoice $record): void
+    public function mount(Invoice $record)
     {
+        if (auth()->user()->is_admin == true) {
+            return abort(404);
+        }
+
         $this->record = $record;
 
         $this->form->fill();
@@ -178,7 +182,7 @@ class ClientInvoicePayment extends Page implements HasForms
                     Card::make()
                         ->schema([
                             TextInput::make('invoice_subtotal')
-                            ->label('Sub Total')
+                                ->label('Sub Total')
                                 ->numeric()
                                 ->type('number')
                                 ->prefix('R')
@@ -210,10 +214,10 @@ class ClientInvoicePayment extends Page implements HasForms
                                 ]),
 
                             TextInput::make('invoice_discount')
-                            ->label('Discount')
+                                ->label('Discount')
                                 ->required()
                                 ->reactive()
-                        ->disabled()
+                                ->disabled()
                                 ->type('number')
                                 ->prefix('R')
                                 ->numeric()
@@ -234,7 +238,7 @@ class ClientInvoicePayment extends Page implements HasForms
                                 ]),
 
                             TextInput::make('invoice_tax')
-                            ->label('Tax')
+                                ->label('Tax')
                                 ->numeric()
                                 ->type('number')
                                 ->prefix('R')
@@ -251,8 +255,8 @@ class ClientInvoicePayment extends Page implements HasForms
                                 ]),
 
                             TextInput::make('invoice_total')
-                            ->label('Total Amount')
-                            ->numeric()
+                                ->label('Total Amount')
+                                ->numeric()
                                 ->type('number')
                                 ->prefix('R')
                                 ->disabled()

@@ -50,11 +50,18 @@ class ClientJobs extends Page implements HasTable
         if (! auth()->user()->Hasrole('Client')) {
             return abort(404);
         }
+        if (auth()->user()->is_admin == true) {
+            return abort(404);
+        }
     }
 
     protected static function shouldRegisterNavigation(): bool
     {
         if (cache()->get('hasExpired') == true) {
+            return false;
+        }
+
+        if (auth()->user()->is_admin == true) {
             return false;
         }
 
@@ -70,9 +77,9 @@ class ClientJobs extends Page implements HasTable
             \Filament\Tables\Columns\TextColumn::make('title')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('description')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('date_completed')
-            ->date()->searchable(),
+                ->date()->searchable(),
             \Filament\Tables\Columns\TextColumn::make('created_at')
-            ->dateTime()->searchable(),
+                ->dateTime()->searchable(),
         ];
     }
 
@@ -95,42 +102,43 @@ class ClientJobs extends Page implements HasTable
                 ->form(
                     [
                         Select::make('user_id')
-                        ->label('Assign To User')
-                        ->required()
+                            ->label('Assign To User')
+                            ->required()
                             ->searchable()
                             ->options(User::query()->pluck('name', 'id')),
 
                         Select::make('created_by')
-                        ->label('Created by User')
-                        ->options(User::query()->pluck('name', 'id'))
-                        ->visibleOn('view'),
+                            ->label('Created by User')
+                            ->options(User::query()->pluck('name', 'id'))
+                            ->visibleOn('view'),
 
                         DatePicker::make('created_at')
-                        ->label('Created At')
-                        ->visibleOn('view'),
+                            ->label('Created At')
+                            ->visibleOn('view'),
 
                         DatePicker::make('date_completed')
-                        ->label('Completed At')
-                        ->visibleOn('view'),
+                            ->label('Completed At')
+                            ->visibleOn('view'),
 
                         Select::make('invoice_id')
-                        ->label('Job Invoice')
-                        ->required()
+                            ->label('Job Invoice')
+                            ->required()
                             ->searchable()
                             ->options(Invoice::query()->where('is_quote', false)->pluck('invoice_number', 'id')),
 
                         Select::make('status_id')
-                        ->label('Job Status')
-                        ->required()
+                            ->label('Job Status')
+                            ->required()
                             ->searchable()
                             ->options(Status::query()->pluck('name', 'id')),
 
                         TextInput::make('title')
                             ->required(),
                         Textarea::make('description')
-                        ->required(),
+                            ->required(),
                     ]
-                ), ];
+                ),
+        ];
     }
 
     protected function getTableBulkActions(): array

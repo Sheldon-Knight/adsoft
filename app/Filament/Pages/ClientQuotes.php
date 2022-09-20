@@ -54,11 +54,18 @@ class ClientQuotes extends Page implements HasTable
         if (! auth()->user()->Hasrole('Client')) {
             return abort(404);
         }
+
+        if (auth()->user()->is_admin == true) {
+            return abort(404);
+        }
     }
 
     protected static function shouldRegisterNavigation(): bool
     {
         if (cache()->get('hasExpired') == true) {
+            return false;
+        }
+        if (auth()->user()->is_admin == true) {
             return false;
         }
 

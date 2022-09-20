@@ -18,6 +18,10 @@ class AttendancePolicy
      */
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -34,6 +38,10 @@ class AttendancePolicy
      */
     public function view(User $user, Attendance $attendance)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -52,6 +60,10 @@ class AttendancePolicy
      */
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -68,6 +80,10 @@ class AttendancePolicy
      */
     public function update(User $user, Attendance $attendance)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -87,6 +103,10 @@ class AttendancePolicy
      */
     public function delete(User $user, Attendance $attendance)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -107,6 +127,10 @@ class AttendancePolicy
      */
     public function restore(User $user, Attendance $attendance)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -127,6 +151,10 @@ class AttendancePolicy
      */
     public function forceDelete(User $user, Attendance $attendance)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }

@@ -18,6 +18,10 @@ class ClientPolicy
      */
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -34,6 +38,10 @@ class ClientPolicy
      */
     public function view(User $user, Client $client)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -53,6 +61,10 @@ class ClientPolicy
      */
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -69,6 +81,10 @@ class ClientPolicy
      */
     public function update(User $user, Client $client)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -89,6 +105,10 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -109,6 +129,10 @@ class ClientPolicy
      */
     public function restore(User $user, Client $client)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -128,6 +152,10 @@ class ClientPolicy
      */
     public function forceDelete(User $user, Client $client)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }

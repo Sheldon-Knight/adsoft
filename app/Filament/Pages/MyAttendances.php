@@ -48,6 +48,10 @@ class MyAttendances extends Page implements HasTable
         if (auth()->user()->hasRole('Client')) {
             return abort(404);
         }
+
+        if (auth()->user()->is_admin == true) {
+            return abort(404);
+        }
     }
 
     protected static function shouldRegisterNavigation(): bool
@@ -55,7 +59,9 @@ class MyAttendances extends Page implements HasTable
         if (cache()->get('hasExpired') == true) {
             return false;
         }
-
+        if (auth()->user()->is_admin == true) {
+            return false;
+        }
         if (auth()->user()->hasRole('Client')) {
             return false;
         }

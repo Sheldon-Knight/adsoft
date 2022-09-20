@@ -7,12 +7,13 @@ $user = \Filament\Facades\Filament::auth()->user();
     </span>
     <span
         class="inline-flex items-center justify-center ml-auto rtl:ml-0 rtl:mr-auto min-h-4 px-2 py-0.5 text-xs font-medium tracking-tight rounded-xl whitespace-normal text-primary-700 bg-primary-500/10 dark:text-primary-500">
-        {{ auth()->user()->getRoleNames()[0] ?? '' }}
+        {{ auth()->user()->getRoleNames()[0] ?? 'System User' }}
     </span>
 </div>
 
+@if (auth()->user()->is_admin === false)
     @livewire('notification-bell')
-
+@endif
 <div x-data="{
     mode: null,
 

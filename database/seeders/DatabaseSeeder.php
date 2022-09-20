@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
                 ClientSeeder::class,
                 StatusesSeeder::class,
                 DepartmentSeeder::class,
+                SystemSeeder::class,
                 // InstructionSeeder::class,
                 // AccountSeeder::class,
                 // TransferSeeder::class,

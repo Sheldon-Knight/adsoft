@@ -18,6 +18,9 @@ class StatusPolicy
      */
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -34,6 +37,9 @@ class StatusPolicy
      */
     public function view(User $user, Status $status)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -52,6 +58,9 @@ class StatusPolicy
      */
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -68,6 +77,9 @@ class StatusPolicy
      */
     public function update(User $user, Status $status)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -87,6 +99,9 @@ class StatusPolicy
      */
     public function delete(User $user, Status $status)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -106,6 +121,9 @@ class StatusPolicy
      */
     public function restore(User $user, Status $status)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -125,6 +143,9 @@ class StatusPolicy
      */
     public function forceDelete(User $user, Status $status)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
         if (cache()->get('hasExpired') == true) {
             return false;
         }

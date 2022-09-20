@@ -18,6 +18,10 @@ class JobPolicy
      */
     public function viewAny(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -34,6 +38,10 @@ class JobPolicy
      */
     public function view(User $user, Job $job)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -52,6 +60,10 @@ class JobPolicy
      */
     public function create(User $user)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -68,6 +80,10 @@ class JobPolicy
      */
     public function update(User $user, Job $job)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -87,6 +103,10 @@ class JobPolicy
      */
     public function delete(User $user, Job $job)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -106,6 +126,10 @@ class JobPolicy
      */
     public function restore(User $user, Job $job)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -125,6 +149,10 @@ class JobPolicy
      */
     public function forceDelete(User $user, Job $job)
     {
+        if ($user->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }

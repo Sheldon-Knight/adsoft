@@ -58,7 +58,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessFilament(): bool
     {
         if (cache()->get('hasExpired') == true) {
-            if (auth()->user()->is_admin == true) {
+            if (auth()->user()->hasRole('Super Admin') == true) {
                 return true;
             }
 

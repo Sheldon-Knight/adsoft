@@ -18,6 +18,10 @@ class AttendanceCalendarWidget extends FullCalendarWidget
 
     public static function canView(): bool
     {
+        if (auth()->user()->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }

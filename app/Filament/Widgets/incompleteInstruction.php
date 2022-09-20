@@ -1,56 +1,32 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\Filament\Widgets;
 
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Models\Instruction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Pages\Page;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\DateFilter;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\TextFilter;
 
-class MyInstructions extends Page implements HasTable
+class incompleteInstruction extends BaseWidget
 {
-    use InteractsWithTable;
+    protected int | string | array $columnSpan = 'full';
 
-    protected static ?string $navigationIcon = 'heroicon-o-cursor-click';
-
-    protected static ?int $navigationSort = 3;
-
-    protected static ?string $navigationGroup = 'My Workflow';
-
-    protected static string $view = 'filament.pages.my-instructions';
+    protected static ?int $sort = 2;
 
     protected function getTableQuery(): Builder
     {
-        return Instruction::query()->where('assigned_to', auth()->id());
-    }
-
-    public function mount()
-    {
-        if (auth()->user()->hasRole('Client')) {
-            return abort(404);
-        }
-
-        if (auth()->user()->is_admin == true) {
-            return abort(404);
-        }
-    }
-
-    protected static function getNavigationBadge(): ?string
-    {
-        return auth()->user()->incompleteInstructions->count();
+        return Instruction::query()->where('assigned_to', auth()->id())->where('date_completed', '=', null);
     }
 
     protected function getTableColumns(): array
@@ -139,21 +115,6 @@ class MyInstructions extends Page implements HasTable
             )->visible(auth()->user()->can('create instructions')),
             FilamentExportHeaderAction::make('export'),
         ];
-    }
-
-    protected static function shouldRegisterNavigation(): bool
-    {
-        if (cache()->get('hasExpired') == true) {
-            return false;
-        }
-        if (auth()->user()->is_admin == true) {
-            return false;
-        }
-        if (auth()->user()->hasRole('Client')) {
-            return false;
-        }
-
-        return true;
     }
 
     protected function getTableFiltersFormColumns(): int

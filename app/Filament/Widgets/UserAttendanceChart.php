@@ -21,6 +21,10 @@ class UserAttendanceChart extends BarChartWidget
 
     public static function canView(): bool
     {
+        if (auth()->user()->is_admin == true) {
+            return false;
+        }
+
         if (cache()->get('hasExpired') == true) {
             return false;
         }
@@ -55,7 +59,7 @@ class UserAttendanceChart extends BarChartWidget
         $activeFilter = $this->filter;
 
         $query = Trend::query(Attendance::where('user_id', auth()->id())->where('present', $present))
-        ->dateColumn('day')
+            ->dateColumn('day')
             ->between(
                 start: now()->startOfYear(),
                 end: now()->endOfYear(),
