@@ -86,7 +86,14 @@ class JobResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('client.name')->searchable(),
                 Tables\Columns\TextColumn::make('user.name')->searchable(),
-                Tables\Columns\TextColumn::make('department.name')->searchable(),
+                Tables\Columns\TextColumn::make('department.name')->searchable()->getStateUsing(function (Job $record) {
+                    if ($record->user->department_id) {
+                        $record->department_id = $record->user->department_id ?? null;
+                        $record->save();
+                    }
+
+                    return $record?->department->name ?? 'No Department';
+                }),
                 Tables\Columns\TextColumn::make('invoice.invoice_number')->searchable(),
                 Tables\Columns\BadgeColumn::make('status.name')->searchable(),
                 Tables\Columns\TextColumn::make('title')->searchable(),
@@ -94,13 +101,13 @@ class JobResource extends Resource
                 Tables\Columns\TextColumn::make('date_completed')
                     ->date()->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()->searchable(),
+                    ->dateTime()->since()->searchable(),
             ])
             ->filters([
                 MultiSelectFilter::make('status')->relationship('status', 'name'),
                 MultiSelectFilter::make('user')->relationship('user', 'name'),
                 MultiSelectFilter::make('client')->relationship('client', 'name'),
-                MultiSelectFilter::make('deaprtment')->relationship('department', 'name'),
+                MultiSelectFilter::make('department')->relationship('department', 'name'),
                 TextFilter::make('title'),
                 TextFilter::make('description'),
                 DateFilter::make('date_completed'),

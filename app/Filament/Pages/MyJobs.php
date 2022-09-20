@@ -47,7 +47,14 @@ class MyJobs extends Page implements HasTable
     {
         return [
             \Filament\Tables\Columns\TextColumn::make('client.name')->searchable(),
-            \Filament\Tables\Columns\TextColumn::make('department.name')->searchable(),
+            \Filament\Tables\Columns\TextColumn::make('department.name')->searchable()->getStateUsing(function (Job $record) {
+                if ($record->user->department_id) {
+                    $record->department_id = $record->user->department_id ?? null;
+                    $record->save();
+                }
+
+                return $record?->department->name ?? 'No Department';
+            }),
             \Filament\Tables\Columns\TextColumn::make('invoice.invoice_number')->searchable(),
             \Filament\Tables\Columns\BadgeColumn::make('status.name')->searchable(),
             \Filament\Tables\Columns\TextColumn::make('title')->searchable(),
@@ -55,7 +62,7 @@ class MyJobs extends Page implements HasTable
             \Filament\Tables\Columns\TextColumn::make('date_completed')
                 ->date()->searchable(),
             \Filament\Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()->searchable(),
+                ->dateTime()->since()->searchable(),
         ];
     }
 

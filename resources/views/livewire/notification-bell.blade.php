@@ -1,6 +1,6 @@
 <div class="flex">
-  @unlessrole('Client')
-<a href={{ route('filament.pages.my-instructions') }}
+    @unlessrole('Client')
+        <a href={{ route('filament.pages.my-instructions') }}
             class="flex items-center justify-center gap-3 px-3 py-2 rounded-lg font-medium transition hover:bg-gray-500/5 focus:bg-gray-500/5 dark:text-gray-300 dark:hover:bg-gray-700">
 
             <svg class="h-5 w-5 shrink-0" fill="#EAB435" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -40,9 +40,6 @@
                 </span>
             </div>
         </a>
-
-
-  @else
-
-  @endrole
+    @else
+    @endrole
 </div>

@@ -74,7 +74,14 @@ class JobsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('client.name')->searchable(),
                 Tables\Columns\TextColumn::make('user.name')->searchable(),
-                Tables\Columns\TextColumn::make('department.name')->searchable(),
+                Tables\Columns\TextColumn::make('department.name')->searchable()->getStateUsing(function (Job $record) {
+                    if ($record->user->department_id) {
+                        $record->department_id = $record->user->department_id ?? null;
+                        $record->save();
+                    }
+
+                    return $record?->department->name ?? 'No Department';
+                }),
                 Tables\Columns\TextColumn::make('invoice.invoice_number')->searchable(),
                 Tables\Columns\BadgeColumn::make('status.name')->searchable(),
                 Tables\Columns\TextColumn::make('title')->searchable(),
@@ -82,7 +89,7 @@ class JobsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('date_completed')
                     ->date()->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()->searchable(),
+                    ->dateTime()->since()->searchable(),
             ])
             ->filters([
                 MultiSelectFilter::make('status')->relationship('status', 'name'),
@@ -157,15 +164,15 @@ class JobsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                   ->mutateFormDataUsing(function (array $data): array {
-                       $data['created_by'] = auth()->id();
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['created_by'] = auth()->id();
 
-                       $invoice = Invoice::find($data['invoice_id']);
+                        $invoice = Invoice::find($data['invoice_id']);
 
-                       $data['client_id'] = $invoice->client_id;
+                        $data['client_id'] = $invoice->client_id;
 
-                       return $data;
-                   }),
+                        return $data;
+                    }),
                 \AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction::make('export'),
             ])
             ->bulkActions([
