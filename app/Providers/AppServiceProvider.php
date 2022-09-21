@@ -40,9 +40,9 @@ class AppServiceProvider extends ServiceProvider
                     ->collapsed(),
 
                 NavigationGroup::make()
-                ->label('Inventory Management')
-                ->icon('heroicon-s-view-grid')
-                ->collapsed(),
+                    ->label('Inventory Management')
+                    ->icon('heroicon-s-view-grid')
+                    ->collapsed(),
 
                 NavigationGroup::make()
                     ->label('Settings')
@@ -80,8 +80,10 @@ class AppServiceProvider extends ServiceProvider
         Filament::serving(function () {
             Filament::registerUserMenuItems([
                 'account' => UserMenuItem::make()->url(route('filament.pages.profile')),
+                'credits' => UserMenuItem::make()->label('Credits')->icon('heroicon-o-phone-outgoing')->url(route('filament.pages.credits')),
             ]);
         });
+
 
         $hasExpired = true;
 
@@ -97,11 +99,11 @@ class AppServiceProvider extends ServiceProvider
 
             $plan = cache()->get('current_plan');
 
-            if (! $subscription) {
+            if (!$subscription) {
                 cache()->forever('subscription', OmsSetting::first()->subscription);
             }
 
-            if (! $plan) {
+            if (!$plan) {
                 cache()->forever('current_plan', OmsSetting::first()->subscription->plan->name);
             }
         }

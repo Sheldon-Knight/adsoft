@@ -1,6 +1,7 @@
 @php
 $user = \Filament\Facades\Filament::auth()->user();
 @endphp
+
 <div class="flex-1">
     <span class="mr-2">
         Your Role(s):
@@ -14,6 +15,7 @@ $user = \Filament\Facades\Filament::auth()->user();
 @if (auth()->user()->is_admin === false)
     @livewire('notification-bell')
 @endif
+
 <div x-data="{
     mode: null,
 

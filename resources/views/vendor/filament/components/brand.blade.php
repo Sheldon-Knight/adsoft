@@ -15,12 +15,11 @@
         'text-md font-bold tracking-tight filament-brand',
         'dark:text-white' => config('filament.dark_mode'),
     ])>
-
-        {{-- {{ $brand }} --}}
-
-
-        Welcome To Adsoft
-
+  @if (!request()->routeIs('filament.auth.login'))
+        {{ $brand }}
+@else
+Welcome To Adsoft
+@endif
         <x-filament::hr />
     </div>
     @if (!request()->routeIs('filament.auth.login'))
