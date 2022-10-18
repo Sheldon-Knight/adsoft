@@ -14,7 +14,7 @@ class EmployeeSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->times(10)->create()
+        User::factory()->times(1)->create()
             ->each(function ($user) {
                 $user->assignRole('Employee');
             });
